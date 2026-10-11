@@ -14,44 +14,142 @@
         :root { --hotbar-w: 378px; --hotbar-h: 46px; }
         body.mobile { --hotbar-w: 306px; --hotbar-h: 37px; }
 
+        @keyframes crosshairBreathe {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.88; }
+            50% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
+        }
         #crosshair {
             position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             color: #fff; font-size: 26px; font-weight: bold; line-height: 1;
             pointer-events: none; z-index: 10;
             text-shadow: 0 0 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.6);
-            transition: transform 0.15s ease-out, opacity 0.2s;
+            animation: crosshairBreathe 2.4s ease-in-out infinite;
         }
-        #crosshair.hidden { display: none; }
+        #crosshair.hidden { display: none; animation: none; }
 
         #hud { position: fixed; top: 12px; left: 12px; font-size: 13px; z-index: 10; text-shadow: 1px 1px 0 #000; pointer-events: none; line-height: 1.7; background: rgba(0,0,0,0.75); padding: 8px 12px; min-width: 200px; }
         #hud .label { color: #9a9a9a; }
         .hp-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
         .hp-bar { flex: 1; height: 12px; background: rgba(255,255,255,0.15); position: relative; overflow: hidden; min-width: 120px; }
-        .hp-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #4ade80, #22c55e); transition: width 0.25s ease-out; }
+        .hp-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #4ade80, #22c55e); transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: width; }
         .hp-fill.mid { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
         .hp-fill.low { background: linear-gradient(90deg, #ef4444, #dc2626); }
-        .hp-text { font-size: 12px; color: #fff; min-width: 28px; text-align: right; font-weight: bold; }
 
-        #chatBar {
-            position: fixed; left: 10px; bottom: 10px;
-            width: 320px; max-width: calc(100vw - 20px);
-            background: rgba(0,0,0,0.55); z-index: 55;
-            padding: 5px 8px; display: flex; flex-direction: column; gap: 2px;
-            pointer-events: none; max-height: 26vh; min-height: 4px;
-            border-radius: 3px; overflow: hidden;
+        @keyframes hpCriticalPulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.6); }
         }
-        #chatMessages { display: flex; flex-direction: column; justify-content: flex-end; gap: 1px; overflow: hidden; flex: 1; min-height: 0; max-height: 22vh; }
-        .chat-line { background: transparent; padding: 1px 4px; color: #fff; font-size: 13px; line-height: 1.35; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000; animation: chatIn 0.25s ease; word-break: break-all; }
+        .hp-fill.critical { animation: hpCriticalPulse 1s ease-in-out infinite; }
+
+        @keyframes hpHitFlash {
+            0% { filter: brightness(3.5) saturate(0); }
+            100% { filter: brightness(1) saturate(1); }
+        }
+        .hp-fill.hit-flash { animation: hpHitFlash 0.4s ease-out; }
+
+        @keyframes hpTextBump {
+            0% { transform: scale(1); color: #fff; }
+            50% { transform: scale(1.45); color: #ff7777; }
+            100% { transform: scale(1); color: #fff; }
+        }
+        .hp-text { font-size: 12px; color: #fff; min-width: 28px; text-align: right; font-weight: bold; display: inline-block; }
+        .hp-text.bump { animation: hpTextBump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+        /* ==================== 消息框（击杀信息）：HUD 下方左侧 ==================== */
+        #killFeed {
+            position: fixed;
+            top: 128px;
+            left: 12px;
+            right: auto;
+            z-index: 10;
+            font-size: 13px;
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+            pointer-events: none;
+            text-align: left;
+            max-width: 560px;
+        }
+        .kill-entry {
+            background: rgba(0,0,0,0.75);
+            padding: 4px 10px;
+            margin-bottom: 4px;
+            text-align: left;
+            animation: killIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), fadeOut 3s forwards;
+        }
+        @keyframes killIn { from { transform: translateX(-30px) scale(0.85); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
+        @keyframes fadeOut { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* ==================== 聊天栏：消息框下方左侧，加高版 ==================== */
+        #chatBar {
+            position: fixed;
+            left: 12px;
+            top: 280px;
+            right: auto;
+            bottom: auto;
+            width: 420px;
+            max-width: calc(100vw - 24px);
+            height: 56vh;               /* 固定高度，撑开聊天栏 */
+            max-height: 56vh;
+            background: rgba(0,0,0,0.55);
+            z-index: 55;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            pointer-events: none;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        #chatMessages {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 3px;
+            overflow: hidden;
+            flex: 1;
+            min-height: 0;
+            /* 高度由父容器决定，显示更多消息 */
+        }
+        .chat-line {
+            background: transparent;
+            padding: 3px 6px;
+            color: #fff;
+            font-size: 15px;
+            line-height: 1.5;
+            text-shadow: 1px 1px 0 #000, -1px -1px 0 #000;
+            animation: chatIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            word-break: break-all;
+        }
         .chat-line .who { color: #5aff5a; }
         .chat-line .who.self { color: #5aafff; }
         .chat-line .who.msg { color: #ffaa00; }
         .chat-line.private { background: rgba(80,30,80,0.6); }
-        @keyframes chatIn { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        #chatInputWrap { display: none; gap: 6px; pointer-events: auto; padding-top: 3px; }
-        #chatInputWrap.active { display: flex; }
-        #chatInput { flex: 1; padding: 6px 10px; background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 14px; outline: none; font-family: inherit; }
-        #chatSend { padding: 6px 14px; background: rgba(255,255,255,0.22); color: #fff; border: none; cursor: pointer; font-family: inherit; font-size: 13px; }
+        @keyframes chatIn { from { transform: translateY(14px) scale(0.92); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        #chatInputWrap { display: none; gap: 6px; pointer-events: auto; padding-top: 4px; flex-shrink: 0; }
+        #chatInputWrap.active { display: flex; animation: chatIn 0.25s ease; }
+        #chatInput { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 15px; outline: none; font-family: inherit; }
+        #chatSend { padding: 8px 16px; background: rgba(255,255,255,0.22); color: #fff; border: none; cursor: pointer; font-family: inherit; font-size: 14px; }
+
+        /* ==================== 移动端：聊天栏移回底部，尺寸适中 ==================== */
+    body.mobile #killFeed {
+        top: 122px;
+        font-size: 12px;
+        max-width: calc(100vw - 24px);
+    }
+        body.mobile #chatBar {
+            top: auto;
+            bottom: 10px;
+            left: 10px;
+            width: 320px;
+            height: auto;
+            max-height: 34vh;
+            padding: 5px 8px;
+        }
+        body.mobile #chatMessages { max-height: 30vh; }
+        body.mobile .chat-line { font-size: 13px; line-height: 1.35; padding: 1px 4px; }
+        body.mobile #chatInput { font-size: 14px; padding: 6px 10px; }
+        body.mobile #chatSend { font-size: 13px; padding: 6px 14px; }
 
         #chatBtn {
             position: fixed; bottom: 92px;
@@ -59,47 +157,75 @@
             padding: 8px 14px; background: rgba(0,0,0,0.75);
             color: #fff; font-size: 13px; border: none; cursor: pointer;
             z-index: 100; letter-spacing: 1px; white-space: nowrap;
+            transition: transform 0.15s ease, background 0.15s ease;
         }
+        #chatBtn:hover { transform: scale(1.06); background: rgba(40,40,40,0.9); }
+        #chatBtn:active { transform: scale(0.95); }
         #throwBtn {
             position: fixed; bottom: 92px;
             right: calc(50% + var(--hotbar-w) / 2 + 8px);
             padding: 8px 14px; background: rgba(0,0,0,0.75);
             color: #fff; font-size: 13px; border: none; cursor: pointer;
             z-index: 100; letter-spacing: 1px; display: none; white-space: nowrap;
+            transition: transform 0.15s ease, background 0.15s ease;
         }
+        #throwBtn:hover { transform: scale(1.06); background: rgba(40,40,40,0.9); }
+        #throwBtn:active { transform: scale(0.95); }
         body.mobile #throwBtn { display: block; }
         body.mobile #chatBtn, body.mobile #throwBtn { bottom: 96px; padding: 6px 10px; font-size: 12px; }
 
-        #settingsBtn { position: fixed; top: 12px; right: 12px; width: 42px; height: 42px; background: rgba(0,0,0,0.75); border: none; color: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; }
+        #settingsBtn { position: fixed; top: 12px; right: 12px; width: 42px; height: 42px; background: rgba(0,0,0,0.75); border: none; color: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s; }
+        #settingsBtn:hover { transform: rotate(90deg) scale(1.1); background: rgba(60,60,60,0.9); }
         #settingsPanel { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 200; padding: 80px 24px 40px; opacity: 0; overflow-y: auto; transition: opacity 0.3s ease; }
         #settingsPanel.active { display: flex; opacity: 1; }
         #settingsPanel::-webkit-scrollbar { width: 6px; }
         #settingsPanel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); }
-        #settingsPanel .panel-content { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 380px; padding-bottom: 60px; }
-        #backBtn { position: fixed; top: 16px; left: 16px; width: 48px; height: 48px; background: rgba(0,0,0,0.6); border: none; color: #fff; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 201; }
+        #settingsPanel .panel-content { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 380px; padding-bottom: 60px; animation: panelSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes panelSlideIn {
+            from { transform: translateY(40px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        #backBtn { position: fixed; top: 16px; left: 16px; width: 48px; height: 48px; background: rgba(0,0,0,0.6); border: none; color: #fff; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 201; transition: transform 0.2s; }
+        #backBtn:hover { transform: translateX(-4px); }
         #settingsPanel h2 { font-size: 22px; margin-bottom: 28px; color: #fff; letter-spacing: 3px; text-shadow: 2px 2px 0 #000; }
         .setting-row { width: 100%; margin-bottom: 22px; }
         .setting-row label { display: block; font-size: 12px; margin-bottom: 8px; color: #c8c8c8; letter-spacing: 1px; }
-        .setting-row input[type="text"] { width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.75); border: none; color: #fff; font-size: 15px; outline: none; font-family: inherit; }
+        .setting-row input[type="text"] { width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.75); border: none; color: #fff; font-size: 15px; outline: none; font-family: inherit; transition: box-shadow 0.2s; }
+        .setting-row input[type="text"]:focus { box-shadow: 0 0 0 2px #5aff5a inset; }
         .setting-row input[type="range"] { width: 100%; height: 8px; -webkit-appearance: none; appearance: none; background: rgba(255,255,255,0.25); outline: none; border: none; cursor: pointer; }
-        .setting-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; background: #fff; cursor: pointer; }
+        .setting-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; background: #fff; cursor: pointer; transition: transform 0.15s; }
+        .setting-row input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
         .range-val { float: right; color: #fff; font-size: 13px; }
         .toggle-group { display: flex; gap: 8px; }
-        .toggle-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.08); color: #9a9a9a; border: none; font-size: 13px; cursor: pointer; text-align: center; font-family: inherit; }
+        .toggle-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.08); color: #9a9a9a; border: none; font-size: 13px; cursor: pointer; text-align: center; font-family: inherit; transition: background 0.2s, color 0.2s, transform 0.15s; }
+        .toggle-btn:hover { transform: scale(1.03); }
+        .toggle-btn:active { transform: scale(0.97); }
         .toggle-btn.active { background: rgba(255,255,255,0.32); color: #fff; }
         .skin-row { display: flex; gap: 12px; align-items: stretch; }
         .skin-preview { width: 72px; height: 72px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
-        .skin-preview img { max-width: 100%; max-height: 100%; image-rendering: pixelated; }
+        .skin-preview img { max-width: 100%; max-height: 100%; image-rendering: pixelated; transition: transform 0.2s; }
+        .skin-preview:hover img { transform: scale(1.08); }
         .skin-buttons { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-        .skin-btn { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.08); color: #ddd; border: none; font-size: 12px; cursor: pointer; font-family: inherit; }
-        .big-btn { width: 100%; padding: 12px; background: rgba(255,255,255,0.12); color: #fff; border: none; font-size: 13px; cursor: pointer; letter-spacing: 1px; font-family: inherit; }
+        .skin-btn { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.08); color: #ddd; border: none; font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.15s, transform 0.15s; }
+        .skin-btn:hover { background: rgba(255,255,255,0.16); transform: scale(1.02); }
+        .skin-btn:active { transform: scale(0.97); }
+        .big-btn { width: 100%; padding: 12px; background: rgba(255,255,255,0.12); color: #fff; border: none; font-size: 13px; cursor: pointer; letter-spacing: 1px; font-family: inherit; transition: background 0.2s, transform 0.15s; }
+        .big-btn:hover { background: rgba(255,255,255,0.22); transform: scale(1.02); }
+        .big-btn:active { transform: scale(0.97); }
+
         #roomModal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 300; padding: 24px; }
         #roomModal.active { display: flex; }
-        #roomModal .modal-box { width: 100%; max-width: 340px; background: rgba(20,20,20,0.95); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+        #roomModal .modal-box { width: 100%; max-width: 340px; background: rgba(20,20,20,0.95); padding: 24px; display: flex; flex-direction: column; gap: 14px; animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes modalPop {
+            from { transform: scale(0.82); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
         #roomModal h3 { font-size: 16px; text-align: center; letter-spacing: 2px; }
         #roomModal input { padding: 12px; background: rgba(255,255,255,0.08); border: none; color: #fff; font-size: 16px; text-align: center; outline: none; font-family: inherit; }
         .modal-actions { display: flex; gap: 8px; }
-        .modal-actions button { flex: 1; padding: 11px; background: rgba(255,255,255,0.12); border: none; color: #fff; font-size: 13px; cursor: pointer; font-family: inherit; }
+        .modal-actions button { flex: 1; padding: 11px; background: rgba(255,255,255,0.12); border: none; color: #fff; font-size: 13px; cursor: pointer; font-family: inherit; transition: background 0.15s, transform 0.15s; }
+        .modal-actions button:hover { background: rgba(255,255,255,0.22); }
+        .modal-actions button:active { transform: scale(0.96); }
 
         #mobileControls { position: fixed; inset: 0; pointer-events: none; z-index: 60; display: none; }
         #mobileControls.active { display: block; }
@@ -114,25 +240,20 @@
             display: none; align-items: center; justify-content: center;
             pointer-events: auto; touch-action: none; font-family: inherit;
             z-index: 200; user-select: none; -webkit-user-select: none;
+            transition: background 0.15s, transform 0.15s;
         }
         body.mobile #sprintBtn, body.mobile #shootBtn, body.mobile #jumpBtn,
         body.mobile #bagBtn, body.mobile #aimBtn { display: flex; }
 
-        #sprintBtn { bottom: 182px; left: 34px; width: 58px; height: 58px; font-size: 11px; color: #bbb; transition: background 0.15s; }
+        #sprintBtn { bottom: 182px; left: 34px; width: 58px; height: 58px; font-size: 11px; color: #bbb; }
         #sprintBtn.active { background: rgba(255,255,255,0.32); color: #fff; }
-        #shootBtn { bottom: 44px; right: 34px; width: 84px; height: 84px; font-size: 14px; transition: background 0.12s, transform 0.12s; }
-        #shootBtn.hitting { background: rgba(255,60,60,0.55); transform: scale(0.92); }
+        #shootBtn { bottom: 44px; right: 34px; width: 84px; height: 84px; font-size: 14px; }
+        #shootBtn:active, #shootBtn.hitting { background: rgba(255,60,60,0.55); transform: scale(0.92); }
         #jumpBtn { bottom: 150px; right: 34px; width: 68px; height: 68px; font-size: 13px; }
-        #jumpBtn:active { background: rgba(255,255,255,0.32); }
+        #jumpBtn:active { background: rgba(255,255,255,0.32); transform: scale(0.94); }
         #bagBtn { bottom: 232px; right: 34px; width: 68px; height: 68px; font-size: 13px; }
-        #bagBtn:active { background: rgba(255,255,255,0.32); }
-
-        /* 瞄准按钮：射击键左侧 */
-        #aimBtn {
-            bottom: 44px; right: 132px;
-            width: 68px; height: 68px; font-size: 13px;
-            transition: background 0.12s, transform 0.12s;
-        }
+        #bagBtn:active { background: rgba(255,255,255,0.32); transform: scale(0.94); }
+        #aimBtn { bottom: 44px; right: 132px; width: 68px; height: 68px; font-size: 13px; }
         #aimBtn.active { background: rgba(90,180,255,0.55); transform: scale(0.94); }
 
         #sprintHint { position: fixed; bottom: 162px; left: 48px; width: 30px; height: 20px; color: rgba(255,255,255,0.35); font-size: 14px; text-align: center; pointer-events: none; display: none; z-index: 199; animation: hintPulse 1.8s ease-in-out infinite; }
@@ -141,26 +262,31 @@
 
         #mobileRing { position: fixed; left: -9999px; top: -9999px; width: 172px; height: 172px; border-radius: 50%; border: 5px solid #fff; mix-blend-mode: difference; pointer-events: none; display: none; z-index: 55; transform: translate(-50%, -50%); will-change: left, top; }
 
-        #freeCamUpBtn, #freeCamDownBtn { position: fixed; right: 40px; width: 58px; height: 58px; border-radius: 50%; background: rgba(0,0,0,0.75); color: #fff; font-size: 20px; display: none; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; font-family: inherit; z-index: 200; }
+        #freeCamUpBtn, #freeCamDownBtn { position: fixed; right: 40px; width: 58px; height: 58px; border-radius: 50%; background: rgba(0,0,0,0.75); color: #fff; font-size: 20px; display: none; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; font-family: inherit; z-index: 200; transition: background 0.15s, transform 0.15s; }
         #freeCamUpBtn { bottom: 320px; }
         #freeCamDownBtn { bottom: 250px; }
         body.mobile #freeCamUpBtn.visible, body.mobile #freeCamDownBtn.visible { display: flex; }
-        #freeCamUpBtn.pressed, #freeCamDownBtn.pressed { background: rgba(255,255,255,0.32); }
+        #freeCamUpBtn.pressed, #freeCamDownBtn.pressed { background: rgba(255,255,255,0.32); transform: scale(0.94); }
 
         #startScreen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; color: #fff; padding: 24px; gap: 14px; transition: opacity 0.55s ease, visibility 0.55s; }
         #startScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-        #startScreen input[type="text"] { padding: 14px 18px; background: rgba(255,255,255,0.06); border: none; color: #fff; font-size: 17px; text-align: center; outline: none; width: 280px; font-family: inherit; touch-action: auto; }
-        #startBtn { padding: 14px 58px; background: rgba(255,255,255,0.16); border: none; color: #fff; font-size: 17px; cursor: pointer; letter-spacing: 4px; font-family: inherit; touch-action: auto; }
-        #startBtn:hover { background: rgba(255,255,255,0.28); }
+        #startScreen > * { animation: startFadeIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
+        #startScreen > *:nth-child(1) { animation-delay: 0.05s; }
+        #startScreen > *:nth-child(2) { animation-delay: 0.15s; }
+        #startScreen > *:nth-child(3) { animation-delay: 0.25s; }
+        @keyframes startFadeIn {
+            from { transform: translateY(30px) scale(0.94); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        #startScreen input[type="text"] { padding: 14px 18px; background: rgba(255,255,255,0.06); border: none; color: #fff; font-size: 17px; text-align: center; outline: none; width: 280px; font-family: inherit; touch-action: auto; transition: box-shadow 0.2s; }
+        #startScreen input[type="text"]:focus { box-shadow: 0 0 0 2px #5aff5a inset; }
+        #startBtn { padding: 14px 58px; background: rgba(255,255,255,0.16); border: none; color: #fff; font-size: 17px; cursor: pointer; letter-spacing: 4px; font-family: inherit; touch-action: auto; transition: background 0.2s, transform 0.15s; }
+        #startBtn:hover { background: rgba(255,255,255,0.28); transform: scale(1.04); }
         #startBtn:active { transform: scale(0.96); }
         #loadingHint { font-size: 12px; color: #888; letter-spacing: 1px; transition: color 0.3s; text-align: center; max-width: 320px; word-break: break-all; line-height: 1.5; }
 
-        #killFeed { position: fixed; top: 64px; right: 12px; z-index: 10; font-size: 12px; color: #fff; text-shadow: 1px 1px 0 #000; pointer-events: none; text-align: right; max-width: 260px; }
-        .kill-entry { background: rgba(0,0,0,0.75); padding: 4px 10px; margin-bottom: 4px; animation: killIn 0.3s ease, fadeOut 3s forwards; }
-        @keyframes killIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeOut { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
-        .hit-marker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff4444; font-size: 30px; font-weight: bold; pointer-events: none; z-index: 11; animation: hitPop 0.35s forwards; }
-        @keyframes hitPop { 0% { transform: translate(-50%,-50%) scale(0.3); opacity: 0; } 40% { transform: translate(-50%,-50%) scale(1.3); opacity: 1; } 100% { transform: translate(-50%,-50%) scale(1.7); opacity: 0; } }
+        .hit-marker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff4444; font-size: 30px; font-weight: bold; pointer-events: none; z-index: 11; animation: hitPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        @keyframes hitPop { 0% { transform: translate(-50%,-50%) scale(0.3) rotate(-25deg); opacity: 0; } 40% { transform: translate(-50%,-50%) scale(1.35) rotate(8deg); opacity: 1; } 100% { transform: translate(-50%,-50%) scale(1.8) rotate(0deg); opacity: 0; } }
         #netStatus { position: fixed; bottom: 8px; right: 12px; font-size: 11px; color: #888; z-index: 10; pointer-events: none; text-shadow: 1px 1px 0 #000; }
         #damageFlash { position: fixed; inset: 0; background: radial-gradient(circle, transparent 40%, rgba(200,0,0,0.7) 100%); opacity: 0; pointer-events: none; z-index: 15; transition: opacity 0.4s ease-out; }
         #damageFlash.flash { opacity: 1; transition: opacity 0s; }
@@ -169,7 +295,7 @@
         #deathFade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 40; transition: opacity 0.6s ease; }
         #deathFade.active { opacity: 1; }
         #freeCamHint { position: fixed; top: 50%; left: 50%; transform: translate(-50%, 60px); color: rgba(255,255,255,0.75); font-size: 16px; letter-spacing: 6px; pointer-events: none; z-index: 12; display: none; background: rgba(0,0,0,0.55); padding: 8px 24px; }
-        #freeCamHint.active { display: block; }
+        #freeCamHint.active { display: block; animation: hintPulse 1.8s ease-in-out infinite; }
 
         #hotbar {
             position: fixed; bottom: 92px; left: 50%;
@@ -181,17 +307,35 @@
             background-size: 100% 100%;
             image-rendering: pixelated;
             -ms-interpolation-mode: nearest-neighbor;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
         }
         .hotbar-slot { flex: 1 1 0; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; background: transparent; overflow: visible; }
         .hotbar-slot.active {
             background: url('https://zh.minecraft.wiki/images/Hotbar_selection.png?ba576') no-repeat center center;
             background-size: contain; image-rendering: pixelated;
         }
-        .hotbar-img { width: 70%; height: 70%; object-fit: contain; image-rendering: pixelated; pointer-events: none; display: block; }
+        @keyframes slotBump {
+            0% { transform: scale(1); }
+            35% { transform: scale(1.18); }
+            70% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        .hotbar-slot.bump { animation: slotBump 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .hotbar-slot:hover { background-color: rgba(255,255,255,0.08); }
+        .hotbar-img { width: 70%; height: 70%; object-fit: contain; image-rendering: pixelated; pointer-events: none; display: block; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .hotbar-slot.active .hotbar-img { transform: scale(1.05); }
         .hotbar-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; color: #fff; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000; font-weight: bold; pointer-events: none; z-index: 2; }
 
-        #itemName { position: fixed; bottom: 148px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 14px; background: rgba(0,0,0,0.7); padding: 4px 14px; z-index: 89; pointer-events: none; letter-spacing: 1px; opacity: 0; transition: opacity 0.25s; white-space: nowrap; }
-        #itemName.visible { opacity: 1; }
+        #itemName {
+            position: fixed; bottom: 148px; left: 50%;
+            color: #fff; font-size: 14px; background: rgba(0,0,0,0.7);
+            padding: 4px 14px; z-index: 89; pointer-events: none;
+            letter-spacing: 1px; white-space: nowrap;
+            opacity: 0;
+            transform: translateX(-50%) translateY(8px) scale(0.9);
+            transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        #itemName.visible { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
         body.mobile #hotbar { bottom: 96px; }
         body.mobile #itemName { bottom: 144px; font-size: 12px; }
 
@@ -203,18 +347,33 @@
             display: flex; flex-direction: column; gap: 14px;
             border: 2px solid #555; max-width: 92vw; max-height: 90vh;
             overflow-y: auto; pointer-events: none;
-            transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
-                        opacity 0.22s ease, visibility 0.28s;
+            transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        opacity 0.22s ease, visibility 0.32s;
         }
         #bagPanel.active { transform: translate(-50%, -50%) scale(1); opacity: 1; visibility: visible; pointer-events: auto; }
         #bagPanel h3 { font-size: 16px; text-align: center; letter-spacing: 2px; color: #fff; }
         .bag-hint { font-size: 11px; color: #888; text-align: center; }
         .bag-grid { display: grid; grid-template-columns: repeat(6, 56px); gap: 6px; }
-        .bag-slot { width: 56px; height: 56px; background: rgba(255,255,255,0.08); position: relative; display: flex; align-items: center; justify-content: center; cursor: grab; user-select: none; overflow: hidden; }
-        .bag-slot.dragover { background: rgba(90,255,90,0.25); box-shadow: 0 0 0 2px #5aff5a inset; }
+        .bag-slot {
+            width: 56px; height: 56px; background: rgba(255,255,255,0.08);
+            position: relative; display: flex; align-items: center; justify-content: center;
+            cursor: grab; user-select: none; overflow: hidden;
+            transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease, box-shadow 0.18s;
+        }
+        .bag-slot:hover {
+            transform: scale(1.08) translateY(-2px);
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+        .bag-slot.dragover { background: rgba(90,255,90,0.25); box-shadow: 0 0 0 2px #5aff5a inset, 0 0 14px rgba(90,255,90,0.6); transform: scale(1.05); }
         .bag-slot img { width: 90%; height: 90%; object-fit: contain; image-rendering: pixelated; pointer-events: none; }
         .bag-slot .bag-count { position: absolute; bottom: 1px; right: 3px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000; }
-        #bagFloating { position: fixed; pointer-events: none; z-index: 9999; width: 56px; height: 56px; display: none; }
+        #bagFloating { position: fixed; pointer-events: none; z-index: 9999; width: 56px; height: 56px; display: none; animation: floatBob 0.8s ease-in-out infinite; }
+        @keyframes floatBob {
+            0%, 100% { transform: scale(1.05); }
+            50% { transform: scale(0.98) rotate(2deg); }
+        }
         #bagFloating img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
 
         body.ui-editing #mobileControls, body.ui-editing #chatInputWrap { pointer-events: none !important; }
@@ -224,7 +383,8 @@
         #uiEditBar { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 99999; display: none; gap: 10px; padding: 8px 14px; background: rgba(0,0,0,0.85); align-items: center; }
         #uiEditBar.active { display: flex; }
         #uiEditBar .ui-edit-tip { color: #5aff5a; font-size: 12px; letter-spacing: 1px; }
-        #uiEditBar button { padding: 7px 14px; background: rgba(255,255,255,0.15); color: #fff; border: none; font-size: 12px; cursor: pointer; font-family: inherit; letter-spacing: 1px; }
+        #uiEditBar button { padding: 7px 14px; background: rgba(255,255,255,0.15); color: #fff; border: none; font-size: 12px; cursor: pointer; font-family: inherit; letter-spacing: 1px; transition: background 0.15s, transform 0.15s; }
+        #uiEditBar button:hover { background: rgba(255,255,255,0.28); transform: scale(1.05); }
         #uiEditBar button.done { background: #3a6a3a; }
     </style>
 </head>
@@ -486,6 +646,7 @@ let localPlayerMesh = null;
 let localMeshGeneration = 0;
 let lastBarrelSpawnCheck = 0;
 let dropIdCounter = 0;
+let lastRenderedSelection = -1;
 
 const deathState = { active: false, startTime: 0, duration: 2200, faded: false, respawned: false };
 
@@ -717,7 +878,6 @@ function removeFromFullBillboards(mesh) {
     if (idx >= 0) fullBillboards.splice(idx, 1);
 }
 
-/* ===== UI 编辑器 ===== */
 const UI_EDITABLE = ['hud', 'hotbar', 'chatBar', 'chatBtn', 'throwBtn', 'settingsBtn', 'itemName', 'killFeed', 'netStatus'];
 let uiEditing = false, uiDragState = null;
 const uiLayout = {};
@@ -836,7 +996,6 @@ function initUIEditor() {
     });
 }
 
-/* ===== 建筑 ===== */
 function addBuilding(bldgX, bldgZ, type, mats, boxGeo, stairGeo) {
     const group = new THREE.Group();
     group.position.set(bldgX, 0, bldgZ);
@@ -964,7 +1123,6 @@ async function buildWorld() {
     }
     for (const bldg of buildingPositions) addBuilding(bldg.x, bldg.z, bldg.type, bldgMats, boxGeo, stairGeo);
 
-    /* 石头 */
     const stoneAspect = stoneTex ? aspectOf(stoneTex) : 1;
     const stoneSizes = [
         ...Array.from({ length: 6 }, () => 0.35 + Math.random() * 0.25),
@@ -997,7 +1155,6 @@ async function buildWorld() {
         placed++;
     }
 
-    /* 树：不拉伸，使用原始宽高比（高度已缩小到原来 1/2） */
     const treeAspect = treeTex ? aspectOf(treeTex) : 0.7;
     for (let i = 0; i < 25; i++) {
         const x = (Math.random() - 0.5) * 96;
@@ -1017,7 +1174,6 @@ async function buildWorld() {
         colliders.push({ x, z, radius: Math.max(0.25, w * 0.20), height: h });
     }
 
-    /* 物资箱 */
     for (let i = 0; i < 10; i++) {
         const x = (Math.random() - 0.5) * 96;
         const z = (Math.random() - 0.5) * 96;
@@ -1064,13 +1220,12 @@ function updateBarrelSpawning(now) {
     spawnBarrelAt(x, z);
 }
 
-/* ===== 玩家模型 ===== */
 function createPlayerMesh(texture) {
     const group = new THREE.Group();
     const aspect = aspectOf(texture) || 0.62;
     const h = 1.85;
     const w = h * aspect;
-    const mesh = createYBillboard(texture, w, h, 0x6a6a6a, { depthTest: true });
+    const mesh = createFullBillboard(texture, w, h, 0x6a6a6a);
     mesh.position.y = h / 2;
     group.add(mesh);
     return group;
@@ -1081,7 +1236,7 @@ async function rebuildLocalPlayerMesh() {
     const gen = ++localMeshGeneration;
     if (localPlayerMesh) {
         const child = localPlayerMesh.children[0];
-        if (child) removeFromYBillboards(child);
+        if (child) removeFromFullBillboards(child);
         scene.remove(localPlayerMesh);
         localPlayerMesh = null;
     }
@@ -1108,9 +1263,9 @@ function createNameSprite(name) {
     return createYBillboard(tex, 2.6, 0.41, 0xffffff, { depthTest: false, renderOrder: 999 });
 }
 
-/* ===== 快捷栏 ===== */
 function renderHotbar() {
     const bar = document.getElementById('hotbar'); if (!bar) return;
+    const prevSelected = lastRenderedSelection;
     bar.innerHTML = '';
     for (let i = 0; i < 9; i++) {
         const slot = document.createElement('div');
@@ -1126,6 +1281,14 @@ function renderHotbar() {
         }
         bar.appendChild(slot);
     }
+    if (prevSelected !== -1 && prevSelected !== inventory.selected) {
+        const newSlot = bar.querySelector('.hotbar-slot[data-index="' + inventory.selected + '"]');
+        if (newSlot) {
+            newSlot.classList.add('bump');
+            setTimeout(() => newSlot.classList.remove('bump'), 320);
+        }
+    }
+    lastRenderedSelection = inventory.selected;
     updateItemNameDisplay();
     if (bagOpen) renderBag();
 }
@@ -1329,14 +1492,13 @@ function throwItemFromIndex(idx) {
     saveInventory();
 }
 
-/* ===== 掉落物 ===== */
 function spawnDrop(pos, vel, itemId, count, dropId, isRemote) {
     if (!ITEM_DEFS[itemId]) return null;
     const tex = getItemTexture(itemId);
     const aspect = (tex && tex.image) ? aspectOf(tex) : 1;
     const baseH = 0.5;
     const baseW = baseH * aspect;
-    const mesh = createYBillboard(tex, baseW, baseH, 0xcccccc, { depthTest: true });
+    const mesh = createFullBillboard(tex, baseW, baseH, 0xcccccc);
     mesh.position.copy(pos);
     scene.add(mesh);
     const id = dropId || (player.id + '_' + (dropIdCounter++) + '_' + Math.random().toString(36).slice(2, 6));
@@ -1355,7 +1517,7 @@ function spawnDrop(pos, vel, itemId, count, dropId, isRemote) {
 function removeDropById(id) {
     for (let i = drops.length - 1; i >= 0; i--) {
         if (drops[i].id === id) {
-            removeFromYBillboards(drops[i].mesh);
+            removeFromFullBillboards(drops[i].mesh);
             scene.remove(drops[i].mesh);
             drops.splice(i, 1);
         }
@@ -1406,7 +1568,7 @@ function updateDrops(delta, now) {
                         d.count -= added;
                         publishMessage({ type: 'drop', id: d.id, itemId: d.itemId, count: d.count, position: { x: d.mesh.position.x, y: d.mesh.position.y, z: d.mesh.position.z }, vel: { x: d.vel.x, y: d.vel.y, z: d.vel.z } });
                     } else {
-                        removeFromYBillboards(d.mesh);
+                        removeFromFullBillboards(d.mesh);
                         scene.remove(d.mesh);
                         drops.splice(i, 1);
                         publishMessage({ type: 'pickup', id: d.id });
@@ -1487,7 +1649,6 @@ function updateBullets(delta, now) {
     }
 }
 
-/* ===== 键盘 ===== */
 addEventListener('keydown', (e) => {
     if (chatOpen || uiEditing) return;
     keys[e.code] = true;
@@ -1500,7 +1661,6 @@ addEventListener('keydown', (e) => {
     if (e.code === 'KeyT' && gameStarted && !mobileMode && !deathState.active && !bagOpen) { e.preventDefault(); openChat(); }
     if (e.code === 'KeyQ' && gameStarted && !freeCamMode && !deathState.active && !bagOpen) { e.preventDefault(); throwItem(); }
     if (e.code === 'KeyE' && gameStarted && !deathState.active) { e.preventDefault(); if (bagOpen) closeBag(); else openBag(); }
-    /* C 键：按住放大（瞄准） */
     if (e.code === 'KeyC' && gameStarted && !freeCamMode && !deathState.active && !bagOpen) {
         e.preventDefault();
         startAim();
@@ -1512,7 +1672,6 @@ addEventListener('keydown', (e) => {
 });
 addEventListener('keyup', (e) => {
     keys[e.code] = false;
-    /* 松开 C 键：退出放大 */
     if (e.code === 'KeyC') {
         if (aiming) {
             aiming = false;
@@ -1529,18 +1688,12 @@ addEventListener('wheel', (e) => {
     renderHotbar(); saveInventory();
 }, { passive: false });
 
-/* ===== 瞄准 / 射击 ===== */
 function startAim() {
     if (aiming) return;
     if (!gameStarted || freeCamMode || deathState.active || uiEditing || bagOpen) return;
     const item = inventory.slots[inventory.selected];
     if (!item || !ITEM_DEFS[item.id] || !ITEM_DEFS[item.id].damage) return;
     aiming = true;
-}
-function stopAim() {
-    if (!aiming) return;
-    aiming = false;
-    if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); }
 }
 function tryUseMedkitOnLeftClick() {
     const item = inventory.slots[inventory.selected];
@@ -1549,7 +1702,6 @@ function tryUseMedkitOnLeftClick() {
     return true;
 }
 
-/* 电脑鼠标左键：交互 + 射击（不再放大） */
 addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
     if (uiEditing || bagOpen || mobileMode) return;
@@ -1585,7 +1737,7 @@ function handleInteract(ray) {
                     d.count -= added;
                     publishMessage({ type: 'drop', id: d.id, itemId: d.itemId, count: d.count, position: { x: d.mesh.position.x, y: d.mesh.position.y, z: d.mesh.position.z }, vel: { x: d.vel.x, y: d.vel.y, z: d.vel.z } });
                 } else {
-                    removeFromYBillboards(d.mesh);
+                    removeFromFullBillboards(d.mesh);
                     scene.remove(d.mesh); drops.splice(i, 1);
                     publishMessage({ type: 'pickup', id: d.id });
                 }
@@ -1637,10 +1789,9 @@ function showHitMarker() {
     el.className = 'hit-marker';
     el.textContent = '✕';
     document.body.appendChild(el);
-    setTimeout(() => el.remove(), 350);
+    setTimeout(() => el.remove(), 400);
 }
 
-/* ===== 移动端 ===== */
 function initMobileControls() {
     const joyZone = document.getElementById('joystickZone');
     const joyKnob = document.getElementById('joystickKnob');
@@ -1763,7 +1914,6 @@ function initMobileControls() {
     document.addEventListener('pointerup', (e) => { if (e.pointerType) sprintEnd(); });
     sprintBtn.addEventListener('pointercancel', sprintEnd);
 
-    /* 射击按钮：按下即射击，不再放大 */
     function shootStart(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         if (!gameStarted || deathState.active || freeCamMode || uiEditing || bagOpen) return;
@@ -1779,7 +1929,6 @@ function initMobileControls() {
     shootBtn.addEventListener('pointerup', shootEnd);
     shootBtn.addEventListener('pointercancel', shootEnd);
 
-    /* 瞄准按钮：按住放大，松开恢复 */
     let aimPointerId = null;
     aimBtn.addEventListener('pointerdown', (e) => {
         e.preventDefault(); e.stopPropagation();
@@ -1792,13 +1941,13 @@ function initMobileControls() {
         if (e.pointerId !== aimPointerId) return;
         aimPointerId = null;
         aimBtn.classList.remove('active');
-        stopAim();
+        if (aiming) { aiming = false; if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); } }
     });
     aimBtn.addEventListener('pointercancel', (e) => {
         if (e.pointerId !== aimPointerId) return;
         aimPointerId = null;
         aimBtn.classList.remove('active');
-        stopAim();
+        if (aiming) { aiming = false; if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); } }
     });
 
     jumpBtn.addEventListener('pointerdown', (e) => {
@@ -1846,7 +1995,6 @@ function initMobileControls() {
     throwBtn.addEventListener('pointerdown', (e) => { if (uiEditing || bagOpen) return; e.preventDefault(); throwItem(); });
 }
 
-/* ===== 模式 ===== */
 function setMobileMode(on, save) {
     if (save === undefined) save = true;
     mobileMode = on;
@@ -1914,7 +2062,6 @@ function updateFreeCam(delta) {
     if (localPlayerMesh) localPlayerMesh.position.set(player.pos.x, player.pos.y, player.pos.z);
 }
 
-/* ===== 物理 ===== */
 function tryJump() { if (player.onGround) { player.vy = CONFIG.jumpSpeed; player.onGround = false; } }
 function hasSpaceAbove(x, z, fromY) {
     const top = fromY + CONFIG.playerHeight;
@@ -2144,9 +2291,11 @@ function updateHealthUI() {
     const text = document.getElementById('hpText');
     if (!fill || !text) return;
     fill.style.width = (pct * 100) + '%';
-    fill.classList.remove('mid', 'low');
-    if (pct < 0.3) fill.classList.add('low');
-    else if (pct < 0.65) fill.classList.add('mid');
+    fill.classList.remove('mid', 'low', 'critical');
+    if (pct < 0.3) {
+        fill.classList.add('low');
+        fill.classList.add('critical');
+    } else if (pct < 0.65) fill.classList.add('mid');
     text.textContent = Math.round(Math.max(0, player.health));
 }
 function takeDamage(amount) {
@@ -2156,6 +2305,22 @@ function takeDamage(amount) {
     player.lastDamageTime = now;
     player.health = Math.max(0, player.health - amount);
     updateHealthUI();
+
+    const hpText = document.getElementById('hpText');
+    if (hpText) {
+        hpText.classList.remove('bump');
+        void hpText.offsetWidth;
+        hpText.classList.add('bump');
+        setTimeout(() => hpText.classList.remove('bump'), 450);
+    }
+    const hpFill = document.getElementById('hpFill');
+    if (hpFill) {
+        hpFill.classList.remove('hit-flash');
+        void hpFill.offsetWidth;
+        hpFill.classList.add('hit-flash');
+        setTimeout(() => hpFill.classList.remove('hit-flash'), 450);
+    }
+
     cameraShake = Math.min(1.4, cameraShake + 1);
     const tint = document.getElementById('hitTint');
     tint.classList.add('active');
@@ -2167,7 +2332,6 @@ function takeDamage(amount) {
     if (player.health <= 0) startDeathAnimation();
 }
 
-/* ===== 聊天 ===== */
 function openChat() {
     if (chatOpen || uiEditing || bagOpen) return;
     chatOpen = true;
@@ -2216,7 +2380,6 @@ function addChatLine(who, text, whoClass, isPrivate) {
     while (area.children.length > 8) area.removeChild(area.firstChild);
 }
 
-/* ===== 网络 ===== */
 function initNetwork() {
     const statusEl = document.getElementById('netStatus');
     if (typeof mqtt === 'undefined') { statusEl.textContent = '⚠ MQTT 未加载'; statusEl.style.color = '#ffaa00'; return; }
@@ -2322,7 +2485,7 @@ function removeRemotePlayer(id) {
     if (!rp) return;
     const idx = sceneObjects.indexOf(rp.mesh.children[0]);
     if (idx >= 0) sceneObjects.splice(idx, 1);
-    if (rp.mesh.children[0]) removeFromYBillboards(rp.mesh.children[0]);
+    if (rp.mesh.children[0]) removeFromFullBillboards(rp.mesh.children[0]);
     if (rp.nameSprite) removeFromYBillboards(rp.nameSprite);
     scene.remove(rp.mesh);
     const ns = rp.nameSprite;
@@ -2411,7 +2574,6 @@ function compressSkinImage(file, callback) {
     reader.readAsDataURL(file);
 }
 
-/* ===== 相机 ===== */
 function initCamera() {
     camera = new THREE.PerspectiveCamera(fov, innerWidth / innerHeight, 0.1, 400);
     camera.position.set(0, CONFIG.eyeHeight, 0);
@@ -2455,7 +2617,6 @@ function initRenderer() {
     });
 }
 
-/* ===== 设置 ===== */
 function initSettings() {
     const btn = document.getElementById('settingsBtn');
     const panel = document.getElementById('settingsPanel');
@@ -2620,7 +2781,7 @@ function switchRoom(newRoom) {
     if (newRoom === player.roomId) return;
     saveRoomState(); saveInventory();
     disconnectNetwork(); removeAllRemotePlayers(); updatePlayerCount();
-    for (let i = drops.length - 1; i >= 0; i--) { removeFromYBillboards(drops[i].mesh); scene.remove(drops[i].mesh); drops.splice(i, 1); }
+    for (let i = drops.length - 1; i >= 0; i--) { removeFromFullBillboards(drops[i].mesh); scene.remove(drops[i].mesh); drops.splice(i, 1); }
     player.roomId = newRoom;
     document.getElementById('roomDisplay').textContent = newRoom;
     localStorage.setItem(LS.room, newRoom);
@@ -2635,7 +2796,6 @@ function switchRoom(newRoom) {
     initNetwork();
 }
 
-/* ===== 主循环 ===== */
 function animate() {
     requestAnimationFrame(animate);
     if (!renderer || !scene || !camera) return;
@@ -2677,7 +2837,6 @@ function animateSceneObjects(now) {
     }
 }
 
-/* ===== 启动 ===== */
 function startGame() {
     if (!scene || !camera || !renderer || !controls) { return; }
     const roomInput = document.getElementById('roomInput');
