@@ -56,7 +56,6 @@
         .hp-text { font-size: 12px; color: #fff; min-width: 28px; text-align: right; font-weight: bold; display: inline-block; }
         .hp-text.bump { animation: hpTextBump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        /* ==================== 消息框（击杀信息）：HUD 下方左侧 ==================== */
         #killFeed {
             position: fixed;
             top: 128px;
@@ -75,12 +74,13 @@
             padding: 4px 10px;
             margin-bottom: 4px;
             text-align: left;
+            width: 100%;
+            box-sizing: border-box;
             animation: killIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), fadeOut 3s forwards;
         }
         @keyframes killIn { from { transform: translateX(-30px) scale(0.85); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
         @keyframes fadeOut { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
-        /* ==================== 聊天栏：消息框下方左侧，加高版 ==================== */
         #chatBar {
             position: fixed;
             left: 12px;
@@ -89,7 +89,7 @@
             bottom: auto;
             width: 420px;
             max-width: calc(100vw - 24px);
-            height: 56vh;               /* 固定高度，撑开聊天栏 */
+            height: 56vh;
             max-height: 56vh;
             background: rgba(0,0,0,0.55);
             z-index: 55;
@@ -109,7 +109,6 @@
             overflow: hidden;
             flex: 1;
             min-height: 0;
-            /* 高度由父容器决定，显示更多消息 */
         }
         .chat-line {
             background: transparent;
@@ -131,12 +130,11 @@
         #chatInput { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 15px; outline: none; font-family: inherit; }
         #chatSend { padding: 8px 16px; background: rgba(255,255,255,0.22); color: #fff; border: none; cursor: pointer; font-family: inherit; font-size: 14px; }
 
-        /* ==================== 移动端：聊天栏移回底部，尺寸适中 ==================== */
-    body.mobile #killFeed {
-        top: 122px;
-        font-size: 12px;
-        max-width: calc(100vw - 24px);
-    }
+        body.mobile #killFeed {
+            top: 122px;
+            font-size: 12px;
+            max-width: calc(100vw - 24px);
+        }
         body.mobile #chatBar {
             top: auto;
             bottom: 10px;
@@ -245,7 +243,7 @@
         body.mobile #sprintBtn, body.mobile #shootBtn, body.mobile #jumpBtn,
         body.mobile #bagBtn, body.mobile #aimBtn { display: flex; }
 
-        #sprintBtn { bottom: 182px; left: 34px; width: 58px; height: 58px; font-size: 11px; color: #bbb; }
+        #sprintBtn { bottom: 182px; left: 73px; width: 58px; height: 58px; font-size: 11px; color: #bbb; }
         #sprintBtn.active { background: rgba(255,255,255,0.32); color: #fff; }
         #shootBtn { bottom: 44px; right: 34px; width: 84px; height: 84px; font-size: 14px; }
         #shootBtn:active, #shootBtn.hitting { background: rgba(255,60,60,0.55); transform: scale(0.92); }
@@ -256,7 +254,7 @@
         #aimBtn { bottom: 44px; right: 132px; width: 68px; height: 68px; font-size: 13px; }
         #aimBtn.active { background: rgba(90,180,255,0.55); transform: scale(0.94); }
 
-        #sprintHint { position: fixed; bottom: 162px; left: 48px; width: 30px; height: 20px; color: rgba(255,255,255,0.35); font-size: 14px; text-align: center; pointer-events: none; display: none; z-index: 199; animation: hintPulse 1.8s ease-in-out infinite; }
+        #sprintHint { position: fixed; bottom: 162px; left: 87px; width: 30px; height: 20px; color: rgba(255,255,255,0.35); font-size: 14px; text-align: center; pointer-events: none; display: none; z-index: 199; animation: hintPulse 1.8s ease-in-out infinite; }
         body.mobile #sprintHint { display: block; }
         @keyframes hintPulse { 0%, 100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 0.75; transform: translateY(-4px); } }
 
@@ -532,8 +530,18 @@
 <div id="freeCamDownBtn">▼</div>
 <div id="mobileRing"></div>
 
-<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.min.js"></script>
+<script>
+    // 备用 CDN：如果上面的 Three.js 加载失败，尝试从 unpkg 再加载一次
+    if (typeof THREE === 'undefined') {
+        document.write('<script src="https://unpkg.com/three@0.150.0/build/three.min.js"><\/script>');
+    }
+    // 备用 CDN：如果 MQTT 也失败了，尝试另一个源
+    if (typeof mqtt === 'undefined') {
+        document.write('<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"><\/script>');
+    }
+</script>
 
 <script>
 window.__gameStarted = false;
@@ -553,7 +561,7 @@ window.addEventListener('unhandledrejection', (e) => {
 
 if (typeof THREE === 'undefined') {
     const hint = document.getElementById('loadingHint');
-    if (hint) { hint.style.color = '#ff5555'; hint.textContent = '无法加载 Three.js，请检查网络或刷新页面'; }
+    if (hint) { hint.style.color = '#ff5555'; hint.textContent = '无法加载 Three.js，请检查网络或刷新页面。如果问题依旧，请尝试切换网络环境（如更换 DNS 或使用手机热点）。'; }
     throw new Error('Three.js not loaded');
 }
 
@@ -2222,6 +2230,37 @@ function updatePlayer(delta, now) {
     if (localPlayerMesh) localPlayerMesh.position.set(player.pos.x, player.pos.y, player.pos.z);
 }
 
+function dropHalfInventory() {
+    for (let i = 0; i < CONFIG.invSize; i++) {
+        const item = inventory.slots[i];
+        if (!item || !ITEM_DEFS[item.id]) continue;
+
+        const dropCount = Math.ceil(item.count / 2);
+        if (dropCount <= 0) continue;
+
+        const dropPos = player.pos.clone();
+        dropPos.y += 1.0;
+        dropPos.x += (Math.random() - 0.5) * 0.6;
+        dropPos.z += (Math.random() - 0.5) * 0.6;
+
+        const vel = new THREE.Vector3(
+            (Math.random() - 0.5) * 3,
+            4 + Math.random() * 2,
+            (Math.random() - 0.5) * 3
+        );
+        spawnDrop(dropPos, vel, item.id, dropCount);
+
+        if (dropCount >= item.count) {
+            inventory.slots[i] = null;
+        } else {
+            item.count -= dropCount;
+        }
+    }
+    renderHotbar();
+    if (bagOpen) renderBag();
+    saveInventory();
+}
+
 function startDeathAnimation() {
     deathState.active = true;
     deathState.startTime = performance.now();
@@ -2231,6 +2270,8 @@ function startDeathAnimation() {
     aiming = false;
     if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); }
     if (controls && controls.isLocked) controls.unlock();
+
+    dropHalfInventory();
 }
 function updateDeathAnimation(now, delta) {
     if (!deathState.active) return;
