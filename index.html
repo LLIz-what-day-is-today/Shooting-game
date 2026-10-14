@@ -36,86 +36,40 @@
         .hp-fill.mid { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
         .hp-fill.low { background: linear-gradient(90deg, #ef4444, #dc2626); }
 
-        @keyframes hpCriticalPulse {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.6); }
-        }
+        @keyframes hpCriticalPulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.6); } }
         .hp-fill.critical { animation: hpCriticalPulse 1s ease-in-out infinite; }
-
-        @keyframes hpHitFlash {
-            0% { filter: brightness(3.5) saturate(0); }
-            100% { filter: brightness(1) saturate(1); }
-        }
+        @keyframes hpHitFlash { 0% { filter: brightness(3.5) saturate(0); } 100% { filter: brightness(1) saturate(1); } }
         .hp-fill.hit-flash { animation: hpHitFlash 0.4s ease-out; }
-
-        @keyframes hpTextBump {
-            0% { transform: scale(1); color: #fff; }
-            50% { transform: scale(1.45); color: #ff7777; }
-            100% { transform: scale(1); color: #fff; }
-        }
+        @keyframes hpTextBump { 0% { transform: scale(1); color: #fff; } 50% { transform: scale(1.45); color: #ff7777; } 100% { transform: scale(1); color: #fff; } }
         .hp-text { font-size: 12px; color: #fff; min-width: 28px; text-align: right; font-weight: bold; display: inline-block; }
         .hp-text.bump { animation: hpTextBump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         #killFeed {
-            position: fixed;
-            top: 128px;
-            left: 12px;
-            right: auto;
-            z-index: 10;
-            font-size: 13px;
-            color: #fff;
-            text-shadow: 1px 1px 0 #000;
-            pointer-events: none;
-            text-align: left;
-            max-width: 560px;
+            position: fixed; top: 128px; left: 12px; right: auto;
+            z-index: 10; font-size: 13px; color: #fff;
+            text-shadow: 1px 1px 0 #000; pointer-events: none;
+            text-align: left; max-width: 560px;
         }
         .kill-entry {
-            background: rgba(0,0,0,0.75);
-            padding: 4px 10px;
-            margin-bottom: 4px;
-            text-align: left;
-            width: 100%;
-            box-sizing: border-box;
+            background: rgba(0,0,0,0.75); padding: 4px 10px; margin-bottom: 4px;
+            text-align: left; width: 100%; box-sizing: border-box;
             animation: killIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), fadeOut 3s forwards;
         }
         @keyframes killIn { from { transform: translateX(-30px) scale(0.85); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
         @keyframes fadeOut { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
         #chatBar {
-            position: fixed;
-            left: 12px;
-            top: 280px;
-            right: auto;
-            bottom: auto;
-            width: 420px;
-            max-width: calc(100vw - 24px);
-            height: 56vh;
-            max-height: 56vh;
-            background: rgba(0,0,0,0.55);
-            z-index: 55;
-            padding: 10px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            pointer-events: none;
-            border-radius: 4px;
-            overflow: hidden;
+            position: fixed; left: 12px; top: 280px; right: auto; bottom: auto;
+            width: 420px; max-width: calc(100vw - 24px);
+            height: 56vh; max-height: 56vh;
+            background: rgba(0,0,0,0.55); z-index: 55;
+            padding: 10px 14px; display: flex; flex-direction: column;
+            gap: 3px; pointer-events: none; border-radius: 4px; overflow: hidden;
         }
-        #chatMessages {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            gap: 3px;
-            overflow: hidden;
-            flex: 1;
-            min-height: 0;
-        }
+        #chatMessages { display: flex; flex-direction: column; justify-content: flex-end; gap: 3px; overflow: hidden; flex: 1; min-height: 0; }
         .chat-line {
-            background: transparent;
-            padding: 3px 6px;
-            color: #fff;
-            font-size: 15px;
-            line-height: 1.5;
+            background: transparent; padding: 3px 6px; color: #fff;
+            font-size: 15px; line-height: 1.5;
             text-shadow: 1px 1px 0 #000, -1px -1px 0 #000;
             animation: chatIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             word-break: break-all;
@@ -130,43 +84,17 @@
         #chatInput { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 15px; outline: none; font-family: inherit; }
         #chatSend { padding: 8px 16px; background: rgba(255,255,255,0.22); color: #fff; border: none; cursor: pointer; font-family: inherit; font-size: 14px; }
 
-        body.mobile #killFeed {
-            top: 122px;
-            font-size: 12px;
-            max-width: calc(100vw - 24px);
-        }
-        body.mobile #chatBar {
-            top: auto;
-            bottom: 10px;
-            left: 10px;
-            width: 320px;
-            height: auto;
-            max-height: 34vh;
-            padding: 5px 8px;
-        }
+        body.mobile #killFeed { top: 122px; font-size: 12px; max-width: calc(100vw - 24px); }
+        body.mobile #chatBar { top: auto; bottom: 10px; left: 10px; width: 320px; height: auto; max-height: 34vh; padding: 5px 8px; }
         body.mobile #chatMessages { max-height: 30vh; }
         body.mobile .chat-line { font-size: 13px; line-height: 1.35; padding: 1px 4px; }
         body.mobile #chatInput { font-size: 14px; padding: 6px 10px; }
         body.mobile #chatSend { font-size: 13px; padding: 6px 14px; }
 
-        #chatBtn {
-            position: fixed; bottom: 92px;
-            left: calc(50% + var(--hotbar-w) / 2 + 8px);
-            padding: 8px 14px; background: rgba(0,0,0,0.75);
-            color: #fff; font-size: 13px; border: none; cursor: pointer;
-            z-index: 100; letter-spacing: 1px; white-space: nowrap;
-            transition: transform 0.15s ease, background 0.15s ease;
-        }
+        #chatBtn { position: fixed; bottom: 92px; left: calc(50% + var(--hotbar-w) / 2 + 8px); padding: 8px 14px; background: rgba(0,0,0,0.75); color: #fff; font-size: 13px; border: none; cursor: pointer; z-index: 100; letter-spacing: 1px; white-space: nowrap; transition: transform 0.15s ease, background 0.15s ease; }
         #chatBtn:hover { transform: scale(1.06); background: rgba(40,40,40,0.9); }
         #chatBtn:active { transform: scale(0.95); }
-        #throwBtn {
-            position: fixed; bottom: 92px;
-            right: calc(50% + var(--hotbar-w) / 2 + 8px);
-            padding: 8px 14px; background: rgba(0,0,0,0.75);
-            color: #fff; font-size: 13px; border: none; cursor: pointer;
-            z-index: 100; letter-spacing: 1px; display: none; white-space: nowrap;
-            transition: transform 0.15s ease, background 0.15s ease;
-        }
+        #throwBtn { position: fixed; bottom: 92px; right: calc(50% + var(--hotbar-w) / 2 + 8px); padding: 8px 14px; background: rgba(0,0,0,0.75); color: #fff; font-size: 13px; border: none; cursor: pointer; z-index: 100; letter-spacing: 1px; display: none; white-space: nowrap; transition: transform 0.15s ease, background 0.15s ease; }
         #throwBtn:hover { transform: scale(1.06); background: rgba(40,40,40,0.9); }
         #throwBtn:active { transform: scale(0.95); }
         body.mobile #throwBtn { display: block; }
@@ -179,10 +107,7 @@
         #settingsPanel::-webkit-scrollbar { width: 6px; }
         #settingsPanel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); }
         #settingsPanel .panel-content { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 380px; padding-bottom: 60px; animation: panelSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes panelSlideIn {
-            from { transform: translateY(40px) scale(0.95); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
-        }
+        @keyframes panelSlideIn { from { transform: translateY(40px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         #backBtn { position: fixed; top: 16px; left: 16px; width: 48px; height: 48px; background: rgba(0,0,0,0.6); border: none; color: #fff; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 201; transition: transform 0.2s; }
         #backBtn:hover { transform: translateX(-4px); }
         #settingsPanel h2 { font-size: 22px; margin-bottom: 28px; color: #fff; letter-spacing: 3px; text-shadow: 2px 2px 0 #000; }
@@ -214,10 +139,7 @@
         #roomModal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 300; padding: 24px; }
         #roomModal.active { display: flex; }
         #roomModal .modal-box { width: 100%; max-width: 340px; background: rgba(20,20,20,0.95); padding: 24px; display: flex; flex-direction: column; gap: 14px; animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes modalPop {
-            from { transform: scale(0.82); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+        @keyframes modalPop { from { transform: scale(0.82); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         #roomModal h3 { font-size: 16px; text-align: center; letter-spacing: 2px; }
         #roomModal input { padding: 12px; background: rgba(255,255,255,0.08); border: none; color: #fff; font-size: 16px; text-align: center; outline: none; font-family: inherit; }
         .modal-actions { display: flex; gap: 8px; }
@@ -260,22 +182,13 @@
 
         #mobileRing { position: fixed; left: -9999px; top: -9999px; width: 172px; height: 172px; border-radius: 50%; border: 5px solid #fff; mix-blend-mode: difference; pointer-events: none; display: none; z-index: 55; transform: translate(-50%, -50%); will-change: left, top; }
 
-        #freeCamUpBtn, #freeCamDownBtn { position: fixed; right: 40px; width: 58px; height: 58px; border-radius: 50%; background: rgba(0,0,0,0.75); color: #fff; font-size: 20px; display: none; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; font-family: inherit; z-index: 200; transition: background 0.15s, transform 0.15s; }
-        #freeCamUpBtn { bottom: 320px; }
-        #freeCamDownBtn { bottom: 250px; }
-        body.mobile #freeCamUpBtn.visible, body.mobile #freeCamDownBtn.visible { display: flex; }
-        #freeCamUpBtn.pressed, #freeCamDownBtn.pressed { background: rgba(255,255,255,0.32); transform: scale(0.94); }
-
         #startScreen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; color: #fff; padding: 24px; gap: 14px; transition: opacity 0.55s ease, visibility 0.55s; }
         #startScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         #startScreen > * { animation: startFadeIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
         #startScreen > *:nth-child(1) { animation-delay: 0.05s; }
         #startScreen > *:nth-child(2) { animation-delay: 0.15s; }
         #startScreen > *:nth-child(3) { animation-delay: 0.25s; }
-        @keyframes startFadeIn {
-            from { transform: translateY(30px) scale(0.94); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
-        }
+        @keyframes startFadeIn { from { transform: translateY(30px) scale(0.94); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         #startScreen input[type="text"] { padding: 14px 18px; background: rgba(255,255,255,0.06); border: none; color: #fff; font-size: 17px; text-align: center; outline: none; width: 280px; font-family: inherit; touch-action: auto; transition: box-shadow 0.2s; }
         #startScreen input[type="text"]:focus { box-shadow: 0 0 0 2px #5aff5a inset; }
         #startBtn { padding: 14px 58px; background: rgba(255,255,255,0.16); border: none; color: #fff; font-size: 17px; cursor: pointer; letter-spacing: 4px; font-family: inherit; touch-action: auto; transition: background 0.2s, transform 0.15s; }
@@ -292,8 +205,6 @@
         #hitTint.active { opacity: 1; transition: opacity 0s; }
         #deathFade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 40; transition: opacity 0.6s ease; }
         #deathFade.active { opacity: 1; }
-        #freeCamHint { position: fixed; top: 50%; left: 50%; transform: translate(-50%, 60px); color: rgba(255,255,255,0.75); font-size: 16px; letter-spacing: 6px; pointer-events: none; z-index: 12; display: none; background: rgba(0,0,0,0.55); padding: 8px 24px; }
-        #freeCamHint.active { display: block; animation: hintPulse 1.8s ease-in-out infinite; }
 
         #hotbar {
             position: fixed; bottom: 92px; left: 50%;
@@ -302,8 +213,7 @@
             padding: 0; margin: 0; z-index: 90;
             width: var(--hotbar-w); height: var(--hotbar-h);
             background: url('https://zh.minecraft.wiki/images/thumb/Hotbar.png/300px-Hotbar.png?95cb4') no-repeat center center;
-            background-size: 100% 100%;
-            image-rendering: pixelated;
+            background-size: 100% 100%; image-rendering: pixelated;
             -ms-interpolation-mode: nearest-neighbor;
             filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
         }
@@ -312,27 +222,14 @@
             background: url('https://zh.minecraft.wiki/images/Hotbar_selection.png?ba576') no-repeat center center;
             background-size: contain; image-rendering: pixelated;
         }
-        @keyframes slotBump {
-            0% { transform: scale(1); }
-            35% { transform: scale(1.18); }
-            70% { transform: scale(0.95); }
-            100% { transform: scale(1); }
-        }
+        @keyframes slotBump { 0% { transform: scale(1); } 35% { transform: scale(1.18); } 70% { transform: scale(0.95); } 100% { transform: scale(1); } }
         .hotbar-slot.bump { animation: slotBump 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .hotbar-slot:hover { background-color: rgba(255,255,255,0.08); }
         .hotbar-img { width: 70%; height: 70%; object-fit: contain; image-rendering: pixelated; pointer-events: none; display: block; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .hotbar-slot.active .hotbar-img { transform: scale(1.05); }
         .hotbar-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; color: #fff; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000; font-weight: bold; pointer-events: none; z-index: 2; }
 
-        #itemName {
-            position: fixed; bottom: 148px; left: 50%;
-            color: #fff; font-size: 14px; background: rgba(0,0,0,0.7);
-            padding: 4px 14px; z-index: 89; pointer-events: none;
-            letter-spacing: 1px; white-space: nowrap;
-            opacity: 0;
-            transform: translateX(-50%) translateY(8px) scale(0.9);
-            transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        #itemName { position: fixed; bottom: 148px; left: 50%; color: #fff; font-size: 14px; background: rgba(0,0,0,0.7); padding: 4px 14px; z-index: 89; pointer-events: none; letter-spacing: 1px; white-space: nowrap; opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.9); transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         #itemName.visible { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
         body.mobile #hotbar { bottom: 96px; }
         body.mobile #itemName { bottom: 144px; font-size: 12px; }
@@ -345,34 +242,53 @@
             display: flex; flex-direction: column; gap: 14px;
             border: 2px solid #555; max-width: 92vw; max-height: 90vh;
             overflow-y: auto; pointer-events: none;
-            transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
-                        opacity 0.22s ease, visibility 0.32s;
+            transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease, visibility 0.32s;
         }
         #bagPanel.active { transform: translate(-50%, -50%) scale(1); opacity: 1; visibility: visible; pointer-events: auto; }
         #bagPanel h3 { font-size: 16px; text-align: center; letter-spacing: 2px; color: #fff; }
-        .bag-hint { font-size: 11px; color: #888; text-align: center; }
         .bag-grid { display: grid; grid-template-columns: repeat(6, 56px); gap: 6px; }
-        .bag-slot {
-            width: 56px; height: 56px; background: rgba(255,255,255,0.08);
-            position: relative; display: flex; align-items: center; justify-content: center;
-            cursor: grab; user-select: none; overflow: hidden;
-            transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease, box-shadow 0.18s;
-        }
-        .bag-slot:hover {
-            transform: scale(1.08) translateY(-2px);
-            background: rgba(255,255,255,0.2);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-            z-index: 2;
-        }
+        .bag-slot { width: 56px; height: 56px; background: rgba(255,255,255,0.08); position: relative; display: flex; align-items: center; justify-content: center; cursor: grab; user-select: none; overflow: hidden; transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease, box-shadow 0.18s; }
+        .bag-slot:hover { transform: scale(1.08) translateY(-2px); background: rgba(255,255,255,0.2); box-shadow: 0 6px 12px rgba(0,0,0,0.4); z-index: 2; }
         .bag-slot.dragover { background: rgba(90,255,90,0.25); box-shadow: 0 0 0 2px #5aff5a inset, 0 0 14px rgba(90,255,90,0.6); transform: scale(1.05); }
         .bag-slot img { width: 90%; height: 90%; object-fit: contain; image-rendering: pixelated; pointer-events: none; }
         .bag-slot .bag-count { position: absolute; bottom: 1px; right: 3px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000; }
         #bagFloating { position: fixed; pointer-events: none; z-index: 9999; width: 56px; height: 56px; display: none; animation: floatBob 0.8s ease-in-out infinite; }
-        @keyframes floatBob {
-            0%, 100% { transform: scale(1.05); }
-            50% { transform: scale(0.98) rotate(2deg); }
-        }
+        @keyframes floatBob { 0%, 100% { transform: scale(1.05); } 50% { transform: scale(0.98) rotate(2deg); } }
         #bagFloating img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+
+        .bag-slot .pct-bar {
+            position: absolute;
+            left: 4px; right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 14px;
+            background: #ffffff;
+            border-radius: 2px;
+            display: none;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .bag-slot .pct-bar.active { display: block; }
+        .bag-slot .pct-fill {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 0%;
+            background: #3b82f6;
+        }
+        .bag-slot .pct-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 10px;
+            font-weight: bold;
+            font-family: inherit;
+            text-shadow: 0 0 2px rgba(255,255,255,0.9);
+        }
 
         body.ui-editing #mobileControls, body.ui-editing #chatInputWrap { pointer-events: none !important; }
         .ui-edit { outline: 2px dashed #5aff5a !important; outline-offset: 2px; cursor: move !important; z-index: 9998 !important; pointer-events: auto !important; }
@@ -389,7 +305,7 @@
 <body>
 
 <div id="startScreen">
-    <input type="text" id="roomInput" value="public-room-1" placeholder="房间号" maxlength="32">
+    <input type="text" id="roomInput" value="publicroom1" placeholder="房间号（字母/数字/下划线）" maxlength="32" pattern="[a-zA-Z0-9_]*">
     <button id="startBtn">确定</button>
     <div id="loadingHint">正在加载 Three.js…</div>
 </div>
@@ -414,7 +330,6 @@
 <div id="damageFlash"></div>
 <div id="hitTint"></div>
 <div id="deathFade"></div>
-<div id="freeCamHint">自由视角</div>
 <div id="itemName"></div>
 <div id="hotbar"></div>
 
@@ -435,7 +350,6 @@
 
 <div id="bagPanel">
     <h3>背 包</h3>
-    <div class="bag-hint">拖动交换位置 · 拖到面板外扔出 · 双击血包治疗</div>
     <div class="bag-grid" id="bagGrid"></div>
 </div>
 <div id="bagFloating"><img id="bagFloatingImg" alt=""></div>
@@ -467,6 +381,13 @@
             </div>
         </div>
         <div class="setting-row">
+            <label>使用陀螺仪操控视角（只对部分设备有效）</label>
+            <div class="toggle-group">
+                <div class="toggle-btn active" data-gyro="off">关闭</div>
+                <div class="toggle-btn" data-gyro="on">开启</div>
+            </div>
+        </div>
+        <div class="setting-row">
             <label>摄像机灵敏度 <span class="range-val" id="sensValue">5.0</span></label>
             <input type="range" id="sensSlider" min="1" max="20" step="1" value="5">
         </div>
@@ -483,17 +404,6 @@
             <input type="range" id="ringSlider" min="60" max="320" step="4" value="172">
         </div>
         <div class="setting-row">
-            <label>自由视角</label>
-            <div class="toggle-group">
-                <div class="toggle-btn active" data-freecam="off">关闭</div>
-                <div class="toggle-btn" data-freecam="on">开启</div>
-            </div>
-        </div>
-        <div class="setting-row">
-            <label>自由视角速度 <span class="range-val" id="freeCamSpeedValue">12</span></label>
-            <input type="range" id="freeCamSpeedSlider" min="2" max="40" step="1" value="12">
-        </div>
-        <div class="setting-row">
             <label>切换房间</label>
             <button class="big-btn" id="switchRoomBtn">切换到其他房间…</button>
         </div>
@@ -507,7 +417,7 @@
 <div id="roomModal">
     <div class="modal-box">
         <h3>切 换 房 间</h3>
-        <input type="text" id="roomModalInput" placeholder="输入房间号" maxlength="32">
+        <input type="text" id="roomModalInput" placeholder="输入房间号（字母/数字/下划线）" maxlength="32" pattern="[a-zA-Z0-9_]*">
         <div class="modal-actions">
             <button id="roomModalCancel">取消</button>
             <button id="roomModalConfirm">确定</button>
@@ -526,22 +436,12 @@
 <div id="aimBtn">瞄准</div>
 <div id="jumpBtn">跳跃</div>
 <div id="bagBtn">背包</div>
-<div id="freeCamUpBtn">▲</div>
-<div id="freeCamDownBtn">▼</div>
 <div id="mobileRing"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.min.js"></script>
-<script>
-    // 备用 CDN：如果上面的 Three.js 加载失败，尝试从 unpkg 再加载一次
-    if (typeof THREE === 'undefined') {
-        document.write('<script src="https://unpkg.com/three@0.150.0/build/three.min.js"><\/script>');
-    }
-    // 备用 CDN：如果 MQTT 也失败了，尝试另一个源
-    if (typeof mqtt === 'undefined') {
-        document.write('<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"><\/script>');
-    }
-</script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"
+        onerror="this.onerror=null; this.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.min.js"
+        onerror="this.onerror=null; this.src='https://unpkg.com/three@0.150.0/build/three.min.js';"></script>
 
 <script>
 window.__gameStarted = false;
@@ -561,7 +461,7 @@ window.addEventListener('unhandledrejection', (e) => {
 
 if (typeof THREE === 'undefined') {
     const hint = document.getElementById('loadingHint');
-    if (hint) { hint.style.color = '#ff5555'; hint.textContent = '无法加载 Three.js，请检查网络或刷新页面。如果问题依旧，请尝试切换网络环境（如更换 DNS 或使用手机热点）。'; }
+    if (hint) { hint.style.color = '#ff5555'; hint.textContent = '无法加载 Three.js，请检查网络或刷新页面'; }
     throw new Error('Three.js not loaded');
 }
 
@@ -580,19 +480,20 @@ const CONFIG = {
     invSize: 18,
     bulletSpeed: 55,
     bulletLifetime: 60000,
-    maxBarrels: 14,
-    barrelRespawnInterval: 4000,
+    maxBarrels: 1,
+    barrelRespawnInterval: 120000,
     MIN_FOV: 30,
     AIM_FOV_RATIO: 0.5,
+    BARREL_INTERACT_RANGE: 5,
 };
 
 const LS = {
     name: 'sg_name', sens: 'sg_sens', mode: 'sg_mode', skin: 'sg_skin',
     room: 'sg_room', fov: 'sg_fov', ring: 'sg_ring',
     crosshairSize: 'sg_crosshairsize',
-    freeCam: 'sg_freecam', freeCamSpeed: 'sg_freecamspeed',
     statePrefix: 'sg_roomstate_', invPrefix: 'sg_inv_',
     uiLayout: 'sg_uilayout',
+    gyro: 'sg_gyro',
 };
 
 const ASSETS = {
@@ -615,6 +516,7 @@ const ITEM_DEFS = {
     csgun:  { name: 'CS枪', img: 'https://s1.aigei.com/src/img/png/b2/b2bca57c05484321b35ee3c739c890ce.png?e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:FuaL13JHjHZzHcbbJKhoAs7GcDY=', stackable: false, damage: 45, ammoType: 'ammo', removeBg: true },
     ammo:   { name: '子弹', img: 'https://s1.aigei.com/src/img/png/d6/d6f9b3b74e0448b0b5a75bf72f768f3f.png?imageMogr2/auto-orient/thumbnail/!282x282r/gravity/Center/crop/282x282/quality/85/%7CimageView2/2/w/282&e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:iF6xYHprXa5XOgPWSrhlNYzvqIg=', stackable: true, maxStack: 99, removeBg: true },
     medkit: { name: '血包', img: null, stackable: true, maxStack: 5, heal: 40, removeBg: false },
+    harm_potion: { name: '伤害药水', img: 'https://zh.minecraft.wiki/images/Invicon_Splash_Potion_of_Harming.png?9b6ad', stackable: true, maxStack: 16, removeBg: false, isPotion: true },
 };
 
 const inventory = { slots: new Array(CONFIG.invSize).fill(null), selected: 0 };
@@ -628,12 +530,12 @@ let buildingPositions = [];
 
 const player = {
     pos: new THREE.Vector3(0, 0, 0), vy: 0, onGround: true,
-    name: 'Steve', id: null, roomId: 'public-room-1',
+    name: 'Steve', id: null, roomId: 'publicroom1',
     skin: null, health: CONFIG.maxHealth, lastDamageTime: -Infinity,
 };
 
 let sensitivity = CONFIG.sensFactor * 5;
-let fov = 75, baseFov = 75, ringSize = 172, freeCamSpeed = 12;
+let fov = 75, baseFov = 75, ringSize = 172;
 let crosshairSize = 26;
 
 const keys = {};
@@ -644,6 +546,7 @@ const remotePlayers = {};
 const drops = [];
 const barrels = [];
 const bullets = [];
+const potionProjectiles = [];
 const yBillboards = [];
 const fullBillboards = [];
 
@@ -653,6 +556,7 @@ let medkitDataURL = null;
 let localPlayerMesh = null;
 let localMeshGeneration = 0;
 let lastBarrelSpawnCheck = 0;
+let barrelRespawnTime = 0;
 let dropIdCounter = 0;
 let lastRenderedSelection = -1;
 
@@ -660,7 +564,12 @@ const deathState = { active: false, startTime: 0, duration: 2200, faded: false, 
 
 let joystickVec = new THREE.Vector2(0, 0);
 let sprinting = false, sprintByJoystick = false, sprintByButton = false;
-let freeCamUpPressed = false, freeCamDownPressed = false;
+
+let gyroEnabled = false;
+let gyroBaseAlpha = null, gyroBaseBeta = null, gyroBaseGamma = null;
+
+/* 鼠标按键状态（用于右键瞄准） */
+let rightMouseDown = false;
 
 let mqttClient = null, mqttTopic = '';
 let lastNetSend = 0, lastStateSave = 0;
@@ -676,6 +585,48 @@ let sprintFovPulse = 0;
 const _tmpVec1 = new THREE.Vector3();
 
 document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+/* ==================== 房间名处理 ==================== */
+function sanitizeRoomName(name) {
+    return (name || '').replace(/[^a-zA-Z0-9_]/g, '');
+}
+function roomNameToSeedString(roomName) {
+    let result = '';
+    for (const ch of roomName) {
+        if (ch >= '0' && ch <= '9') {
+            result += ch;
+        } else if (ch === '_') {
+            result += '32767';
+        } else {
+            const lower = ch.toLowerCase();
+            if (lower >= 'a' && lower <= 'z') {
+                const n = lower.charCodeAt(0) - 96;
+                result += n;
+            }
+        }
+    }
+    return result || '0';
+}
+function hashString(str) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h >>> 0;
+}
+function makeSeededRandom(seed) {
+    let a = seed >>> 0;
+    return function () {
+        a |= 0;
+        a = (a + 0x6D2B79F5) | 0;
+        let t = a;
+        t = Math.imul(t ^ (t >>> 15), 1 | t);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+let seededRandom = Math.random;
 
 function applyColorSpace(tex) {
     if (!tex) return;
@@ -886,6 +837,66 @@ function removeFromFullBillboards(mesh) {
     if (idx >= 0) fullBillboards.splice(idx, 1);
 }
 
+/* ==================== 陀螺仪 ==================== */
+function handleGyroEvent(e) {
+    if (!gyroEnabled || !camera || !gameStarted || deathState.active) return;
+    if (e.alpha === null || e.beta === null || e.gamma === null) return;
+    if (gyroBaseAlpha === null) {
+        gyroBaseAlpha = e.alpha;
+        gyroBaseBeta = e.beta;
+        gyroBaseGamma = e.gamma;
+        return;
+    }
+    let dAlpha = e.alpha - gyroBaseAlpha;
+    while (dAlpha > 180) dAlpha -= 360;
+    while (dAlpha < -180) dAlpha += 360;
+    const dBeta = e.beta - gyroBaseBeta;
+    const dGamma = e.gamma - gyroBaseGamma;
+
+    const euler = new THREE.Euler(
+        THREE.MathUtils.degToRad(dBeta),
+        THREE.MathUtils.degToRad(-dAlpha),
+        THREE.MathUtils.degToRad(-dGamma * 0.6),
+        'YXZ'
+    );
+    camera.quaternion.setFromEuler(euler);
+}
+
+function setGyroEnabled(on) {
+    gyroEnabled = on;
+    document.querySelectorAll('.toggle-btn[data-gyro]').forEach(b => {
+        b.classList.toggle('active', b.dataset.gyro === (on ? 'on' : 'off'));
+    });
+    if (on) {
+        if (typeof DeviceOrientationEvent !== 'undefined' &&
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission().then(perm => {
+                if (perm === 'granted') {
+                    gyroBaseAlpha = gyroBaseBeta = gyroBaseGamma = null;
+                    window.addEventListener('deviceorientation', handleGyroEvent);
+                } else {
+                    gyroEnabled = false;
+                    document.querySelectorAll('.toggle-btn[data-gyro]').forEach(b => {
+                        b.classList.toggle('active', b.dataset.gyro === 'off');
+                    });
+                }
+            }).catch(() => {
+                gyroEnabled = false;
+                document.querySelectorAll('.toggle-btn[data-gyro]').forEach(b => {
+                    b.classList.toggle('active', b.dataset.gyro === 'off');
+                });
+            });
+        } else {
+            gyroBaseAlpha = gyroBaseBeta = gyroBaseGamma = null;
+            window.addEventListener('deviceorientation', handleGyroEvent);
+        }
+    } else {
+        window.removeEventListener('deviceorientation', handleGyroEvent);
+    }
+    try { localStorage.setItem(LS.gyro, on ? 'on' : 'off'); } catch (e) {}
+}
+
+/* ==================== UI 编辑器 ==================== */
 const UI_EDITABLE = ['hud', 'hotbar', 'chatBar', 'chatBtn', 'throwBtn', 'settingsBtn', 'itemName', 'killFeed', 'netStatus'];
 let uiEditing = false, uiDragState = null;
 const uiLayout = {};
@@ -1004,6 +1015,7 @@ function initUIEditor() {
     });
 }
 
+/* ==================== 建筑 ==================== */
 function addBuilding(bldgX, bldgZ, type, mats, boxGeo, stairGeo) {
     const group = new THREE.Group();
     group.position.set(bldgX, 0, bldgZ);
@@ -1032,6 +1044,9 @@ function addBuilding(bldgX, bldgZ, type, mats, boxGeo, stairGeo) {
     else { w = 9; d = 9; h = 6; wallMat = 'planks'; roofMat = 'log'; doorPos = { x: 0, z: -4 }; windows = [{ x: 0, z: 4, y: 2 }, { x: 4, z: 0, y: 2 }, { x: -4, z: 0, y: 2 }, { x: 0, z: 4, y: 4 }, { x: 4, z: 0, y: 4 }, { x: -4, z: 0, y: 4 }]; }
 
     const halfW = Math.floor(w / 2), halfD = Math.floor(d / 2);
+
+    if (w >= 7 && d >= 7 && Math.floor(h / 4) >= 1) hasStairs = true;
+
     for (let iy = 0; iy <= h; iy++) {
         for (let ix = -halfW; ix <= halfW; ix++) {
             for (let iz = -halfD; iz <= halfD; iz++) {
@@ -1046,6 +1061,20 @@ function addBuilding(bldgX, bldgZ, type, mats, boxGeo, stairGeo) {
         }
     }
     for (let ix = -halfW; ix <= halfW; ix++) for (let iz = -halfD; iz <= halfD; iz++) addBlock(ix, h + 1, iz, roofMat);
+
+    if (w >= 7 && d >= 7) {
+        const numFloors = Math.floor(h / 4);
+        for (let level = 1; level <= numFloors; level++) {
+            const floorY = level * 4;
+            if (floorY >= h) break;
+            const iy = floorY - 1;
+            for (let ix = -halfW + 2; ix <= halfW - 2; ix++) {
+                for (let iz = -halfD + 2; iz <= halfD - 2; iz++) {
+                    addBlock(ix, iy, iz, wallMat);
+                }
+            }
+        }
+    }
 
     if (hasStairs) {
         const ixMin = -halfW + 1, ixMax = halfW - 1;
@@ -1067,11 +1096,12 @@ function addBuilding(bldgX, bldgZ, type, mats, boxGeo, stairGeo) {
         for (let i = 0; i < fullPath.length; i++) path.push(fullPath[(startIdx + i) % fullPath.length]);
         const circ = path.length;
         const totalSteps = h * 2;
+        const maxStairY = Math.floor((h - 1) / 4) * 4;
         for (let step = 0; step < totalSteps; step++) {
             const pos = path[step % circ];
             if (pos.z === doorPos.z && pos.x === doorPos.x) continue;
             const yLevel = step * 0.5;
-            if (yLevel >= h) break;
+            if (yLevel > maxStairY) break;
             addStairBlock(pos.x, yLevel, pos.z, wallMat);
         }
     }
@@ -1079,6 +1109,10 @@ function addBuilding(bldgX, bldgZ, type, mats, boxGeo, stairGeo) {
 }
 
 async function buildWorld() {
+    const seedString = roomNameToSeedString(player.roomId || 'publicroom1');
+    const roomSeed = hashString(seedString);
+    seededRandom = makeSeededRandom(roomSeed);
+
     const [mossTex, stoneTex, treeTex, kaiTex, plankTex, logTex, cobbleTex, brickTex, glassTex, barrelTex] = await Promise.all([
         getTexture(ASSETS.mossBlock), getTexture(ASSETS.stone), getTexture(ASSETS.tree), getTexture(ASSETS.kai),
         getTexture(ASSETS.planks), getTexture(ASSETS.log), getTexture(ASSETS.cobble),
@@ -1098,7 +1132,7 @@ async function buildWorld() {
         mossTex.wrapS = mossTex.wrapT = THREE.RepeatWrapping;
         mossTex.repeat.set(CONFIG.floorRepeat, CONFIG.floorRepeat);
         floorMat.map = mossTex;
-    } else floorMat.color = 0x4a7a3a;
+    } else floorMat.color = 0x8ecf6a;
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(CONFIG.floorSize, CONFIG.floorSize), floorMat);
     floor.rotation.x = -Math.PI / 2;
     scene.add(floor);
@@ -1108,7 +1142,15 @@ async function buildWorld() {
         log:    new THREE.MeshLambertMaterial({ map: logTex,    color: logTex ? 0xffffff : FALLBACK_COLORS.log }),
         cobble: new THREE.MeshLambertMaterial({ map: cobbleTex, color: cobbleTex ? 0xffffff : FALLBACK_COLORS.cobble }),
         brick:  new THREE.MeshLambertMaterial({ map: brickTex,  color: brickTex ? 0xffffff : FALLBACK_COLORS.brick }),
-        glass:  new THREE.MeshLambertMaterial({ map: glassTex,  color: glassTex ? 0xffffff : FALLBACK_COLORS.glass }),
+        glass:  new THREE.MeshLambertMaterial({
+            map: glassTex,
+            color: glassTex ? 0xffffff : 0xbfe4ff,
+            transparent: true,
+            opacity: 0.55,
+            alphaTest: 0.05,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+        }),
     };
 
     const boxGeo = new THREE.BoxGeometry(1, 1, 1);
@@ -1119,8 +1161,8 @@ async function buildWorld() {
         const type = typeCounts[i];
         const spacing = type >= 6 ? 22 : 14;
         while (tries++ < 100) {
-            x = (Math.random() - 0.5) * 96;
-            z = (Math.random() - 0.5) * 96;
+            x = (seededRandom() - 0.5) * 96;
+            z = (seededRandom() - 0.5) * 96;
             if (Math.abs(x) < 16 && Math.abs(z) < 16) continue;
             let ov = false;
             for (const bp of buildingPositions) if (Math.abs(x - bp.x) < spacing && Math.abs(z - bp.z) < spacing) { ov = true; break; }
@@ -1133,19 +1175,19 @@ async function buildWorld() {
 
     const stoneAspect = stoneTex ? aspectOf(stoneTex) : 1;
     const stoneSizes = [
-        ...Array.from({ length: 6 }, () => 0.35 + Math.random() * 0.25),
-        ...Array.from({ length: 8 }, () => 0.60 + Math.random() * 0.40),
-        ...Array.from({ length: 7 }, () => 1.00 + Math.random() * 0.55),
-        ...Array.from({ length: 6 }, () => 1.55 + Math.random() * 0.65),
-        ...Array.from({ length: 5 }, () => 2.20 + Math.random() * 1.00),
+        ...Array.from({ length: 6 }, () => 0.35 + seededRandom() * 0.25),
+        ...Array.from({ length: 8 }, () => 0.60 + seededRandom() * 0.40),
+        ...Array.from({ length: 7 }, () => 1.00 + seededRandom() * 0.55),
+        ...Array.from({ length: 6 }, () => 1.55 + seededRandom() * 0.65),
+        ...Array.from({ length: 5 }, () => 2.20 + seededRandom() * 1.00),
     ];
-    for (let i = stoneSizes.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [stoneSizes[i], stoneSizes[j]] = [stoneSizes[j], stoneSizes[i]]; }
+    for (let i = stoneSizes.length - 1; i > 0; i--) { const j = Math.floor(seededRandom() * (i + 1)); [stoneSizes[i], stoneSizes[j]] = [stoneSizes[j], stoneSizes[i]]; }
     let placed = 0;
     for (const h of stoneSizes) {
         let x, z, tries = 0, ok = false;
         while (tries++ < 30) {
-            x = (Math.random() - 0.5) * 90;
-            z = (Math.random() - 0.5) * 90;
+            x = (seededRandom() - 0.5) * 90;
+            z = (seededRandom() - 0.5) * 90;
             if (Math.abs(x) < 3.5 && Math.abs(z) < 3.5) continue;
             let ov = false;
             for (const c of colliders) { const dx = x - c.x, dz = z - c.z; if (dx*dx + dz*dz < (c.radius + h * stoneAspect * 0.34 + 0.5)**2) { ov = true; break; } }
@@ -1165,31 +1207,62 @@ async function buildWorld() {
 
     const treeAspect = treeTex ? aspectOf(treeTex) : 0.7;
     for (let i = 0; i < 25; i++) {
-        const x = (Math.random() - 0.5) * 96;
-        const z = (Math.random() - 0.5) * 96;
+        const x = (seededRandom() - 0.5) * 96;
+        const z = (seededRandom() - 0.5) * 96;
         if (Math.abs(x) < 6 && Math.abs(z) < 6) { i--; continue; }
         let ov = false;
         for (const c of colliders) { const dx = x - c.x, dz = z - c.z; if (dx*dx + dz*dz < (c.radius + 1.6)**2) { ov = true; break; } }
         for (const bp of buildingPositions) if (Math.abs(x - bp.x) < 8 && Math.abs(z - bp.z) < 8) { ov = true; break; }
         if (ov) { i--; continue; }
-        const h = 2.25 + Math.random() * 0.75;
+        const h = 2.25 + seededRandom() * 0.75;
         const w = h * treeAspect;
         const mesh = createFullBillboard(treeTex, w, h, 0x2f6b2f);
         mesh.position.set(x, h/2, z);
-        mesh.userData = { type: 'tree', baseScale: new THREE.Vector2(w, h), spawnTime: performance.now() + 400 + Math.random() * 600 };
+        mesh.userData = { type: 'tree', baseScale: new THREE.Vector2(w, h), spawnTime: performance.now() + 400 + seededRandom() * 600 };
         mesh.scale.set(0.001, 0.001, 1);
         scene.add(mesh); sceneObjects.push(mesh);
         colliders.push({ x, z, radius: Math.max(0.25, w * 0.20), height: h });
     }
 
-    for (let i = 0; i < 10; i++) {
-        const x = (Math.random() - 0.5) * 96;
-        const z = (Math.random() - 0.5) * 96;
+    for (let i = 0; i < 1; i++) {
+        const x = (seededRandom() - 0.5) * 96;
+        const z = (seededRandom() - 0.5) * 96;
         if (Math.abs(x) < 4 && Math.abs(z) < 4) { i--; continue; }
         let ov = false;
         for (const bp of buildingPositions) if (Math.abs(x - bp.x) < 6 && Math.abs(z - bp.z) < 6) { ov = true; break; }
         if (ov) { i--; continue; }
         spawnBarrelAt(x, z, barrelTex);
+    }
+
+    for (const bldg of buildingPositions) {
+        if (seededRandom() > 0.4) continue;
+        const t = bldg.type;
+        let bldgH;
+        if (t === 0) bldgH = 3;
+        else if (t === 1) bldgH = 5;
+        else if (t === 2) bldgH = 3;
+        else if (t === 3) bldgH = 12;
+        else if (t === 4) bldgH = 5;
+        else if (t === 5) bldgH = 4;
+        else if (t === 6) bldgH = 22;
+        else if (t === 7) bldgH = 8;
+        else if (t === 8) bldgH = 10;
+        else bldgH = 6;
+
+        const floorIdx = 1 + Math.floor(seededRandom() * Math.max(1, bldgH - 1));
+        const count = 1 + Math.floor(seededRandom() * 2);
+        for (let i = 0; i < count; i++) {
+            const px = bldg.x + (seededRandom() - 0.5) * 3;
+            const pz = bldg.z + (seededRandom() - 0.5) * 3;
+            const py = floorIdx + 0.5;
+            const id = spawnDrop(new THREE.Vector3(px, py, pz), new THREE.Vector3(0, 0, 0), 'harm_potion', 1);
+            const d = drops.find(x => x.id === id);
+            if (d) {
+                d.restY = py;
+                d.mesh.position.y = py;
+                d.vel.set(0, 0, 0);
+            }
+        }
     }
 
     window.__kaiTex = kaiTex;
@@ -1209,9 +1282,8 @@ function spawnBarrelAt(x, z, texture) {
 }
 
 function updateBarrelSpawning(now) {
-    if (now - lastBarrelSpawnCheck < CONFIG.barrelRespawnInterval) return;
-    lastBarrelSpawnCheck = now;
     if (barrels.length >= CONFIG.maxBarrels) return;
+    if (now < barrelRespawnTime) return;
     let x, z, tries = 0, ok = false;
     while (tries++ < 30) {
         x = (Math.random() - 0.5) * 96;
@@ -1226,6 +1298,7 @@ function updateBarrelSpawning(now) {
     }
     if (!ok) return;
     spawnBarrelAt(x, z);
+    barrelRespawnTime = now + CONFIG.barrelRespawnInterval;
 }
 
 function createPlayerMesh(texture) {
@@ -1268,7 +1341,7 @@ function createNameSprite(name) {
     ctx.fillStyle = '#fff'; ctx.fillText(name, canvas.width / 2, canvas.height / 2);
     const tex = new THREE.CanvasTexture(canvas);
     tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter;
-    return createYBillboard(tex, 2.6, 0.41, 0xffffff, { depthTest: false, renderOrder: 999 });
+    return createYBillboard(tex, 2.6, 0.41, 0xffffff, { depthTest: true });
 }
 
 function renderHotbar() {
@@ -1326,6 +1399,16 @@ function renderBag() {
                 (def.stackable && item.count > 1 ? '<span class="bag-count">' + item.count + '</span>' : '');
             slot.title = def.name;
         }
+        const pctBar = document.createElement('div');
+        pctBar.className = 'pct-bar';
+        const pctFill = document.createElement('div');
+        pctFill.className = 'pct-fill';
+        const pctText = document.createElement('div');
+        pctText.className = 'pct-text';
+        pctText.textContent = '0%';
+        pctBar.appendChild(pctFill);
+        pctBar.appendChild(pctText);
+        slot.appendChild(pctBar);
         grid.appendChild(slot);
     }
 }
@@ -1337,6 +1420,27 @@ const bagFloatingImg = document.getElementById('bagFloatingImg');
 function initBagDnD() {
     const grid = document.getElementById('bagGrid');
     let lastTapIdx = -1, lastTapTime = 0;
+
+    let holdState = null;
+    let holdTimer = null;
+
+    function pctBarOf(slotEl) { return slotEl ? slotEl.querySelector('.pct-bar') : null; }
+
+    function clearHoldState() {
+        if (holdTimer) { clearInterval(holdTimer); holdTimer = null; }
+        if (holdState) {
+            const pct = pctBarOf(holdState.slot);
+            if (pct) {
+                pct.classList.remove('active');
+                const fill = pct.querySelector('.pct-fill');
+                const text = pct.querySelector('.pct-text');
+                if (fill) fill.style.width = '0%';
+                if (text) text.textContent = '0%';
+            }
+            holdState = null;
+        }
+    }
+
     grid.addEventListener('pointerdown', (e) => {
         const slot = e.target.closest('.bag-slot');
         if (!slot) return;
@@ -1344,12 +1448,36 @@ function initBagDnD() {
         const item = inventory.slots[idx];
         if (!item) return;
         e.preventDefault();
+
         bagDragState = { fromIdx: idx, item: item, startX: e.clientX, startY: e.clientY, moved: false };
+
         bagFloatingImg.src = getItemImgURL(item.id);
         bagFloating.style.display = 'block';
         bagFloating.style.left = (e.clientX - 28) + 'px';
         bagFloating.style.top = (e.clientY - 28) + 'px';
+
+        holdState = { slot: slot, fromIdx: idx, startTime: performance.now(), pct: 0 };
+        const pctBar = pctBarOf(slot);
+        if (pctBar) pctBar.classList.add('active');
+
+        holdTimer = setInterval(() => {
+            if (!holdState) return;
+            const held = performance.now() - holdState.startTime;
+            let pct = 0;
+            if (held > 500) pct = Math.min(100, Math.floor((held - 500) / 100) * 10);
+            if (pct !== holdState.pct) {
+                holdState.pct = pct;
+                const bar = pctBarOf(holdState.slot);
+                if (bar) {
+                    const fill = bar.querySelector('.pct-fill');
+                    const text = bar.querySelector('.pct-text');
+                    if (fill) fill.style.width = pct + '%';
+                    if (text) text.textContent = pct + '%';
+                }
+            }
+        }, 60);
     });
+
     document.addEventListener('pointermove', (e) => {
         if (!bagDragState) return;
         if (Math.hypot(e.clientX - bagDragState.startX, e.clientY - bagDragState.startY) > 7) bagDragState.moved = true;
@@ -1359,6 +1487,7 @@ function initBagDnD() {
         const target = document.elementFromPoint(e.clientX, e.clientY);
         if (target && target.classList.contains('bag-slot')) target.classList.add('dragover');
     });
+
     document.addEventListener('pointerup', (e) => {
         if (!bagDragState) return;
         const fromIdx = bagDragState.fromIdx;
@@ -1366,19 +1495,70 @@ function initBagDnD() {
         bagDragState = null;
         bagFloating.style.display = 'none';
         document.querySelectorAll('.bag-slot').forEach(s => s.classList.remove('dragover'));
+
+        const held = holdState ? (performance.now() - holdState.startTime) : 0;
+        const pct = holdState ? holdState.pct : 0;
+        const wasHold = holdState !== null;
+        clearHoldState();
+
+        if (!moved && wasHold && held > 500 && pct > 0) {
+            const item = inventory.slots[fromIdx];
+            if (item && ITEM_DEFS[item.id]) {
+                const dropCount = Math.round(item.count * pct / 100);
+                if (dropCount > 0) {
+                    const pos = camera.position.clone();
+                    const dir = new THREE.Vector3();
+                    camera.getWorldDirection(dir);
+                    const dropPos = pos.clone().add(dir.clone().multiplyScalar(1.2));
+                    dropPos.y -= 0.2;
+                    spawnDrop(dropPos, dir.clone().multiplyScalar(9).add(new THREE.Vector3(0, 3, 0)), item.id, dropCount);
+                    if (dropCount >= item.count) inventory.slots[fromIdx] = null;
+                    else item.count -= dropCount;
+                }
+                renderBag(); renderHotbar(); saveInventory();
+            }
+            return;
+        }
+
         if (!moved) {
             const now = performance.now();
             if (lastTapIdx === fromIdx && now - lastTapTime < 340) { useItemAt(fromIdx); lastTapIdx = -1; }
             else { lastTapIdx = fromIdx; lastTapTime = now; }
             return;
         }
+
         const target = document.elementFromPoint(e.clientX, e.clientY);
         const rect = document.getElementById('bagPanel').getBoundingClientRect();
         const insidePanel = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+
         if (!insidePanel) { throwItemFromIndex(fromIdx); return; }
+
         if (target && target.classList.contains('bag-slot')) {
             const toIdx = parseInt(target.dataset.index);
             if (toIdx !== fromIdx) {
+                const srcItem = inventory.slots[fromIdx];
+                const dstItem = inventory.slots[toIdx];
+                if (srcItem && dstItem && srcItem.id === dstItem.id && ITEM_DEFS[srcItem.id] && ITEM_DEFS[srcItem.id].stackable) {
+                    const def = ITEM_DEFS[srcItem.id];
+                    const space = def.maxStack - dstItem.count;
+                    if (space > 0) {
+                        const mergeAmount = Math.min(space, srcItem.count);
+                        dstItem.count += mergeAmount;
+                        srcItem.count -= mergeAmount;
+                        if (srcItem.count <= 0) inventory.slots[fromIdx] = null;
+                        if (srcItem.count > 0) {
+                            const pos = camera.position.clone();
+                            const dir = new THREE.Vector3();
+                            camera.getWorldDirection(dir);
+                            const dropPos = pos.clone().add(dir.clone().multiplyScalar(1.2));
+                            dropPos.y -= 0.2;
+                            spawnDrop(dropPos, dir.clone().multiplyScalar(9).add(new THREE.Vector3(0, 3, 0)), srcItem.id, srcItem.count);
+                            inventory.slots[fromIdx] = null;
+                        }
+                        renderBag(); renderHotbar(); saveInventory();
+                        return;
+                    }
+                }
                 const tmp = inventory.slots[toIdx];
                 inventory.slots[toIdx] = inventory.slots[fromIdx];
                 inventory.slots[fromIdx] = tmp;
@@ -1483,7 +1663,7 @@ function addItem(itemId, count) {
     return count - remaining;
 }
 function throwItem() {
-    if (!gameStarted || freeCamMode || deathState.active || uiEditing || bagOpen) return;
+    if (!gameStarted || deathState.active || uiEditing || bagOpen) return;
     throwItemFromIndex(inventory.selected);
 }
 function throwItemFromIndex(idx) {
@@ -1604,15 +1784,20 @@ function breakBarrel(barrelMesh) {
     if (Math.random() < 0.35) loots.push('csgun');
     if (Math.random() < 0.85) loots.push('ammo');
     if (Math.random() < 0.5) loots.push('medkit');
+    if (Math.random() < 0.3) loots.push('harm_potion');
     if (loots.length === 0) loots.push('ammo');
     for (const itemId of loots) {
         const vel = new THREE.Vector3((Math.random() - 0.5) * 4, 3 + Math.random() * 3, (Math.random() - 0.5) * 4);
         const dropPos = pos.clone();
         dropPos.x += (Math.random() - 0.5) * 0.4;
         dropPos.z += (Math.random() - 0.5) * 0.4;
-        const c = itemId === 'ammo' ? (10 + Math.floor(Math.random() * 20)) : itemId === 'medkit' ? (1 + Math.floor(Math.random() * 3)) : 1;
+        const c = itemId === 'ammo' ? (10 + Math.floor(Math.random() * 20))
+                : itemId === 'medkit' ? (1 + Math.floor(Math.random() * 3))
+                : itemId === 'harm_potion' ? (1 + Math.floor(Math.random() * 2))
+                : 1;
         spawnDrop(dropPos, vel, itemId, c);
     }
+    barrelRespawnTime = performance.now() + CONFIG.barrelRespawnInterval;
 }
 
 function spawnBullet(pos, dir, damage, ownerId) {
@@ -1657,19 +1842,124 @@ function updateBullets(delta, now) {
     }
 }
 
+function spawnPotionProjectile(pos, dir, ownerId) {
+    const tex = getItemTexture('harm_potion');
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: tex, color: tex ? 0xffffff : 0xcc00cc,
+        transparent: true, depthTest: true, depthWrite: false,
+    }));
+    sprite.scale.set(0.45, 0.45, 1);
+    sprite.position.copy(pos);
+    scene.add(sprite);
+    potionProjectiles.push({
+        mesh: sprite,
+        vel: dir.clone().normalize().multiplyScalar(16).add(new THREE.Vector3(0, 4.5, 0)),
+        ownerId: ownerId,
+        spawnTime: performance.now(),
+    });
+}
+
+function spawnPotionSplash(pos) {
+    const tex = getItemTexture('harm_potion');
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: tex, color: 0xff66ff,
+        transparent: true, opacity: 0.8, depthTest: true, depthWrite: false,
+    }));
+    sprite.scale.set(1.5, 1.5, 1);
+    sprite.position.copy(pos);
+    scene.add(sprite);
+    setTimeout(() => { scene.remove(sprite); }, 400);
+}
+
+function updatePotionProjectiles(delta, now) {
+    for (let i = potionProjectiles.length - 1; i >= 0; i--) {
+        const p = potionProjectiles[i];
+        p.vel.y += CONFIG.gravity * delta * 0.6;
+        p.mesh.position.addScaledVector(p.vel, delta);
+        p.mesh.material.rotation = (now - p.spawnTime) * 0.008;
+
+        let hit = false;
+        const dxSelf = p.mesh.position.x - player.pos.x;
+        const dzSelf = p.mesh.position.z - player.pos.z;
+        const dySelf = p.mesh.position.y - (player.pos.y + 0.9);
+        if (dxSelf*dxSelf + dzSelf*dzSelf + dySelf*dySelf < 1.2) {
+            takeDamage(25);
+            hit = true;
+        }
+
+        if (!hit) {
+            for (const id in remotePlayers) {
+                if (id === p.ownerId) continue;
+                const rp = remotePlayers[id];
+                const dx = p.mesh.position.x - rp.mesh.position.x;
+                const dz = p.mesh.position.z - rp.mesh.position.z;
+                const dy = p.mesh.position.y - (rp.mesh.position.y + 0.9);
+                if (dx*dx + dz*dz + dy*dy < 1.2) {
+                    if (p.ownerId === player.id) {
+                        publishMessage({ type: 'hit', targetId: id, damage: 25, from: player.name });
+                    }
+                    hit = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hit) {
+            for (const bc of boxColliders) {
+                const dx = Math.abs(p.mesh.position.x - bc.x);
+                const dy = Math.abs(p.mesh.position.y - bc.y);
+                const dz = Math.abs(p.mesh.position.z - bc.z);
+                if (dx < bc.hw + 0.2 && dy < bc.hh + 0.2 && dz < bc.hd + 0.2) { hit = true; break; }
+            }
+        }
+
+        if (!hit) {
+            const gh = getGroundHeight(p.mesh.position.x, p.mesh.position.z, p.mesh.position.y);
+            if (p.mesh.position.y <= gh + 0.1) hit = true;
+        }
+
+        if (now - p.spawnTime > 6000) hit = true;
+
+        if (hit) {
+            spawnPotionSplash(p.mesh.position.clone());
+            scene.remove(p.mesh);
+            potionProjectiles.splice(i, 1);
+        }
+    }
+}
+
+function throwPotion() {
+    if (!gameStarted || deathState.active || uiEditing || bagOpen) return false;
+    const item = inventory.slots[inventory.selected];
+    if (!item || item.id !== 'harm_potion') return false;
+
+    const pos = camera.position.clone();
+    const dir = new THREE.Vector3();
+    camera.getWorldDirection(dir);
+    const spawnPos = pos.clone().add(dir.clone().multiplyScalar(0.8));
+    spawnPotionProjectile(spawnPos, dir, player.id);
+
+    if (item.count > 1) item.count--;
+    else inventory.slots[inventory.selected] = null;
+    renderHotbar(); saveInventory();
+    return true;
+}
+
+/* ==================== 键盘 ==================== */
 addEventListener('keydown', (e) => {
     if (chatOpen || uiEditing) return;
     keys[e.code] = true;
-    if (e.code === 'Space' && gameStarted && !deathState.active) { e.preventDefault(); if (!freeCamMode && !bagOpen) tryJump(); }
+    if (e.code === 'Space' && gameStarted && !deathState.active) { e.preventDefault(); if (!bagOpen) tryJump(); }
     if (e.code === 'Escape') {
         if (bagOpen) { closeBag(); return; }
         if (settingsOpen) return;
         if (controls && controls.isLocked) controls.unlock();
     }
     if (e.code === 'KeyT' && gameStarted && !mobileMode && !deathState.active && !bagOpen) { e.preventDefault(); openChat(); }
-    if (e.code === 'KeyQ' && gameStarted && !freeCamMode && !deathState.active && !bagOpen) { e.preventDefault(); throwItem(); }
+    if (e.code === 'KeyQ' && gameStarted && !deathState.active && !bagOpen) { e.preventDefault(); throwItem(); }
     if (e.code === 'KeyE' && gameStarted && !deathState.active) { e.preventDefault(); if (bagOpen) closeBag(); else openBag(); }
-    if (e.code === 'KeyC' && gameStarted && !freeCamMode && !deathState.active && !bagOpen) {
+    /* C 键瞄准 */
+    if (e.code === 'KeyC' && gameStarted && !deathState.active && !bagOpen) {
         e.preventDefault();
         startAim();
     }
@@ -1681,10 +1971,7 @@ addEventListener('keydown', (e) => {
 addEventListener('keyup', (e) => {
     keys[e.code] = false;
     if (e.code === 'KeyC') {
-        if (aiming) {
-            aiming = false;
-            if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); }
-        }
+        if (aiming && !rightMouseDown) stopAim();
     }
 });
 
@@ -1698,10 +1985,15 @@ addEventListener('wheel', (e) => {
 
 function startAim() {
     if (aiming) return;
-    if (!gameStarted || freeCamMode || deathState.active || uiEditing || bagOpen) return;
+    if (!gameStarted || deathState.active || uiEditing || bagOpen) return;
     const item = inventory.slots[inventory.selected];
     if (!item || !ITEM_DEFS[item.id] || !ITEM_DEFS[item.id].damage) return;
     aiming = true;
+}
+function stopAim() {
+    if (!aiming) return;
+    aiming = false;
+    if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); }
 }
 function tryUseMedkitOnLeftClick() {
     const item = inventory.slots[inventory.selected];
@@ -1710,15 +2002,31 @@ function tryUseMedkitOnLeftClick() {
     return true;
 }
 
+/* 鼠标按下：左键 = 射击；右键 = 瞄准 */
 addEventListener('mousedown', (e) => {
-    if (e.button !== 0) return;
     if (uiEditing || bagOpen || mobileMode) return;
-    if (!isLocked || !gameStarted || freeCamMode || deathState.active) return;
-    if (tryUseMedkitOnLeftClick()) return;
-    const ray = new THREE.Raycaster();
-    ray.setFromCamera(new THREE.Vector2(0, 0), camera);
-    const interacted = handleInteract(ray);
-    if (!interacted) fireGun();
+    if (!isLocked || !gameStarted || deathState.active) return;
+    if (e.button === 0) {
+        if (tryUseMedkitOnLeftClick()) return;
+        if (throwPotion()) return;
+        const ray = new THREE.Raycaster();
+        ray.setFromCamera(new THREE.Vector2(0, 0), camera);
+        const interacted = handleInteract(ray);
+        if (!interacted) fireGun();
+    } else if (e.button === 2) {
+        /* 右键按住瞄准 */
+        e.preventDefault();
+        rightMouseDown = true;
+        startAim();
+    }
+});
+
+addEventListener('mouseup', (e) => {
+    if (e.button === 2) {
+        rightMouseDown = false;
+        /* 只有在 C 键也没按住时才停止瞄准 */
+        if (!keys['KeyC']) stopAim();
+    }
 });
 
 document.body.addEventListener('click', (e) => {
@@ -1753,12 +2061,22 @@ function handleInteract(ray) {
             return true;
         }
     }
-    if (hit.userData && hit.userData.type === 'barrel') { breakBarrel(hit); return true; }
+    if (hit.userData && hit.userData.type === 'barrel') {
+        const dx = player.pos.x - hit.position.x;
+        const dz = player.pos.z - hit.position.z;
+        const dist2 = dx * dx + dz * dz;
+        if (dist2 > CONFIG.BARREL_INTERACT_RANGE * CONFIG.BARREL_INTERACT_RANGE) {
+            addKillFeed('距离太远，无法打开木桶');
+            return true;
+        }
+        breakBarrel(hit);
+        return true;
+    }
     return false;
 }
 
 function fireGun() {
-    if (!gameStarted || deathState.active || freeCamMode || uiEditing || bagOpen) return;
+    if (!gameStarted || deathState.active || uiEditing || bagOpen) return;
     const item = inventory.slots[inventory.selected];
     if (!item || !ITEM_DEFS[item.id]) return;
     const def = ITEM_DEFS[item.id];
@@ -1800,6 +2118,7 @@ function showHitMarker() {
     setTimeout(() => el.remove(), 400);
 }
 
+/* ==================== 移动端 ==================== */
 function initMobileControls() {
     const joyZone = document.getElementById('joystickZone');
     const joyKnob = document.getElementById('joystickKnob');
@@ -1810,8 +2129,6 @@ function initMobileControls() {
     const jumpBtn = document.getElementById('jumpBtn');
     const bagBtn = document.getElementById('bagBtn');
     const mobileRing = document.getElementById('mobileRing');
-    const freeCamUpBtn = document.getElementById('freeCamUpBtn');
-    const freeCamDownBtn = document.getElementById('freeCamDownBtn');
 
     mobileRing.style.width = ringSize + 'px';
     mobileRing.style.height = ringSize + 'px';
@@ -1868,7 +2185,6 @@ function initMobileControls() {
         if (!target || !target.closest) return false;
         return target.closest('#joystickZone') || target.closest('#sprintBtn') || target.closest('#shootBtn') ||
                target.closest('#aimBtn') || target.closest('#jumpBtn') || target.closest('#bagBtn') ||
-               target.closest('#freeCamUpBtn') || target.closest('#freeCamDownBtn') ||
                target.closest('#hotbar') || target.closest('#throwBtn') ||
                target.closest('#chatBtn') || target.closest('#settingsBtn') || target.closest('#bagPanel');
     }
@@ -1885,10 +2201,11 @@ function initMobileControls() {
         touchStartX = e.clientX; touchStartY = e.clientY;
         touchStartTime = Date.now();
         touchMoved = false;
-        if (!freeCamMode) showRing(e.clientX, e.clientY);
+        showRing(e.clientX, e.clientY);
     });
     lookZone.addEventListener('pointermove', (e) => {
         if (chatOpen || deathState.active || uiEditing || bagOpen) return;
+        if (gyroEnabled) return;
         if (e.pointerId !== lookPointerId) return;
         e.preventDefault(); e.stopPropagation();
         if (Math.hypot(e.clientX - touchStartX, e.clientY - touchStartY) > TAP_THRESHOLD) touchMoved = true;
@@ -1900,14 +2217,14 @@ function initMobileControls() {
         euler.y -= dx * sens; euler.x -= dy * sens;
         euler.x = Math.max(-Math.PI/2 + 0.01, Math.min(Math.PI/2 - 0.01, euler.x));
         camera.quaternion.setFromEuler(euler);
-        if (!freeCamMode) moveRing(e.clientX, e.clientY);
+        moveRing(e.clientX, e.clientY);
     });
     lookZone.addEventListener('pointerup', (e) => {
         if (e.pointerId !== lookPointerId) return;
         lookPointerId = null;
         hideRing();
         if (chatOpen || deathState.active || uiEditing || bagOpen) return;
-        if (!touchMoved && Date.now() - touchStartTime < TAP_TIME && !freeCamMode) {
+        if (!touchMoved && Date.now() - touchStartTime < TAP_TIME) {
             const ray = new THREE.Raycaster();
             const ndc = new THREE.Vector2((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
             ray.setFromCamera(ndc, camera);
@@ -1924,9 +2241,10 @@ function initMobileControls() {
 
     function shootStart(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
-        if (!gameStarted || deathState.active || freeCamMode || uiEditing || bagOpen) return;
+        if (!gameStarted || deathState.active || uiEditing || bagOpen) return;
         shootBtn.classList.add('hitting');
         if (tryUseMedkitOnLeftClick()) return;
+        if (throwPotion()) return;
         const ray = new THREE.Raycaster();
         ray.setFromCamera(new THREE.Vector2(0, 0), camera);
         const interacted = handleInteract(ray);
@@ -1940,7 +2258,7 @@ function initMobileControls() {
     let aimPointerId = null;
     aimBtn.addEventListener('pointerdown', (e) => {
         e.preventDefault(); e.stopPropagation();
-        if (!gameStarted || deathState.active || freeCamMode || uiEditing || bagOpen) return;
+        if (!gameStarted || deathState.active || uiEditing || bagOpen) return;
         aimPointerId = e.pointerId;
         startAim();
         if (aiming) aimBtn.classList.add('active');
@@ -1949,32 +2267,23 @@ function initMobileControls() {
         if (e.pointerId !== aimPointerId) return;
         aimPointerId = null;
         aimBtn.classList.remove('active');
-        if (aiming) { aiming = false; if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); } }
+        stopAim();
     });
     aimBtn.addEventListener('pointercancel', (e) => {
         if (e.pointerId !== aimPointerId) return;
         aimPointerId = null;
         aimBtn.classList.remove('active');
-        if (aiming) { aiming = false; if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); } }
+        stopAim();
     });
 
     jumpBtn.addEventListener('pointerdown', (e) => {
         e.preventDefault(); e.stopPropagation();
-        if (!gameStarted || deathState.active || freeCamMode || bagOpen) return;
+        if (!gameStarted || deathState.active || bagOpen) return;
         tryJump();
     });
 
     function bagToggle(e) { if (e) { e.preventDefault(); e.stopPropagation(); } if (bagOpen) closeBag(); else openBag(); }
     bagBtn.addEventListener('pointerdown', bagToggle);
-
-    function bindHold(el, downFn, upFn) {
-        let pid = null;
-        el.addEventListener('pointerdown', (e) => { if (uiEditing) return; e.preventDefault(); e.stopPropagation(); pid = e.pointerId; downFn(); });
-        el.addEventListener('pointerup', (e) => { if (e.pointerId !== pid) return; pid = null; upFn(); });
-        el.addEventListener('pointercancel', (e) => { if (e.pointerId !== pid) return; pid = null; upFn(); });
-    }
-    bindHold(freeCamUpBtn, () => { freeCamUpPressed = true; freeCamUpBtn.classList.add('pressed'); }, () => { freeCamUpPressed = false; freeCamUpBtn.classList.remove('pressed'); });
-    bindHold(freeCamDownBtn, () => { freeCamDownPressed = true; freeCamDownBtn.classList.add('pressed'); }, () => { freeCamDownPressed = false; freeCamDownBtn.classList.remove('pressed'); });
 
     function showRing(x, y) { mobileRing.style.left = x + 'px'; mobileRing.style.top = y + 'px'; mobileRing.style.display = 'block'; }
     function moveRing(x, y) { mobileRing.style.left = x + 'px'; mobileRing.style.top = y + 'px'; }
@@ -2006,70 +2315,20 @@ function initMobileControls() {
 function setMobileMode(on, save) {
     if (save === undefined) save = true;
     mobileMode = on;
-    if (on && aiming) { aiming = false; if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); } }
+    if (on && aiming) { stopAim(); }
     document.body.classList.toggle('mobile', on);
     document.getElementById('mobileControls').classList.toggle('active', on);
     document.getElementById('crosshair').classList.toggle('hidden', freeCamMode);
     document.getElementById('mobileRing').style.display = 'none';
     document.querySelectorAll('.toggle-btn[data-mode]').forEach(x => x.classList.toggle('active', x.dataset.mode === (on ? 'mobile' : 'desktop')));
-    document.getElementById('freeCamUpBtn').classList.toggle('visible', freeCamMode);
-    document.getElementById('freeCamDownBtn').classList.toggle('visible', freeCamMode);
     if (on && controls && controls.isLocked) controls.unlock();
-    if (!on && gameStarted && !settingsOpen && !freeCamMode && !bagOpen && controls) {
-        setTimeout(() => { if (!mobileMode && !settingsOpen && !freeCamMode && gameStarted && !bagOpen && controls) controls.lock(); }, 150);
+    if (!on && gameStarted && !settingsOpen && !bagOpen && controls) {
+        setTimeout(() => { if (!mobileMode && !settingsOpen && gameStarted && !bagOpen && controls) controls.lock(); }, 150);
     }
     if (save) localStorage.setItem(LS.mode, on ? 'mobile' : 'desktop');
 }
-function setFreeCamMode(on, save) {
-    if (save === undefined) save = true;
-    freeCamMode = on;
-    if (on && aiming) { aiming = false; if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); } }
-    document.querySelectorAll('.toggle-btn[data-freecam]').forEach(x => x.classList.toggle('active', x.dataset.freecam === (on ? 'on' : 'off')));
-    document.getElementById('freeCamHint').classList.toggle('active', on);
-    document.getElementById('crosshair').style.display = on ? 'none' : 'block';
-    document.getElementById('freeCamUpBtn').classList.toggle('visible', on);
-    document.getElementById('freeCamDownBtn').classList.toggle('visible', on);
-    if (!localPlayerMesh && scene) rebuildLocalPlayerMesh();
-    if (localPlayerMesh) { localPlayerMesh.visible = on; localPlayerMesh.position.set(player.pos.x, player.pos.y, player.pos.z); }
-    if (on) {
-        player.vy = 0;
-        if (controls && !controls.isLocked && !mobileMode) controls.lock();
-        const fwd = new THREE.Vector3();
-        camera.getWorldDirection(fwd);
-        fwd.y = 0;
-        if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, -1);
-        fwd.normalize();
-        camera.position.set(player.pos.x - fwd.x * 3.5, player.pos.y + CONFIG.eyeHeight + 1.2, player.pos.z - fwd.z * 3.5);
-    } else {
-        camera.position.set(player.pos.x, player.pos.y + CONFIG.eyeHeight, player.pos.z);
-    }
-    if (save) localStorage.setItem(LS.freeCam, on ? 'on' : 'off');
-}
-function updateFreeCam(delta) {
-    const fwd = new THREE.Vector3();
-    camera.getWorldDirection(fwd);
-    const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
-    const move = new THREE.Vector3();
-    if (keys['KeyW'] || keys['ArrowUp']) move.add(fwd);
-    if (keys['KeyS'] || keys['ArrowDown']) move.sub(fwd);
-    if (keys['KeyA'] || keys['ArrowLeft']) move.sub(right);
-    if (keys['KeyD'] || keys['ArrowRight']) move.add(right);
-    if (keys['Space']) move.y += 1;
-    if (keys['ShiftLeft'] || keys['ShiftRight']) move.y -= 1;
-    if (mobileMode && joystickVec.length() > 0.08) {
-        const ff = fwd.clone(); ff.y = 0;
-        if (ff.lengthSq() < 1e-6) ff.set(0, 0, -1);
-        ff.normalize();
-        const fr = new THREE.Vector3().crossVectors(ff, new THREE.Vector3(0, 1, 0)).normalize();
-        move.add(ff.multiplyScalar(joystickVec.y));
-        move.add(fr.multiplyScalar(joystickVec.x));
-    }
-    if (freeCamUpPressed) move.y += 1;
-    if (freeCamDownPressed) move.y -= 1;
-    if (move.lengthSq() > 0) { move.normalize().multiplyScalar(freeCamSpeed * delta); camera.position.add(move); }
-    if (localPlayerMesh) localPlayerMesh.position.set(player.pos.x, player.pos.y, player.pos.z);
-}
 
+/* ==================== 物理 ==================== */
 function tryJump() { if (player.onGround) { player.vy = CONFIG.jumpSpeed; player.onGround = false; } }
 function hasSpaceAbove(x, z, fromY) {
     const top = fromY + CONFIG.playerHeight;
@@ -2203,18 +2462,21 @@ function updatePlayer(delta, now) {
         targetLean += Math.sin(bobTime * 0.5) * 0.01 * bobAmount;
     }
     cameraLean = THREE.MathUtils.lerp(cameraLean, targetLean, 0.08);
+
     camera.position.set(
         player.pos.x + bobX + shakeX,
         player.pos.y + CONFIG.eyeHeight + bobY - dip - recoilKick * 0.02 + shakeY,
         player.pos.z
     );
-    if (camera) {
+
+    if (!gyroEnabled) {
         camera.rotation.order = 'YXZ';
         const e = new THREE.Euler(0, 0, 0, 'YXZ');
         e.setFromQuaternion(camera.quaternion);
         e.z = cameraLean;
         camera.quaternion.setFromEuler(e);
     }
+
     let targetFov = baseFov;
     if (wantSprint && isMoving) { sprintFovPulse += delta * 8; targetFov = baseFov * (1.09 + Math.sin(sprintFovPulse) * 0.006); }
     else sprintFovPulse = 0;
@@ -2234,7 +2496,6 @@ function dropHalfInventory() {
     for (let i = 0; i < CONFIG.invSize; i++) {
         const item = inventory.slots[i];
         if (!item || !ITEM_DEFS[item.id]) continue;
-
         const dropCount = Math.ceil(item.count / 2);
         if (dropCount <= 0) continue;
 
@@ -2250,11 +2511,8 @@ function dropHalfInventory() {
         );
         spawnDrop(dropPos, vel, item.id, dropCount);
 
-        if (dropCount >= item.count) {
-            inventory.slots[i] = null;
-        } else {
-            item.count -= dropCount;
-        }
+        if (dropCount >= item.count) inventory.slots[i] = null;
+        else item.count -= dropCount;
     }
     renderHotbar();
     if (bagOpen) renderBag();
@@ -2267,8 +2525,7 @@ function startDeathAnimation() {
     deathState.faded = false;
     deathState.respawned = false;
     player.vy = 0;
-    aiming = false;
-    if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); }
+    stopAim();
     if (controls && controls.isLocked) controls.unlock();
 
     dropHalfInventory();
@@ -2302,8 +2559,8 @@ function updateDeathAnimation(now, delta) {
     if (t >= 1) {
         deathState.active = false;
         document.getElementById('deathFade').classList.remove('active');
-        if (!mobileMode && !freeCamMode && gameStarted && !uiEditing && !bagOpen && controls) {
-            setTimeout(() => { if (!settingsOpen && !mobileMode && !freeCamMode && !uiEditing && !bagOpen && controls) controls.lock(); }, 100);
+        if (!mobileMode && gameStarted && !uiEditing && !bagOpen && controls) {
+            setTimeout(() => { if (!settingsOpen && !mobileMode && !uiEditing && !bagOpen && controls) controls.lock(); }, 100);
         }
     }
 }
@@ -2373,6 +2630,7 @@ function takeDamage(amount) {
     if (player.health <= 0) startDeathAnimation();
 }
 
+/* ==================== 聊天 ==================== */
 function openChat() {
     if (chatOpen || uiEditing || bagOpen) return;
     chatOpen = true;
@@ -2421,6 +2679,7 @@ function addChatLine(who, text, whoClass, isPrivate) {
     while (area.children.length > 8) area.removeChild(area.firstChild);
 }
 
+/* ==================== 网络 ==================== */
 function initNetwork() {
     const statusEl = document.getElementById('netStatus');
     if (typeof mqtt === 'undefined') { statusEl.textContent = '⚠ MQTT 未加载'; statusEl.style.color = '#ffaa00'; return; }
@@ -2434,7 +2693,7 @@ function initNetwork() {
         mqttClient.on('connect', () => {
             statusEl.textContent = '● 已连接 · ' + player.roomId; statusEl.style.color = '#5aff5a';
             mqttClient.subscribe(mqttTopic, { qos: 0 });
-            publishMessage({ type: 'join', id: player.id, name: player.name, skin: player.skin, position: { x: camera.position.x, y: camera.position.y, z: camera.position.z } });
+            publishMessage({ type: 'join', id: player.id, name: player.name, skin: player.skin, position: { x: player.pos.x, y: player.pos.y, z: player.pos.z } });
         });
         mqttClient.on('message', (topic, payload) => {
             if (topic !== mqttTopic) return;
@@ -2471,7 +2730,7 @@ function handleNetworkMessage(data) {
     switch (data.type) {
         case 'join':
             addRemotePlayer(data);
-            publishMessage({ type: 'welcome', id: player.id, name: player.name, skin: player.skin, position: { x: camera.position.x, y: camera.position.y, z: camera.position.z } });
+            publishMessage({ type: 'welcome', id: player.id, name: player.name, skin: player.skin, position: { x: player.pos.x, y: player.pos.y, z: player.pos.z } });
             break;
         case 'welcome': if (!remotePlayers[data.id]) addRemotePlayer(data); break;
         case 'leave': removeRemotePlayer(data.id); break;
@@ -2493,7 +2752,8 @@ async function addRemotePlayer(data) {
     const texture = await getSkinTexture(data.skin);
     if (remotePlayers[data.id]) return;
     const group = createPlayerMesh(texture);
-    group.position.set(data.position ? data.position.x : 0, 0, data.position ? data.position.z : 0);
+    const py = (data.position && typeof data.position.y === 'number') ? data.position.y : 0;
+    group.position.set(data.position ? data.position.x : 0, py, data.position ? data.position.z : 0);
     group.userData = { playerId: data.id, type: 'remotePlayer' };
     const nameSprite = createNameSprite(data.name || 'Unknown');
     nameSprite.position.y = 2.25;
@@ -2504,8 +2764,16 @@ async function addRemotePlayer(data) {
     remotePlayers[data.id] = {
         mesh: group, nameSprite: nameSprite, skin: data.skin || null,
         displayName: data.name || 'Unknown',
-        targetPos: new THREE.Vector3(data.position ? data.position.x : 0, 0, data.position ? data.position.z : 0),
-        currentPos: new THREE.Vector3(data.position ? data.position.x : 0, 0, data.position ? data.position.z : 0),
+        targetPos: new THREE.Vector3(
+            data.position ? data.position.x : 0,
+            py,
+            data.position ? data.position.z : 0
+        ),
+        currentPos: new THREE.Vector3(
+            data.position ? data.position.x : 0,
+            py,
+            data.position ? data.position.z : 0
+        ),
         targetRot: 0, currentRot: 0,
         spawnTime: performance.now(), lastUpdate: performance.now(),
     };
@@ -2542,7 +2810,13 @@ function updateRemotePlayer(data) {
     if (!rp && data.position) { addRemotePlayer(data); rp = remotePlayers[data.id]; }
     if (!rp) return;
     if (data.name) rp.displayName = data.name;
-    if (data.position) rp.targetPos.set(data.position.x, 0, data.position.z);
+    if (data.position) {
+        rp.targetPos.set(
+            data.position.x,
+            typeof data.position.y === 'number' ? data.position.y : rp.targetPos.y,
+            data.position.z
+        );
+    }
     if (data.rotation) rp.targetRot = data.rotation.y || 0;
     rp.lastUpdate = performance.now();
 }
@@ -2565,6 +2839,7 @@ function interpolateRemotePlayers(now) {
         if (rp.nameSprite.material.opacity < 1) rp.nameSprite.material.opacity = Math.min(1, rp.nameSprite.material.opacity + 0.05);
         rp.currentPos.lerp(rp.targetPos, 0.18);
         rp.mesh.position.x = rp.currentPos.x;
+        rp.mesh.position.y = rp.currentPos.y;
         rp.mesh.position.z = rp.currentPos.z;
     }
 }
@@ -2575,7 +2850,7 @@ function sendNetworkUpdate() {
     lastNetSend = now;
     const euler = new THREE.Euler(0, 0, 0, 'YXZ');
     euler.setFromQuaternion(camera.quaternion);
-    publishMessage({ type: 'move', id: player.id, position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, rotation: { y: euler.y }, name: player.name });
+    publishMessage({ type: 'move', id: player.id, position: { x: player.pos.x, y: player.pos.y, z: player.pos.z }, rotation: { y: euler.y }, name: player.name });
 }
 function broadcastSkin() { if (!mqttClient || !mqttClient.connected) return; publishMessage({ type: 'skin', id: player.id, skin: player.skin }); }
 function addKillFeed(text) {
@@ -2615,6 +2890,7 @@ function compressSkinImage(file, callback) {
     reader.readAsDataURL(file);
 }
 
+/* ==================== 相机 ==================== */
 function initCamera() {
     camera = new THREE.PerspectiveCamera(fov, innerWidth / innerHeight, 0.1, 400);
     camera.position.set(0, CONFIG.eyeHeight, 0);
@@ -2629,12 +2905,13 @@ function initCamera() {
     document.addEventListener('pointerlockchange', () => {
         isLocked = document.pointerLockElement === document.body;
         controls.isLocked = isLocked;
-        if (!isLocked && aiming) { aiming = false; if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); } }
+        if (!isLocked && aiming && !rightMouseDown && !keys['KeyC']) stopAim();
     });
     document.addEventListener('pointerlockerror', () => { console.warn('指针锁定失败'); });
     document.addEventListener('mousemove', (e) => {
         if (!isLocked || mobileMode || !camera || !gameStarted) return;
         if (uiEditing || bagOpen || settingsOpen) return;
+        if (gyroEnabled) return;
         const sens = sensitivity * (aiming ? 0.6 : 1);
         const euler = new THREE.Euler(0, 0, 0, 'YXZ');
         euler.setFromQuaternion(camera.quaternion);
@@ -2658,6 +2935,7 @@ function initRenderer() {
     });
 }
 
+/* ==================== 设置 ==================== */
 function initSettings() {
     const btn = document.getElementById('settingsBtn');
     const panel = document.getElementById('settingsPanel');
@@ -2671,8 +2949,6 @@ function initSettings() {
     const crosshairSizeValue = document.getElementById('crosshairSizeValue');
     const ringSlider = document.getElementById('ringSlider');
     const ringValue = document.getElementById('ringValue');
-    const freeCamSpeedSlider = document.getElementById('freeCamSpeedSlider');
-    const freeCamSpeedValue = document.getElementById('freeCamSpeedValue');
     const skinPreviewImg = document.getElementById('skinPreviewImg');
     const skinUploadBtn = document.getElementById('skinUploadBtn');
     const skinResetBtn = document.getElementById('skinResetBtn');
@@ -2693,7 +2969,7 @@ function initSettings() {
     if (savedFov && savedFov >= CONFIG.MIN_FOV && savedFov <= 120) { fovSlider.value = savedFov; fov = savedFov; baseFov = savedFov; }
     else { fovSlider.value = Math.max(CONFIG.MIN_FOV, 75); fov = baseFov = Math.max(CONFIG.MIN_FOV, 75); }
     fovValue.textContent = Math.round(fov) + '°';
-    if (camera && !freeCamMode) { camera.fov = fov; camera.updateProjectionMatrix(); }
+    if (camera) { camera.fov = fov; camera.updateProjectionMatrix(); }
 
     const savedCrosshairSize = parseFloat(localStorage.getItem(LS.crosshairSize));
     if (savedCrosshairSize && savedCrosshairSize >= 8 && savedCrosshairSize <= 80) { crosshairSizeSlider.value = savedCrosshairSize; crosshairSize = savedCrosshairSize; }
@@ -2706,10 +2982,6 @@ function initSettings() {
     const mobileRing = document.getElementById('mobileRing');
     mobileRing.style.width = ringSize + 'px';
     mobileRing.style.height = ringSize + 'px';
-
-    const savedFreeCamSpeed = parseFloat(localStorage.getItem(LS.freeCamSpeed));
-    if (savedFreeCamSpeed && savedFreeCamSpeed >= 2 && savedFreeCamSpeed <= 40) { freeCamSpeedSlider.value = savedFreeCamSpeed; freeCamSpeed = savedFreeCamSpeed; }
-    freeCamSpeedValue.textContent = freeCamSpeed;
 
     const savedSkin = localStorage.getItem(LS.skin);
     if (savedSkin) { player.skin = savedSkin; skinPreviewImg.src = savedSkin; }
@@ -2728,10 +3000,10 @@ function initSettings() {
         player.name = newName; nameInput.value = newName;
         localStorage.setItem(LS.name, newName);
         settingsOpen = false; panel.classList.remove('active');
-        publishMessage({ type: 'move', id: player.id, name: player.name, position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, rotation: { y: 0 } });
+        publishMessage({ type: 'move', id: player.id, name: player.name, position: { x: player.pos.x, y: player.pos.y, z: player.pos.z }, rotation: { y: 0 } });
         broadcastSkin();
-        if (!mobileMode && !freeCamMode && gameStarted && !bagOpen && controls) {
-            setTimeout(() => { if (!settingsOpen && !mobileMode && !freeCamMode && !bagOpen && controls) controls.lock(); }, 150);
+        if (!mobileMode && gameStarted && !bagOpen && controls) {
+            setTimeout(() => { if (!settingsOpen && !mobileMode && !bagOpen && controls) controls.lock(); }, 150);
         }
     });
     nameInput.addEventListener('input', () => {
@@ -2751,7 +3023,7 @@ function initSettings() {
         if (v < CONFIG.MIN_FOV) v = CONFIG.MIN_FOV;
         fov = v; baseFov = v;
         fovValue.textContent = Math.round(v) + '°';
-        if (camera && !freeCamMode) { camera.fov = v; camera.updateProjectionMatrix(); }
+        if (camera) { camera.fov = v; camera.updateProjectionMatrix(); }
         localStorage.setItem(LS.fov, String(v));
     });
     crosshairSizeSlider.addEventListener('input', () => {
@@ -2767,13 +3039,11 @@ function initSettings() {
         mobileRing.style.width = v + 'px'; mobileRing.style.height = v + 'px';
         localStorage.setItem(LS.ring, ringSlider.value);
     });
-    freeCamSpeedSlider.addEventListener('input', () => {
-        const v = parseFloat(freeCamSpeedSlider.value);
-        freeCamSpeed = v; freeCamSpeedValue.textContent = v;
-        localStorage.setItem(LS.freeCamSpeed, freeCamSpeedSlider.value);
-    });
     document.querySelectorAll('.toggle-btn[data-mode]').forEach(b => { b.addEventListener('click', () => setMobileMode(b.dataset.mode === 'mobile', true)); });
-    document.querySelectorAll('.toggle-btn[data-freecam]').forEach(b => { b.addEventListener('click', () => setFreeCamMode(b.dataset.freecam === 'on', true)); });
+    document.querySelectorAll('.toggle-btn[data-gyro]').forEach(b => {
+        b.addEventListener('click', () => setGyroEnabled(b.dataset.gyro === 'on'));
+    });
+    if (localStorage.getItem(LS.gyro) === 'on') setGyroEnabled(true);
     skinUploadBtn.addEventListener('click', () => skinFile.click());
     skinFile.addEventListener('change', () => {
         const file = skinFile.files && skinFile.files[0];
@@ -2812,13 +3082,14 @@ function initRoomModal() {
     const input = document.getElementById('roomModalInput');
     document.getElementById('roomModalCancel').addEventListener('click', () => modal.classList.remove('active'));
     document.getElementById('roomModalConfirm').addEventListener('click', () => {
-        const newRoom = (input.value.trim() || 'public-room-1').slice(0, 32);
+        const newRoom = sanitizeRoomName(input.value).slice(0, 32) || 'publicroom1';
         modal.classList.remove('active');
         switchRoom(newRoom);
     });
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('roomModalConfirm').click(); });
 }
 function switchRoom(newRoom) {
+    newRoom = sanitizeRoomName(newRoom).slice(0, 32) || 'publicroom1';
     if (newRoom === player.roomId) return;
     saveRoomState(); saveInventory();
     disconnectNetwork(); removeAllRemotePlayers(); updatePlayerCount();
@@ -2837,19 +3108,20 @@ function switchRoom(newRoom) {
     initNetwork();
 }
 
+/* ==================== 主循环 ==================== */
 function animate() {
     requestAnimationFrame(animate);
     if (!renderer || !scene || !camera) return;
     const delta = Math.min(clock.getDelta(), 0.08);
     const now = performance.now();
     if (gameStarted) {
-        if (freeCamMode && !uiEditing) updateFreeCam(delta);
-        else if (!uiEditing) updatePlayer(delta, now);
+        if (!uiEditing) updatePlayer(delta, now);
         if (deathState.active) updateDeathAnimation(now, delta);
         interpolateRemotePlayers(now);
         animateSceneObjects(now);
         updateDrops(delta, now);
         updateBullets(delta, now);
+        updatePotionProjectiles(delta, now);
         updateBarrelSpawning(now);
         if (!uiEditing) sendNetworkUpdate();
         if (now - lastStateSave > CONFIG.stateInterval && !uiEditing) { lastStateSave = now; saveRoomState(); }
@@ -2878,10 +3150,12 @@ function animateSceneObjects(now) {
     }
 }
 
+/* ==================== 启动 ==================== */
 function startGame() {
     if (!scene || !camera || !renderer || !controls) { return; }
     const roomInput = document.getElementById('roomInput');
-    player.roomId = (roomInput.value.trim() || 'public-room-1').slice(0, 32);
+    player.roomId = sanitizeRoomName(roomInput.value).slice(0, 32) || 'publicroom1';
+    roomInput.value = player.roomId;
     player.id = 'p_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
     document.getElementById('roomDisplay').textContent = player.roomId;
     localStorage.setItem(LS.room, player.roomId);
@@ -2899,8 +3173,8 @@ function startGame() {
     }
     if (!loadInventory(player.roomId)) resetInventory();
     rebuildLocalPlayerMesh();
-    if (!mobileMode && !freeCamMode) {
-        setTimeout(() => { if (!mobileMode && !settingsOpen && !freeCamMode && !uiEditing && !bagOpen && controls) controls.lock(); }, 150);
+    if (!mobileMode) {
+        setTimeout(() => { if (!mobileMode && !settingsOpen && !uiEditing && !bagOpen && controls) controls.lock(); }, 150);
     }
     initNetwork();
 }
@@ -2923,8 +3197,42 @@ async function main() {
     let worldReady = false;
     let initError = null;
     try { medkitDataURL = createMedkitIcon(); } catch (e) {}
+
+    try {
+        const oldRoom = localStorage.getItem(LS.room);
+        if (oldRoom && !/^[a-zA-Z0-9_]+$/.test(oldRoom)) {
+            localStorage.removeItem(LS.room);
+            localStorage.removeItem(LS.statePrefix + oldRoom);
+            localStorage.removeItem(LS.invPrefix + oldRoom);
+        }
+    } catch (e) {}
+
     const savedRoom = localStorage.getItem(LS.room);
     if (savedRoom) document.getElementById('roomInput').value = savedRoom;
+
+    const roomInputEl = document.getElementById('roomInput');
+    if (roomInputEl) {
+        roomInputEl.addEventListener('input', () => {
+            const cleaned = sanitizeRoomName(roomInputEl.value);
+            if (roomInputEl.value !== cleaned) {
+                const pos = roomInputEl.selectionStart;
+                roomInputEl.value = cleaned;
+                roomInputEl.setSelectionRange(pos, pos);
+            }
+        });
+    }
+    const roomModalInputEl = document.getElementById('roomModalInput');
+    if (roomModalInputEl) {
+        roomModalInputEl.addEventListener('input', () => {
+            const cleaned = sanitizeRoomName(roomModalInputEl.value);
+            if (roomModalInputEl.value !== cleaned) {
+                const pos = roomModalInputEl.selectionStart;
+                roomModalInputEl.value = cleaned;
+                roomModalInputEl.setSelectionRange(pos, pos);
+            }
+        });
+    }
+
     const startHandler = () => {
         if (initError) { alert('初始化失败: ' + (initError.message || initError) + '\n请刷新页面重试。'); return; }
         if (!worldReady) { setHint('资源还在加载中，请稍候…', '#ffaa00'); return; }
@@ -2958,8 +3266,6 @@ async function main() {
             if (savedMode === 'mobile') setMobileMode(true, false);
             else if (savedMode === 'desktop') setMobileMode(false, false);
             else if (isTouchDevice) setMobileMode(true, false);
-            const savedFreeCam = localStorage.getItem(LS.freeCam);
-            if (savedFreeCam === 'on') setFreeCamMode(true, false);
         } catch (err) {}
     }
     if (initError) { setHint('初始化失败：' + (initError.message || initError), '#ff5555'); worldReady = false; }
