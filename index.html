@@ -471,7 +471,7 @@ const CONFIG = {
     moveSpeed: 4.6, sprintMultiplier: 1.85,
     gravity: -24, jumpSpeed: 9.0,
     sensFactor: 0.001,
-    mqttBroker: 'wss://broker.emqx.io:8084/mqtt',
+    mqttBroker: 'wss://mqtt.eclipseprojects.io:443/mqtt',
     topicPrefix: 'shootinggame_v31_',
     remoteTimeout: 9000, netInterval: 100, stateInterval: 1000,
     maxHealth: 100,
@@ -2753,10 +2753,14 @@ function initNetwork() {
     mqttTopic = CONFIG.topicPrefix + player.roomId;
     statusEl.textContent = '○ 正在连接...'; statusEl.style.color = '#ffaa00';
     try {
-        mqttClient = mqtt.connect(CONFIG.mqttBroker, {
-            clientId: 'sg_' + player.id + '_' + Math.random().toString(16).slice(2, 8),
-            clean: true, connectTimeout: 9000, reconnectPeriod: 3500, keepalive: 30,
-        });
+    mqttClient = mqtt.connect(CONFIG.mqttBroker, {
+        clientId: 'sg_' + player.id + '_' + Math.random().toString(16).slice(2, 8),
+        clean: true,
+        connectTimeout: 15000,        // 15 秒超时
+        reconnectPeriod: 5000,        // 5 秒重连一次
+        keepalive: 60,                // 心跳间隔加大，减少断线
+        resubscribe: true,            // 重连后自动重新订阅
+    });
         mqttClient.on('connect', () => {
             statusEl.textContent = '● 已连接 · ' + player.roomId; statusEl.style.color = '#5aff5a';
             mqttClient.subscribe(mqttTopic, { qos: 0 });
