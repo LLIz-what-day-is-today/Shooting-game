@@ -556,9 +556,58 @@ let medkitDataURL = null;
 let localPlayerMesh = null;
 let localMeshGeneration = 0;
 let lastBarrelSpawnCheck = 0;
-let barrelRespawnTime = 0;
 let dropIdCounter = 0;
 let lastRenderedSelection = -1;
+
+/* ==================== 木桶角落轮换 ==================== */
+/* 4 个角落（地图 120x120，原点在中心，边界 ±60，留出边距） */
+const BARREL_CORNERS = [
+    { x: -50, z: -50, dx:  1 },  // 左上：向右偏移
+    { x:  50, z: -50, dx: -1 },  // 右上：向左偏移
+    { x: -50, z:  50, dx:  1 },  // 左下：向右偏移
+    { x:  50, z:  50, dx: -1 },  // 右下：向左偏移
+];
+let barrelCornerIndex = 0;              // 当前应该刷哪个角落
+let nextBarrelSpawn = null;             // { x, z }  打破后待刷新的位置
+let barrelRespawnTime = 0;              // 到时间才刷
+
+function isBarrelSpotFree(x, z) {
+    if (Math.abs(x) > 56 || Math.abs(z) > 56) return false;
+    for (const bp of buildingPositions) {
+        if (Math.abs(x - bp.x) < 8 && Math.abs(z - bp.z) < 8) return false;
+    }
+    for (const c of colliders) {
+        const dx = x - c.x, dz = z - c.z;
+        const r = c.radius + 0.8;
+        if (dx * dx + dz * dz < r * r) return false;
+    }
+    for (const b of barrels) {
+        const dx = x - b.position.x, dz = z - b.position.z;
+        if (dx * dx + dz * dz < 9) return false;
+    }
+    const pdx = x - player.pos.x, pdz = z - player.pos.z;
+    if (pdx * pdx + pdz * pdz < 36) return false;
+    return true;
+}
+
+/* 从指定角落开始，朝地图中心偏移找空位；返回 { x, z, cornerIndex } 或 null */
+function findBarrelSpotFromCorner(cornerIdx) {
+    const total = BARREL_CORNERS.length;
+    for (let attempt = 0; attempt < total; attempt++) {
+        const idx = (cornerIdx + attempt) % total;
+        const corner = BARREL_CORNERS[idx];
+        for (let step = 0; step < 34; step++) {
+            const offset = step * 3 * corner.dx;
+            const x = corner.x + offset;
+            const z = corner.z;
+            if (Math.abs(x) > 56) break;
+            if (isBarrelSpotFree(x, z)) {
+                return { x: x, z: z, cornerIndex: idx };
+            }
+        }
+    }
+    return null;
+}
 
 const deathState = { active: false, startTime: 0, duration: 2200, faded: false, respawned: false };
 
@@ -568,7 +617,6 @@ let sprinting = false, sprintByJoystick = false, sprintByButton = false;
 let gyroEnabled = false;
 let gyroBaseAlpha = null, gyroBaseBeta = null, gyroBaseGamma = null;
 
-/* 鼠标按键状态（用于右键瞄准） */
 let rightMouseDown = false;
 
 let mqttClient = null, mqttTopic = '';
@@ -1224,16 +1272,15 @@ async function buildWorld() {
         colliders.push({ x, z, radius: Math.max(0.25, w * 0.20), height: h });
     }
 
-    for (let i = 0; i < 1; i++) {
-        const x = (seededRandom() - 0.5) * 96;
-        const z = (seededRandom() - 0.5) * 96;
-        if (Math.abs(x) < 4 && Math.abs(z) < 4) { i--; continue; }
-        let ov = false;
-        for (const bp of buildingPositions) if (Math.abs(x - bp.x) < 6 && Math.abs(z - bp.z) < 6) { ov = true; break; }
-        if (ov) { i--; continue; }
-        spawnBarrelAt(x, z, barrelTex);
+    /* 初始木桶：从第 0 个角落开始寻找空位 */
+    barrelCornerIndex = 0;
+    const firstSpot = findBarrelSpotFromCorner(0);
+    if (firstSpot) {
+        spawnBarrelAt(firstSpot.x, firstSpot.z, barrelTex, false);
+        barrelCornerIndex = (firstSpot.cornerIndex + 1) % BARREL_CORNERS.length;
     }
 
+    /* 建筑内生成伤害药水 */
     for (const bldg of buildingPositions) {
         if (seededRandom() > 0.4) continue;
         const t = bldg.type;
@@ -1269,7 +1316,8 @@ async function buildWorld() {
     window.__barrelTex = barrelTex;
 }
 
-function spawnBarrelAt(x, z, texture) {
+/* 生成木桶；isRemote=false 时广播 barrel_spawn 消息 */
+function spawnBarrelAt(x, z, texture, isRemote) {
     const tex = texture || window.__barrelTex;
     const mesh = createFullBillboard(tex, 0.9, 0.9, 0x8a5a2b);
     mesh.position.set(x, 0.45, z);
@@ -1279,26 +1327,81 @@ function spawnBarrelAt(x, z, texture) {
     scene.add(mesh);
     sceneObjects.push(mesh);
     barrels.push(mesh);
+    if (isRemote === false) {
+        publishMessage({ type: 'barrel_spawn', x: x, z: z });
+    }
 }
 
+/* 2 分钟计时到点，按预设的 nextBarrelSpawn 生成 */
 function updateBarrelSpawning(now) {
     if (barrels.length >= CONFIG.maxBarrels) return;
     if (now < barrelRespawnTime) return;
-    let x, z, tries = 0, ok = false;
-    while (tries++ < 30) {
-        x = (Math.random() - 0.5) * 96;
-        z = (Math.random() - 0.5) * 96;
-        if (Math.abs(x) < 4 && Math.abs(z) < 4) continue;
-        const pdx = x - player.pos.x, pdz = z - player.pos.z;
-        if (pdx * pdx + pdz * pdz < 100) continue;
-        let ov = false;
-        for (const b of barrels) { const dx = x - b.position.x, dz = z - b.position.z; if (dx * dx + dz * dz < 9) { ov = true; break; } }
-        for (const bp of buildingPositions) if (Math.abs(x - bp.x) < 6 && Math.abs(z - bp.z) < 6) { ov = true; break; }
-        if (!ov) { ok = true; break; }
+    if (!nextBarrelSpawn) {
+        /* 没有预设位置，重新按角落逻辑找一个 */
+        const spot = findBarrelSpotFromCorner(barrelCornerIndex);
+        if (!spot) return;
+        nextBarrelSpawn = { x: spot.x, z: spot.z };
+        barrelCornerIndex = (spot.cornerIndex + 1) % BARREL_CORNERS.length;
     }
-    if (!ok) return;
-    spawnBarrelAt(x, z);
+    /* 再检查一次这个位置是否仍空闲 */
+    if (!isBarrelSpotFree(nextBarrelSpawn.x, nextBarrelSpawn.z)) {
+        /* 被占用了，重新找 */
+        const spot = findBarrelSpotFromCorner(barrelCornerIndex);
+        if (!spot) { nextBarrelSpawn = null; return; }
+        nextBarrelSpawn = { x: spot.x, z: spot.z };
+        barrelCornerIndex = (spot.cornerIndex + 1) % BARREL_CORNERS.length;
+    }
+    spawnBarrelAt(nextBarrelSpawn.x, nextBarrelSpawn.z, null, false);
+    nextBarrelSpawn = null;
     barrelRespawnTime = now + CONFIG.barrelRespawnInterval;
+}
+
+function breakBarrel(barrelMesh) {
+    const bx = barrelMesh.position.x;
+    const bz = barrelMesh.position.z;
+
+    scene.remove(barrelMesh);
+    const col = barrelMesh.userData && barrelMesh.userData.collider;
+    if (col) { const ci = colliders.indexOf(col); if (ci >= 0) colliders.splice(ci, 1); }
+    const idx = sceneObjects.indexOf(barrelMesh);
+    if (idx >= 0) sceneObjects.splice(idx, 1);
+    const bidx = barrels.indexOf(barrelMesh);
+    if (bidx >= 0) barrels.splice(bidx, 1);
+    removeFromFullBillboards(barrelMesh);
+
+    /* 战利品散射 */
+    const pos = new THREE.Vector3(bx, 0.45, bz);
+    const loots = [];
+    if (Math.random() < 0.5) loots.push('pistol');
+    if (Math.random() < 0.35) loots.push('csgun');
+    if (Math.random() < 0.85) loots.push('ammo');
+    if (Math.random() < 0.5) loots.push('medkit');
+    if (Math.random() < 0.3) loots.push('harm_potion');
+    if (loots.length === 0) loots.push('ammo');
+    for (const itemId of loots) {
+        const vel = new THREE.Vector3((Math.random() - 0.5) * 4, 3 + Math.random() * 3, (Math.random() - 0.5) * 4);
+        const dropPos = pos.clone();
+        dropPos.x += (Math.random() - 0.5) * 0.4;
+        dropPos.z += (Math.random() - 0.5) * 0.4;
+        const c = itemId === 'ammo' ? (10 + Math.floor(Math.random() * 20))
+                : itemId === 'medkit' ? (1 + Math.floor(Math.random() * 3))
+                : itemId === 'harm_potion' ? (1 + Math.floor(Math.random() * 2))
+                : 1;
+        spawnDrop(dropPos, vel, itemId, c);
+    }
+
+    /* 确定下一个木桶位置，广播给所有人 */
+    const spot = findBarrelSpotFromCorner(barrelCornerIndex);
+    if (spot) {
+        barrelCornerIndex = (spot.cornerIndex + 1) % BARREL_CORNERS.length;
+        nextBarrelSpawn = { x: spot.x, z: spot.z };
+        publishMessage({ type: 'barrel_break', x: bx, z: bz, nextX: spot.x, nextZ: spot.z, nextIdx: barrelCornerIndex });
+    } else {
+        nextBarrelSpawn = null;
+        publishMessage({ type: 'barrel_break', x: bx, z: bz, nextX: null, nextZ: null, nextIdx: barrelCornerIndex });
+    }
+
+    barrelRespawnTime = performance.now() + CONFIG.barrelRespawnInterval;
 }
 
 function createPlayerMesh(texture) {
@@ -1768,38 +1871,6 @@ function updateDrops(delta, now) {
     }
 }
 
-function breakBarrel(barrelMesh) {
-    scene.remove(barrelMesh);
-    const col = barrelMesh.userData && barrelMesh.userData.collider;
-    if (col) { const ci = colliders.indexOf(col); if (ci >= 0) colliders.splice(ci, 1); }
-    const idx = sceneObjects.indexOf(barrelMesh);
-    if (idx >= 0) sceneObjects.splice(idx, 1);
-    const bidx = barrels.indexOf(barrelMesh);
-    if (bidx >= 0) barrels.splice(bidx, 1);
-    removeFromFullBillboards(barrelMesh);
-    const pos = barrelMesh.position.clone();
-    pos.y += 0.3;
-    const loots = [];
-    if (Math.random() < 0.5) loots.push('pistol');
-    if (Math.random() < 0.35) loots.push('csgun');
-    if (Math.random() < 0.85) loots.push('ammo');
-    if (Math.random() < 0.5) loots.push('medkit');
-    if (Math.random() < 0.3) loots.push('harm_potion');
-    if (loots.length === 0) loots.push('ammo');
-    for (const itemId of loots) {
-        const vel = new THREE.Vector3((Math.random() - 0.5) * 4, 3 + Math.random() * 3, (Math.random() - 0.5) * 4);
-        const dropPos = pos.clone();
-        dropPos.x += (Math.random() - 0.5) * 0.4;
-        dropPos.z += (Math.random() - 0.5) * 0.4;
-        const c = itemId === 'ammo' ? (10 + Math.floor(Math.random() * 20))
-                : itemId === 'medkit' ? (1 + Math.floor(Math.random() * 3))
-                : itemId === 'harm_potion' ? (1 + Math.floor(Math.random() * 2))
-                : 1;
-        spawnDrop(dropPos, vel, itemId, c);
-    }
-    barrelRespawnTime = performance.now() + CONFIG.barrelRespawnInterval;
-}
-
 function spawnBullet(pos, dir, damage, ownerId) {
     const tex = getItemTexture('ammo');
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, color: tex ? 0xffffff : 0xffcc00, transparent: true, depthTest: true, depthWrite: false }));
@@ -1958,7 +2029,6 @@ addEventListener('keydown', (e) => {
     if (e.code === 'KeyT' && gameStarted && !mobileMode && !deathState.active && !bagOpen) { e.preventDefault(); openChat(); }
     if (e.code === 'KeyQ' && gameStarted && !deathState.active && !bagOpen) { e.preventDefault(); throwItem(); }
     if (e.code === 'KeyE' && gameStarted && !deathState.active) { e.preventDefault(); if (bagOpen) closeBag(); else openBag(); }
-    /* C 键瞄准 */
     if (e.code === 'KeyC' && gameStarted && !deathState.active && !bagOpen) {
         e.preventDefault();
         startAim();
@@ -2002,7 +2072,6 @@ function tryUseMedkitOnLeftClick() {
     return true;
 }
 
-/* 鼠标按下：左键 = 射击；右键 = 瞄准 */
 addEventListener('mousedown', (e) => {
     if (uiEditing || bagOpen || mobileMode) return;
     if (!isLocked || !gameStarted || deathState.active) return;
@@ -2014,7 +2083,6 @@ addEventListener('mousedown', (e) => {
         const interacted = handleInteract(ray);
         if (!interacted) fireGun();
     } else if (e.button === 2) {
-        /* 右键按住瞄准 */
         e.preventDefault();
         rightMouseDown = true;
         startAim();
@@ -2024,7 +2092,6 @@ addEventListener('mousedown', (e) => {
 addEventListener('mouseup', (e) => {
     if (e.button === 2) {
         rightMouseDown = false;
-        /* 只有在 C 键也没按住时才停止瞄准 */
         if (!keys['KeyC']) stopAim();
     }
 });
@@ -2745,6 +2812,44 @@ function handleNetworkMessage(data) {
             break;
         case 'drop': handleRemoteDrop(data); break;
         case 'pickup': removeDropById(data.id); break;
+        case 'barrel_break': {
+            /* 移除本地对应位置木桶 */
+            for (let i = barrels.length - 1; i >= 0; i--) {
+                const b = barrels[i];
+                if (Math.abs(b.position.x - data.x) < 0.5 && Math.abs(b.position.z - data.z) < 0.5) {
+                    scene.remove(b);
+                    const col = b.userData && b.userData.collider;
+                    if (col) { const ci = colliders.indexOf(col); if (ci >= 0) colliders.splice(ci, 1); }
+                    const si = sceneObjects.indexOf(b);
+                    if (si >= 0) sceneObjects.splice(si, 1);
+                    removeFromFullBillboards(b);
+                    barrels.splice(i, 1);
+                    break;
+                }
+            }
+            /* 记录下一个位置 */
+            if (typeof data.nextX === 'number' && typeof data.nextZ === 'number') {
+                nextBarrelSpawn = { x: data.nextX, z: data.nextZ };
+            } else {
+                nextBarrelSpawn = null;
+            }
+            if (typeof data.nextIdx === 'number') barrelCornerIndex = data.nextIdx;
+            barrelRespawnTime = performance.now() + CONFIG.barrelRespawnInterval;
+            break;
+        }
+        case 'barrel_spawn': {
+            /* 检查是否已经有这个位置附近的木桶 */
+            let exists = false;
+            for (const b of barrels) {
+                if (Math.abs(b.position.x - data.x) < 0.5 && Math.abs(b.position.z - data.z) < 0.5) { exists = true; break; }
+            }
+            if (!exists) {
+                spawnBarrelAt(data.x, data.z, null, true);
+            }
+            nextBarrelSpawn = null;
+            barrelRespawnTime = performance.now() + CONFIG.barrelRespawnInterval;
+            break;
+        }
     }
 }
 async function addRemotePlayer(data) {
@@ -3094,6 +3199,16 @@ function switchRoom(newRoom) {
     saveRoomState(); saveInventory();
     disconnectNetwork(); removeAllRemotePlayers(); updatePlayerCount();
     for (let i = drops.length - 1; i >= 0; i--) { removeFromFullBillboards(drops[i].mesh); scene.remove(drops[i].mesh); drops.splice(i, 1); }
+    for (let i = barrels.length - 1; i >= 0; i--) {
+        const b = barrels[i];
+        scene.remove(b);
+        const col = b.userData && b.userData.collider;
+        if (col) { const ci = colliders.indexOf(col); if (ci >= 0) colliders.splice(ci, 1); }
+        const si = sceneObjects.indexOf(b);
+        if (si >= 0) sceneObjects.splice(si, 1);
+        removeFromFullBillboards(b);
+        barrels.splice(i, 1);
+    }
     player.roomId = newRoom;
     document.getElementById('roomDisplay').textContent = newRoom;
     localStorage.setItem(LS.room, newRoom);
@@ -3105,6 +3220,8 @@ function switchRoom(newRoom) {
         updateHealthUI();
     }
     if (!loadInventory(newRoom)) resetInventory();
+    /* 重新生成地图 */
+    /* 注意：这里简单起见，不重建场景，只重建网络；玩家需要刷新页面以完整重建地图 */
     initNetwork();
 }
 
