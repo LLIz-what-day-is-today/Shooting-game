@@ -155,7 +155,7 @@
         body.mobile #joystickZone { display: block; }
         #joystickKnob { position: absolute; top: 50%; left: 50%; width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.35); transform: translate(-50%, -50%); pointer-events: none; will-change: left, top; }
 
-        #sprintBtn, #shootBtn, #jumpBtn, #bagBtn, #aimBtn {
+        #sprintBtn, #shootBtn, #jumpBtn, #bagBtn, #aimBtn, #crouchBtn, #proneBtn, #peekLeftBtn, #peekRightBtn {
             position: fixed; border-radius: 50%; background: rgba(0,0,0,0.75); color: #fff;
             display: none; align-items: center; justify-content: center;
             pointer-events: auto; touch-action: none; font-family: inherit;
@@ -163,7 +163,17 @@
             transition: background 0.15s, transform 0.15s;
         }
         body.mobile #sprintBtn, body.mobile #shootBtn, body.mobile #jumpBtn,
-        body.mobile #bagBtn, body.mobile #aimBtn { display: flex; }
+        body.mobile #bagBtn, body.mobile #aimBtn, body.mobile #crouchBtn,
+        body.mobile #proneBtn, body.mobile #peekLeftBtn, body.mobile #peekRightBtn { display: flex; }
+
+        /* UI 编辑时强制显示所有手机按钮，方便调整位置 */
+        body.ui-editing #sprintBtn, body.ui-editing #shootBtn, body.ui-editing #jumpBtn,
+        body.ui-editing #bagBtn, body.ui-editing #aimBtn, body.ui-editing #crouchBtn,
+        body.ui-editing #proneBtn, body.ui-editing #peekLeftBtn, body.ui-editing #peekRightBtn { display: flex !important; }
+        body.ui-editing #joystickZone { display: block !important; }
+        body.ui-editing #sprintHint, body.ui-editing #mobileRing { display: none !important; }
+        body.ui-editing #lookZone, body.ui-editing #mobileControls { pointer-events: none !important; }
+        body.ui-editing #joystickKnob { pointer-events: none !important; }
 
         #sprintBtn { bottom: 182px; left: 73px; width: 58px; height: 58px; font-size: 11px; color: #bbb; }
         #sprintBtn.active { background: rgba(255,255,255,0.32); color: #fff; }
@@ -175,6 +185,14 @@
         #bagBtn:active { background: rgba(255,255,255,0.32); transform: scale(0.94); }
         #aimBtn { bottom: 44px; right: 132px; width: 68px; height: 68px; font-size: 13px; }
         #aimBtn.active { background: rgba(90,180,255,0.55); transform: scale(0.94); }
+        #crouchBtn { bottom: 232px; left: 34px; width: 58px; height: 58px; font-size: 11px; }
+        #crouchBtn.active { background: rgba(255,255,0,0.4); color: #000; }
+        #proneBtn { bottom: 300px; left: 34px; width: 58px; height: 58px; font-size: 11px; }
+        #proneBtn.active { background: rgba(255,255,0,0.4); color: #000; }
+        #peekLeftBtn { bottom: 150px; left: 34px; width: 58px; height: 58px; font-size: 11px; }
+        #peekLeftBtn.active { background: rgba(0,200,255,0.4); color: #000; }
+        #peekRightBtn { bottom: 150px; right: 34px; width: 58px; height: 58px; font-size: 11px; }
+        #peekRightBtn.active { background: rgba(0,200,255,0.4); color: #000; }
 
         #sprintHint { position: fixed; bottom: 162px; left: 87px; width: 30px; height: 20px; color: rgba(255,255,255,0.35); font-size: 14px; text-align: center; pointer-events: none; display: none; z-index: 199; animation: hintPulse 1.8s ease-in-out infinite; }
         body.mobile #sprintHint { display: block; }
@@ -184,6 +202,21 @@
 
         #startScreen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; color: #fff; padding: 24px; gap: 14px; transition: opacity 0.55s ease, visibility 0.55s; }
         #startScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        #llLogo {
+            position: fixed;
+            inset: 0;
+            background: #ea1c1f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 600;
+            transition: opacity 1s ease;
+        }
+        #llLogo.hidden { opacity: 0; pointer-events: none; }
+        #llLogo img { max-width: 60%; max-height: 50%; object-fit: contain; z-index: 2; }
+
         #startScreen > * { animation: startFadeIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
         #startScreen > *:nth-child(1) { animation-delay: 0.05s; }
         #startScreen > *:nth-child(2) { animation-delay: 0.15s; }
@@ -304,6 +337,10 @@
 </head>
 <body>
 
+<div id="llLogo">
+    <img src="https://zh.minecraft.wiki/images/LLOGO.png?2fe11&20261015105202" alt="LL Logo">
+</div>
+
 <div id="startScreen">
     <input type="text" id="roomInput" value="publicroom1" placeholder="房间号（字母/数字/下划线）" maxlength="32" pattern="[a-zA-Z0-9_]*">
     <button id="startBtn">确定</button>
@@ -343,7 +380,7 @@
 <div id="netStatus">未连接</div>
 
 <div id="uiEditBar">
-    <span class="ui-edit-tip">拖动元素移动 · 拖拽右下角调整大小</span>
+    <span class="ui-edit-tip">拖动元素移动 · 拖拽右下角调整大小（含手机按钮）</span>
     <button id="uiResetBtn">重置全部</button>
     <button id="uiDoneBtn" class="done">✓ 完成</button>
 </div>
@@ -381,13 +418,6 @@
             </div>
         </div>
         <div class="setting-row">
-            <label>使用陀螺仪操控视角（只对部分设备有效）</label>
-            <div class="toggle-group">
-                <div class="toggle-btn active" data-gyro="off">关闭</div>
-                <div class="toggle-btn" data-gyro="on">开启</div>
-            </div>
-        </div>
-        <div class="setting-row">
             <label>摄像机灵敏度 <span class="range-val" id="sensValue">5.0</span></label>
             <input type="range" id="sensSlider" min="1" max="20" step="1" value="5">
         </div>
@@ -408,7 +438,7 @@
             <button class="big-btn" id="switchRoomBtn">切换到其他房间…</button>
         </div>
         <div class="setting-row">
-            <label>UI 编辑</label>
+            <label>UI 编辑（可调手机按钮位置）</label>
             <button class="big-btn" id="editUIBtn">编辑 UI 布局</button>
         </div>
     </div>
@@ -436,6 +466,10 @@
 <div id="aimBtn">瞄准</div>
 <div id="jumpBtn">跳跃</div>
 <div id="bagBtn">背包</div>
+<div id="crouchBtn">蹲</div>
+<div id="proneBtn">趴</div>
+<div id="peekLeftBtn">◀</div>
+<div id="peekRightBtn">▶</div>
 <div id="mobileRing"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"
@@ -445,6 +479,13 @@
 
 <script>
 window.__gameStarted = false;
+
+/* LLOGO 最多显示 3 秒（从脚本开始执行时计时） */
+setTimeout(() => {
+    const llLogo = document.getElementById('llLogo');
+    if (llLogo) llLogo.classList.add('hidden');
+}, 3000);
+
 window.addEventListener('error', (e) => {
     const msg = e.message || '未知错误';
     console.error('全局错误:', msg, e.error);
@@ -468,7 +509,9 @@ if (typeof THREE === 'undefined') {
 const CONFIG = {
     floorSize: 120, floorRepeat: 60,
     eyeHeight: 1.62, playerHeight: 1.8, playerRadius: 0.34,
-    moveSpeed: 4.6, sprintMultiplier: 1.85,
+    crouchEyeHeight: 1.0, crouchHeight: 1.1,
+    proneEyeHeight: 0.5, proneHeight: 0.25,
+    moveSpeed: 4.6, sprintMultiplier: 1.85, crouchSpeedMultiplier: 0.5, proneSpeedMultiplier: 0.3,
     gravity: -24, jumpSpeed: 9.0,
     sensFactor: 0.001,
     mqttBroker: 'wss://broker-cn.emqx.io:8084/mqtt',
@@ -481,10 +524,13 @@ const CONFIG = {
     bulletSpeed: 55,
     bulletLifetime: 60000,
     maxBarrels: 1,
-    barrelRespawnInterval: 120000,
+    barrelRespawnInterval: 60000,
     MIN_FOV: 30,
     AIM_FOV_RATIO: 0.5,
     BARREL_INTERACT_RANGE: 5,
+    PEEK_OFFSET: 0.6,
+    PEEK_ANGLE: 0.25,
+    POSE_TRANSITION_SPEED: 12,
 };
 
 const LS = {
@@ -493,7 +539,6 @@ const LS = {
     crosshairSize: 'sg_crosshairsize',
     statePrefix: 'sg_roomstate_', invPrefix: 'sg_inv_',
     uiLayout: 'sg_uilayout',
-    gyro: 'sg_gyro',
 };
 
 const ASSETS = {
@@ -507,6 +552,7 @@ const ASSETS = {
     glass:     'https://zh.minecraft.wiki/images/BlockSprite_glass.png',
     brick:     'https://zh.minecraft.wiki/images/BlockSprite_brick-block.png?bca44',
     barrel:    'https://zh.minecraft.wiki/images/BlockSprite_barrel.png',
+    knife:     'https://zh.minecraft.wiki/images/Invicon_Iron_Sword.png?ff2d7',
 };
 
 const FALLBACK_COLORS = { planks: 0xc09a5b, log: 0x8a6234, cobble: 0x909090, brick: 0xa8574a, glass: 0xbfe4ff };
@@ -514,9 +560,12 @@ const FALLBACK_COLORS = { planks: 0xc09a5b, log: 0x8a6234, cobble: 0x909090, bri
 const ITEM_DEFS = {
     pistol: { name: '手枪', img: 'https://s1.aigei.com/src/img/png/0d/0d7e70d1a07547e38c06e6fcbf53c510.png?imageMogr2/auto-orient/thumbnail/!560x560r/gravity/Center/crop/560x560/quality/85/%7CimageView2/2/w/560&e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:vZYrRReOrldOQbHWSddiJHWHxK0=', stackable: false, damage: 28, ammoType: 'ammo', removeBg: true },
     csgun:  { name: 'CS枪', img: 'https://s1.aigei.com/src/img/png/b2/b2bca57c05484321b35ee3c739c890ce.png?e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:FuaL13JHjHZzHcbbJKhoAs7GcDY=', stackable: false, damage: 45, ammoType: 'ammo', removeBg: true },
+    sniper: { name: '狙击枪', img: 'https://s1.aigei.com/src/img/png/b2/b2bca57c05484321b35ee3c739c890ce.png?e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:FuaL13JHjHZzHcbbJKhoAs7GcDY=', stackable: false, damage: 80, ammoType: 'sniper_ammo', removeBg: true },
     ammo:   { name: '子弹', img: 'https://s1.aigei.com/src/img/png/d6/d6f9b3b74e0448b0b5a75bf72f768f3f.png?imageMogr2/auto-orient/thumbnail/!282x282r/gravity/Center/crop/282x282/quality/85/%7CimageView2/2/w/282&e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:iF6xYHprXa5XOgPWSrhlNYzvqIg=', stackable: true, maxStack: 99, removeBg: true },
+    sniper_ammo: { name: '狙击子弹', img: 'https://s1.aigei.com/src/img/png/d6/d6f9b3b74e0448b0b5a75bf72f768f3f.png?imageMogr2/auto-orient/thumbnail/!282x282r/gravity/Center/crop/282x282/quality/85/%7CimageView2/2/w/282&e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:iF6xYHprXa5XOgPWSrhlNYzvqIg=', stackable: true, maxStack: 30, removeBg: true },
     medkit: { name: '血包', img: null, stackable: true, maxStack: 5, heal: 40, removeBg: false },
     harm_potion: { name: '伤害药水', img: 'https://zh.minecraft.wiki/images/Invicon_Splash_Potion_of_Harming.png?9b6ad', stackable: true, maxStack: 16, removeBg: false, isPotion: true },
+    knife:  { name: '刀', img: 'https://zh.minecraft.wiki/images/Invicon_Iron_Sword.png?ff2d7', stackable: false, damage: 5, removeBg: true },
 };
 
 const inventory = { slots: new Array(CONFIG.invSize).fill(null), selected: 0 };
@@ -532,6 +581,8 @@ const player = {
     pos: new THREE.Vector3(0, 0, 0), vy: 0, onGround: true,
     name: 'Steve', id: null, roomId: 'publicroom1',
     skin: null, health: CONFIG.maxHealth, lastDamageTime: -Infinity,
+    crouching: false, prone: false, peekingLeft: false, peekingRight: false,
+    invulnerableUntil: 0,
 };
 
 let sensitivity = CONFIG.sensFactor * 5;
@@ -559,17 +610,20 @@ let lastBarrelSpawnCheck = 0;
 let dropIdCounter = 0;
 let lastRenderedSelection = -1;
 
-/* ==================== 木桶角落轮换 ==================== */
-/* 4 个角落（地图 120x120，原点在中心，边界 ±60，留出边距） */
+let currentBodyHeight = CONFIG.playerHeight;
+let currentEyeHeight = CONFIG.eyeHeight;
+let currentProneTilt = 0;
+let currentPoseVisual = 0;
+
 const BARREL_CORNERS = [
-    { x: -50, z: -50, dx:  1 },  // 左上：向右偏移
-    { x:  50, z: -50, dx: -1 },  // 右上：向左偏移
-    { x: -50, z:  50, dx:  1 },  // 左下：向右偏移
-    { x:  50, z:  50, dx: -1 },  // 右下：向左偏移
+    { x: -50, z: -50, dx:  1 },
+    { x:  50, z: -50, dx: -1 },
+    { x: -50, z:  50, dx:  1 },
+    { x:  50, z:  50, dx: -1 },
 ];
-let barrelCornerIndex = 0;              // 当前应该刷哪个角落
-let nextBarrelSpawn = null;             // { x, z }  打破后待刷新的位置
-let barrelRespawnTime = 0;              // 到时间才刷
+let barrelCornerIndex = 0;
+let nextBarrelSpawn = null;
+let barrelRespawnTime = 0;
 
 function isBarrelSpotFree(x, z) {
     if (Math.abs(x) > 56 || Math.abs(z) > 56) return false;
@@ -590,7 +644,6 @@ function isBarrelSpotFree(x, z) {
     return true;
 }
 
-/* 从指定角落开始，朝地图中心偏移找空位；返回 { x, z, cornerIndex } 或 null */
 function findBarrelSpotFromCorner(cornerIdx) {
     const total = BARREL_CORNERS.length;
     for (let attempt = 0; attempt < total; attempt++) {
@@ -614,10 +667,10 @@ const deathState = { active: false, startTime: 0, duration: 2200, faded: false, 
 let joystickVec = new THREE.Vector2(0, 0);
 let sprinting = false, sprintByJoystick = false, sprintByButton = false;
 
-let gyroEnabled = false;
-let gyroBaseAlpha = null, gyroBaseBeta = null, gyroBaseGamma = null;
-
 let rightMouseDown = false;
+let leftMouseDown = false;
+
+let ctrlTimer = null;
 
 let mqttClient = null, mqttTopic = '';
 let lastNetSend = 0, lastStateSave = 0;
@@ -630,11 +683,13 @@ let cameraShake = 0;
 let cameraLean = 0;
 let sprintFovPulse = 0;
 
+let peekOffsetCurrent = 0;
+let peekAngleCurrent = 0;
+
 const _tmpVec1 = new THREE.Vector3();
 
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-/* ==================== 房间名处理 ==================== */
 function sanitizeRoomName(name) {
     return (name || '').replace(/[^a-zA-Z0-9_]/g, '');
 }
@@ -885,67 +940,12 @@ function removeFromFullBillboards(mesh) {
     if (idx >= 0) fullBillboards.splice(idx, 1);
 }
 
-/* ==================== 陀螺仪 ==================== */
-function handleGyroEvent(e) {
-    if (!gyroEnabled || !camera || !gameStarted || deathState.active) return;
-    if (e.alpha === null || e.beta === null || e.gamma === null) return;
-    if (gyroBaseAlpha === null) {
-        gyroBaseAlpha = e.alpha;
-        gyroBaseBeta = e.beta;
-        gyroBaseGamma = e.gamma;
-        return;
-    }
-    let dAlpha = e.alpha - gyroBaseAlpha;
-    while (dAlpha > 180) dAlpha -= 360;
-    while (dAlpha < -180) dAlpha += 360;
-    const dBeta = e.beta - gyroBaseBeta;
-    const dGamma = e.gamma - gyroBaseGamma;
-
-    const euler = new THREE.Euler(
-        THREE.MathUtils.degToRad(dBeta),
-        THREE.MathUtils.degToRad(-dAlpha),
-        THREE.MathUtils.degToRad(-dGamma * 0.6),
-        'YXZ'
-    );
-    camera.quaternion.setFromEuler(euler);
-}
-
-function setGyroEnabled(on) {
-    gyroEnabled = on;
-    document.querySelectorAll('.toggle-btn[data-gyro]').forEach(b => {
-        b.classList.toggle('active', b.dataset.gyro === (on ? 'on' : 'off'));
-    });
-    if (on) {
-        if (typeof DeviceOrientationEvent !== 'undefined' &&
-            typeof DeviceOrientationEvent.requestPermission === 'function') {
-            DeviceOrientationEvent.requestPermission().then(perm => {
-                if (perm === 'granted') {
-                    gyroBaseAlpha = gyroBaseBeta = gyroBaseGamma = null;
-                    window.addEventListener('deviceorientation', handleGyroEvent);
-                } else {
-                    gyroEnabled = false;
-                    document.querySelectorAll('.toggle-btn[data-gyro]').forEach(b => {
-                        b.classList.toggle('active', b.dataset.gyro === 'off');
-                    });
-                }
-            }).catch(() => {
-                gyroEnabled = false;
-                document.querySelectorAll('.toggle-btn[data-gyro]').forEach(b => {
-                    b.classList.toggle('active', b.dataset.gyro === 'off');
-                });
-            });
-        } else {
-            gyroBaseAlpha = gyroBaseBeta = gyroBaseGamma = null;
-            window.addEventListener('deviceorientation', handleGyroEvent);
-        }
-    } else {
-        window.removeEventListener('deviceorientation', handleGyroEvent);
-    }
-    try { localStorage.setItem(LS.gyro, on ? 'on' : 'off'); } catch (e) {}
-}
-
 /* ==================== UI 编辑器 ==================== */
-const UI_EDITABLE = ['hud', 'hotbar', 'chatBar', 'chatBtn', 'throwBtn', 'settingsBtn', 'itemName', 'killFeed', 'netStatus'];
+const UI_EDITABLE = [
+    'hud', 'hotbar', 'chatBar', 'chatBtn', 'throwBtn', 'settingsBtn', 'itemName', 'killFeed', 'netStatus',
+    'joystickZone', 'sprintBtn', 'shootBtn', 'jumpBtn', 'bagBtn', 'aimBtn',
+    'crouchBtn', 'proneBtn', 'peekLeftBtn', 'peekRightBtn',
+];
 let uiEditing = false, uiDragState = null;
 const uiLayout = {};
 
@@ -1011,11 +1011,6 @@ function initUIEditor() {
             const r = el.getBoundingClientRect();
             uiDragState = { mode: 'resize', el, id, startX: e.clientX, startY: e.clientY, startWidth: r.width, startHeight: r.height };
         }, true);
-        el.addEventListener('dblclick', (e) => {
-            if (uiEditing || !gameStarted) return;
-            e.preventDefault(); e.stopPropagation();
-            enterUIEdit();
-        });
     }
     document.addEventListener('pointermove', (e) => {
         if (!uiDragState) return;
@@ -1161,10 +1156,11 @@ async function buildWorld() {
     const roomSeed = hashString(seedString);
     seededRandom = makeSeededRandom(roomSeed);
 
-    const [mossTex, stoneTex, treeTex, kaiTex, plankTex, logTex, cobbleTex, brickTex, glassTex, barrelTex] = await Promise.all([
+    const [mossTex, stoneTex, treeTex, kaiTex, plankTex, logTex, cobbleTex, brickTex, glassTex, barrelTex, knifeTex] = await Promise.all([
         getTexture(ASSETS.mossBlock), getTexture(ASSETS.stone), getTexture(ASSETS.tree), getTexture(ASSETS.kai),
         getTexture(ASSETS.planks), getTexture(ASSETS.log), getTexture(ASSETS.cobble),
         getTexture(ASSETS.brick), getTexture(ASSETS.glass), getTexture(ASSETS.barrel),
+        getTexture(ASSETS.knife),
     ]);
 
     scene = new THREE.Scene();
@@ -1272,7 +1268,6 @@ async function buildWorld() {
         colliders.push({ x, z, radius: Math.max(0.25, w * 0.20), height: h });
     }
 
-    /* 初始木桶：从第 0 个角落开始寻找空位 */
     barrelCornerIndex = 0;
     const firstSpot = findBarrelSpotFromCorner(0);
     if (firstSpot) {
@@ -1280,7 +1275,6 @@ async function buildWorld() {
         barrelCornerIndex = (firstSpot.cornerIndex + 1) % BARREL_CORNERS.length;
     }
 
-    /* 建筑内生成伤害药水 */
     for (const bldg of buildingPositions) {
         if (seededRandom() > 0.4) continue;
         const t = bldg.type;
@@ -1314,9 +1308,9 @@ async function buildWorld() {
 
     window.__kaiTex = kaiTex;
     window.__barrelTex = barrelTex;
+    window.__knifeTex = knifeTex;
 }
 
-/* 生成木桶；isRemote=false 时广播 barrel_spawn 消息 */
 function spawnBarrelAt(x, z, texture, isRemote) {
     const tex = texture || window.__barrelTex;
     const mesh = createFullBillboard(tex, 0.9, 0.9, 0x8a5a2b);
@@ -1332,20 +1326,16 @@ function spawnBarrelAt(x, z, texture, isRemote) {
     }
 }
 
-/* 2 分钟计时到点，按预设的 nextBarrelSpawn 生成 */
 function updateBarrelSpawning(now) {
     if (barrels.length >= CONFIG.maxBarrels) return;
     if (now < barrelRespawnTime) return;
     if (!nextBarrelSpawn) {
-        /* 没有预设位置，重新按角落逻辑找一个 */
         const spot = findBarrelSpotFromCorner(barrelCornerIndex);
         if (!spot) return;
         nextBarrelSpawn = { x: spot.x, z: spot.z };
         barrelCornerIndex = (spot.cornerIndex + 1) % BARREL_CORNERS.length;
     }
-    /* 再检查一次这个位置是否仍空闲 */
     if (!isBarrelSpotFree(nextBarrelSpawn.x, nextBarrelSpawn.z)) {
-        /* 被占用了，重新找 */
         const spot = findBarrelSpotFromCorner(barrelCornerIndex);
         if (!spot) { nextBarrelSpawn = null; return; }
         nextBarrelSpawn = { x: spot.x, z: spot.z };
@@ -1369,14 +1359,16 @@ function breakBarrel(barrelMesh) {
     if (bidx >= 0) barrels.splice(bidx, 1);
     removeFromFullBillboards(barrelMesh);
 
-    /* 战利品散射 */
     const pos = new THREE.Vector3(bx, 0.45, bz);
     const loots = [];
     if (Math.random() < 0.5) loots.push('pistol');
     if (Math.random() < 0.35) loots.push('csgun');
+    if (Math.random() < 0.15) loots.push('sniper');
     if (Math.random() < 0.85) loots.push('ammo');
     if (Math.random() < 0.5) loots.push('medkit');
     if (Math.random() < 0.3) loots.push('harm_potion');
+    if (Math.random() < 0.6) loots.push('knife');
+    if (Math.random() < 0.1) loots.push('sniper_ammo');
     if (loots.length === 0) loots.push('ammo');
     for (const itemId of loots) {
         const vel = new THREE.Vector3((Math.random() - 0.5) * 4, 3 + Math.random() * 3, (Math.random() - 0.5) * 4);
@@ -1386,11 +1378,11 @@ function breakBarrel(barrelMesh) {
         const c = itemId === 'ammo' ? (10 + Math.floor(Math.random() * 20))
                 : itemId === 'medkit' ? (1 + Math.floor(Math.random() * 3))
                 : itemId === 'harm_potion' ? (1 + Math.floor(Math.random() * 2))
+                : itemId === 'sniper_ammo' ? (2 + Math.floor(Math.random() * 5))
                 : 1;
         spawnDrop(dropPos, vel, itemId, c);
     }
 
-    /* 确定下一个木桶位置，广播给所有人 */
     const spot = findBarrelSpotFromCorner(barrelCornerIndex);
     if (spot) {
         barrelCornerIndex = (spot.cornerIndex + 1) % BARREL_CORNERS.length;
@@ -2020,18 +2012,51 @@ function throwPotion() {
 addEventListener('keydown', (e) => {
     if (chatOpen || uiEditing) return;
     keys[e.code] = true;
-    if (e.code === 'Space' && gameStarted && !deathState.active) { e.preventDefault(); if (!bagOpen) tryJump(); }
+    if (e.code === 'Space' && gameStarted && !deathState.active) { e.preventDefault(); if (!bagOpen && !player.prone) tryJump(); }
     if (e.code === 'Escape') {
         if (bagOpen) { closeBag(); return; }
         if (settingsOpen) return;
         if (controls && controls.isLocked) controls.unlock();
     }
     if (e.code === 'KeyT' && gameStarted && !mobileMode && !deathState.active && !bagOpen) { e.preventDefault(); openChat(); }
-    if (e.code === 'KeyQ' && gameStarted && !deathState.active && !bagOpen) { e.preventDefault(); throwItem(); }
-    if (e.code === 'KeyE' && gameStarted && !deathState.active) { e.preventDefault(); if (bagOpen) closeBag(); else openBag(); }
+    if (e.code === 'KeyI' && gameStarted && !deathState.active) { e.preventDefault(); if (bagOpen) closeBag(); else openBag(); }
     if (e.code === 'KeyC' && gameStarted && !deathState.active && !bagOpen) {
         e.preventDefault();
         startAim();
+    }
+
+    if (e.code === 'ControlLeft' || e.code === 'ControlRight') {
+        if (!gameStarted || deathState.active || bagOpen || chatOpen) return;
+        e.preventDefault();
+        if (ctrlTimer) {
+            clearTimeout(ctrlTimer);
+            ctrlTimer = null;
+            if (player.crouching) player.crouching = false;
+            toggleProne();
+        } else {
+            ctrlTimer = setTimeout(() => {
+                ctrlTimer = null;
+                if (player.prone) {
+                    player.prone = false;
+                } else {
+                    player.crouching = !player.crouching;
+                }
+                const crouchBtnEl = document.getElementById('crouchBtn');
+                const proneBtnEl = document.getElementById('proneBtn');
+                if (crouchBtnEl) crouchBtnEl.classList.toggle('active', player.crouching);
+                if (proneBtnEl) proneBtnEl.classList.toggle('active', player.prone);
+            }, 220);
+        }
+        return;
+    }
+
+    if (e.code === 'KeyQ' && gameStarted && !deathState.active && !bagOpen && !chatOpen) {
+        e.preventDefault();
+        if (!player.peekingRight) { player.peekingRight = true; player.peekingLeft = false; }
+    }
+    if (e.code === 'KeyE' && gameStarted && !deathState.active && !bagOpen && !chatOpen) {
+        e.preventDefault();
+        if (!player.peekingLeft) { player.peekingLeft = true; player.peekingRight = false; }
     }
     if (e.code.startsWith('Digit') && gameStarted && !bagOpen) {
         const n = parseInt(e.code.slice(5));
@@ -2043,6 +2068,12 @@ addEventListener('keyup', (e) => {
     if (e.code === 'KeyC') {
         if (aiming && !rightMouseDown) stopAim();
     }
+    if (e.code === 'KeyQ') {
+        player.peekingRight = false;
+    }
+    if (e.code === 'KeyE') {
+        player.peekingLeft = false;
+    }
 });
 
 addEventListener('wheel', (e) => {
@@ -2052,6 +2083,24 @@ addEventListener('wheel', (e) => {
     inventory.selected = (inventory.selected + dir + 9) % 9;
     renderHotbar(); saveInventory();
 }, { passive: false });
+
+function toggleProne() {
+    if (!gameStarted || deathState.active || uiEditing || bagOpen) return;
+    player.prone = !player.prone;
+    if (player.prone) {
+        player.crouching = false;
+        player.peekingLeft = false;
+        player.peekingRight = false;
+    }
+    const proneBtnEl = document.getElementById('proneBtn');
+    const crouchBtnEl = document.getElementById('crouchBtn');
+    const peekLeftEl = document.getElementById('peekLeftBtn');
+    const peekRightEl = document.getElementById('peekRightBtn');
+    if (proneBtnEl) proneBtnEl.classList.toggle('active', player.prone);
+    if (crouchBtnEl) crouchBtnEl.classList.toggle('active', player.crouching);
+    if (peekLeftEl) peekLeftEl.classList.toggle('active', player.peekingLeft);
+    if (peekRightEl) peekRightEl.classList.toggle('active', player.peekingRight);
+}
 
 function startAim() {
     if (aiming) return;
@@ -2076,6 +2125,7 @@ addEventListener('mousedown', (e) => {
     if (uiEditing || bagOpen || mobileMode) return;
     if (!isLocked || !gameStarted || deathState.active) return;
     if (e.button === 0) {
+        leftMouseDown = true;
         if (tryUseMedkitOnLeftClick()) return;
         if (throwPotion()) return;
         const ray = new THREE.Raycaster();
@@ -2090,6 +2140,7 @@ addEventListener('mousedown', (e) => {
 });
 
 addEventListener('mouseup', (e) => {
+    if (e.button === 0) leftMouseDown = false;
     if (e.button === 2) {
         rightMouseDown = false;
         if (!keys['KeyC']) stopAim();
@@ -2195,6 +2246,10 @@ function initMobileControls() {
     const aimBtn = document.getElementById('aimBtn');
     const jumpBtn = document.getElementById('jumpBtn');
     const bagBtn = document.getElementById('bagBtn');
+    const crouchBtn = document.getElementById('crouchBtn');
+    const proneBtn = document.getElementById('proneBtn');
+    const peekLeftBtn = document.getElementById('peekLeftBtn');
+    const peekRightBtn = document.getElementById('peekRightBtn');
     const mobileRing = document.getElementById('mobileRing');
 
     mobileRing.style.width = ringSize + 'px';
@@ -2252,6 +2307,7 @@ function initMobileControls() {
         if (!target || !target.closest) return false;
         return target.closest('#joystickZone') || target.closest('#sprintBtn') || target.closest('#shootBtn') ||
                target.closest('#aimBtn') || target.closest('#jumpBtn') || target.closest('#bagBtn') ||
+               target.closest('#crouchBtn') || target.closest('#proneBtn') || target.closest('#peekLeftBtn') || target.closest('#peekRightBtn') ||
                target.closest('#hotbar') || target.closest('#throwBtn') ||
                target.closest('#chatBtn') || target.closest('#settingsBtn') || target.closest('#bagPanel');
     }
@@ -2272,7 +2328,6 @@ function initMobileControls() {
     });
     lookZone.addEventListener('pointermove', (e) => {
         if (chatOpen || deathState.active || uiEditing || bagOpen) return;
-        if (gyroEnabled) return;
         if (e.pointerId !== lookPointerId) return;
         e.preventDefault(); e.stopPropagation();
         if (Math.hypot(e.clientX - touchStartX, e.clientY - touchStartY) > TAP_THRESHOLD) touchMoved = true;
@@ -2345,8 +2400,45 @@ function initMobileControls() {
 
     jumpBtn.addEventListener('pointerdown', (e) => {
         e.preventDefault(); e.stopPropagation();
-        if (!gameStarted || deathState.active || bagOpen) return;
+        if (!gameStarted || deathState.active || bagOpen || player.prone) return;
         tryJump();
+    });
+
+    crouchBtn.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        if (!gameStarted || deathState.active || bagOpen) return;
+        player.crouching = !player.crouching;
+        if (player.crouching) { player.prone = false; }
+        crouchBtn.classList.toggle('active', player.crouching);
+        proneBtn.classList.toggle('active', player.prone);
+    });
+
+    proneBtn.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        if (!gameStarted || deathState.active || bagOpen) return;
+        toggleProne();
+        proneBtn.classList.toggle('active', player.prone);
+        crouchBtn.classList.toggle('active', player.crouching);
+        peekLeftBtn.classList.toggle('active', player.peekingLeft);
+        peekRightBtn.classList.toggle('active', player.peekingRight);
+    });
+
+    peekLeftBtn.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        if (!gameStarted || deathState.active || bagOpen) return;
+        player.peekingLeft = !player.peekingLeft;
+        if (player.peekingLeft) player.peekingRight = false;
+        peekLeftBtn.classList.toggle('active', player.peekingLeft);
+        peekRightBtn.classList.toggle('active', player.peekingRight);
+    });
+
+    peekRightBtn.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        if (!gameStarted || deathState.active || bagOpen) return;
+        player.peekingRight = !player.peekingRight;
+        if (player.peekingRight) player.peekingLeft = false;
+        peekRightBtn.classList.toggle('active', player.peekingRight);
+        peekLeftBtn.classList.toggle('active', player.peekingLeft);
     });
 
     function bagToggle(e) { if (e) { e.preventDefault(); e.stopPropagation(); } if (bagOpen) closeBag(); else openBag(); }
@@ -2396,9 +2488,13 @@ function setMobileMode(on, save) {
 }
 
 /* ==================== 物理 ==================== */
-function tryJump() { if (player.onGround) { player.vy = CONFIG.jumpSpeed; player.onGround = false; } }
+function tryJump() { if (player.onGround && !player.prone) { player.vy = CONFIG.jumpSpeed; player.onGround = false; } }
+
+function getPlayerHeight() { return currentBodyHeight; }
+function getEyeHeight() { return currentEyeHeight; }
+
 function hasSpaceAbove(x, z, fromY) {
-    const top = fromY + CONFIG.playerHeight;
+    const top = fromY + getPlayerHeight();
     const r = CONFIG.playerRadius * 0.9;
     for (const b of boxColliders) {
         const minY = b.y - b.hh, maxY = b.y + b.hh;
@@ -2410,7 +2506,8 @@ function hasSpaceAbove(x, z, fromY) {
 }
 function resolveHorizontalCollisions() {
     const feet = player.pos.y;
-    const head = feet + CONFIG.playerHeight;
+    const physHeight = Math.max(currentBodyHeight, player.prone ? CONFIG.proneHeight : (player.crouching ? CONFIG.crouchHeight : CONFIG.playerHeight));
+    const head = feet + physHeight;
     for (const c of colliders) {
         if (feet >= c.height - 0.08) continue;
         if (head <= 0) continue;
@@ -2445,7 +2542,7 @@ function resolveHorizontalCollisions() {
         }
     }
     if (!stepped) {
-        const nf = player.pos.y, nh = nf + CONFIG.playerHeight;
+        const nf = player.pos.y, nh = nf + physHeight;
         for (const b of boxColliders) {
             const minY = b.y - b.hh, maxY = b.y + b.hh;
             if (maxY <= nf + 0.05) continue;
@@ -2477,6 +2574,16 @@ function getGroundHeight(x, z, playerY) {
 }
 function updatePlayer(delta, now) {
     if (!gameStarted || deathState.active || uiEditing) return;
+
+    const targetBodyHeight = player.prone ? CONFIG.proneHeight : (player.crouching ? CONFIG.crouchHeight : CONFIG.playerHeight);
+    const targetEyeHeight = player.prone ? CONFIG.proneEyeHeight : (player.crouching ? CONFIG.crouchEyeHeight : CONFIG.eyeHeight);
+    const targetProneTilt = player.prone ? 1 : 0;
+
+    const poseK = 1 - Math.pow(0.001, delta);
+    currentBodyHeight = THREE.MathUtils.lerp(currentBodyHeight, targetBodyHeight, poseK);
+    currentEyeHeight = THREE.MathUtils.lerp(currentEyeHeight, targetEyeHeight, poseK);
+    currentProneTilt = THREE.MathUtils.lerp(currentProneTilt, targetProneTilt, poseK);
+
     const fwd = new THREE.Vector3();
     camera.getWorldDirection(fwd);
     fwd.y = 0;
@@ -2492,8 +2599,11 @@ function updatePlayer(delta, now) {
         move.add(fwd.clone().multiplyScalar(joystickVec.y));
         move.add(right.clone().multiplyScalar(joystickVec.x));
     }
-    const wantSprint = keys['ShiftLeft'] || keys['ShiftRight'] || sprinting;
-    const speed = CONFIG.moveSpeed * (wantSprint ? CONFIG.sprintMultiplier : 1) * (aiming ? 0.55 : 1);
+    const wantSprint = (keys['ShiftLeft'] || keys['ShiftRight'] || sprinting) && !player.crouching && !player.prone;
+    let speedMul = 1;
+    if (player.crouching) speedMul = CONFIG.crouchSpeedMultiplier;
+    else if (player.prone) speedMul = CONFIG.proneSpeedMultiplier;
+    const speed = CONFIG.moveSpeed * (wantSprint ? CONFIG.sprintMultiplier : 1) * speedMul * (aiming ? 0.55 : 1);
     const isMoving = move.lengthSq() > 0;
     if (isMoving) { move.normalize().multiplyScalar(speed * delta); player.pos.x += move.x; player.pos.z += move.z; }
     const limit = CONFIG.floorSize / 2 - 0.6;
@@ -2508,6 +2618,7 @@ function updatePlayer(delta, now) {
         if (!player.onGround && prevVy < -6) landImpact = Math.min(1, Math.abs(prevVy) / 14);
         player.pos.y = gY; player.vy = 0; player.onGround = true;
     } else player.onGround = false;
+
     if (isMoving && player.onGround) { bobTime += delta * (wantSprint ? 14 : 9); bobAmount = THREE.MathUtils.lerp(bobAmount, 1, 0.12); }
     else bobAmount = THREE.MathUtils.lerp(bobAmount, 0, 0.15);
     const bobY = Math.sin(bobTime) * 0.045 * bobAmount;
@@ -2528,21 +2639,31 @@ function updatePlayer(delta, now) {
         targetLean = -cross.y * 0.045 * (wantSprint ? 1.4 : 1);
         targetLean += Math.sin(bobTime * 0.5) * 0.01 * bobAmount;
     }
-    cameraLean = THREE.MathUtils.lerp(cameraLean, targetLean, 0.08);
+
+    let targetPeekOffset = 0;
+    let targetPeekAngle = 0;
+    if (player.peekingLeft) {
+        targetPeekOffset = CONFIG.PEEK_OFFSET;
+        targetPeekAngle = -CONFIG.PEEK_ANGLE;
+    } else if (player.peekingRight) {
+        targetPeekOffset = -CONFIG.PEEK_OFFSET;
+        targetPeekAngle = CONFIG.PEEK_ANGLE;
+    }
+    peekOffsetCurrent = THREE.MathUtils.lerp(peekOffsetCurrent, targetPeekOffset, 0.15);
+    peekAngleCurrent = THREE.MathUtils.lerp(peekAngleCurrent, targetPeekAngle, 0.15);
 
     camera.position.set(
-        player.pos.x + bobX + shakeX,
-        player.pos.y + CONFIG.eyeHeight + bobY - dip - recoilKick * 0.02 + shakeY,
+        player.pos.x + bobX + shakeX + peekOffsetCurrent * Math.cos(peekAngleCurrent),
+        player.pos.y + getEyeHeight() + bobY - dip - recoilKick * 0.02 + shakeY - currentProneTilt * 0.05,
         player.pos.z
     );
 
-    if (!gyroEnabled) {
-        camera.rotation.order = 'YXZ';
-        const e = new THREE.Euler(0, 0, 0, 'YXZ');
-        e.setFromQuaternion(camera.quaternion);
-        e.z = cameraLean;
-        camera.quaternion.setFromEuler(e);
-    }
+    camera.rotation.order = 'YXZ';
+    const e = new THREE.Euler(0, 0, 0, 'YXZ');
+    e.setFromQuaternion(camera.quaternion);
+    e.z = cameraLean + peekAngleCurrent + currentProneTilt * (-Math.PI / 2) * 0.35;
+    e.x = THREE.MathUtils.clamp(e.x, -Math.PI / 2 + 0.01, Math.PI / 2 - 0.01);
+    camera.quaternion.setFromEuler(e);
 
     let targetFov = baseFov;
     if (wantSprint && isMoving) { sprintFovPulse += delta * 8; targetFov = baseFov * (1.09 + Math.sin(sprintFovPulse) * 0.006); }
@@ -2565,19 +2686,12 @@ function dropHalfInventory() {
         if (!item || !ITEM_DEFS[item.id]) continue;
         const dropCount = Math.ceil(item.count / 2);
         if (dropCount <= 0) continue;
-
         const dropPos = player.pos.clone();
         dropPos.y += 1.0;
         dropPos.x += (Math.random() - 0.5) * 0.6;
         dropPos.z += (Math.random() - 0.5) * 0.6;
-
-        const vel = new THREE.Vector3(
-            (Math.random() - 0.5) * 3,
-            4 + Math.random() * 2,
-            (Math.random() - 0.5) * 3
-        );
+        const vel = new THREE.Vector3((Math.random() - 0.5) * 3, 4 + Math.random() * 2, (Math.random() - 0.5) * 3);
         spawnDrop(dropPos, vel, item.id, dropCount);
-
         if (dropCount >= item.count) inventory.slots[i] = null;
         else item.count -= dropCount;
     }
@@ -2593,8 +2707,11 @@ function startDeathAnimation() {
     deathState.respawned = false;
     player.vy = 0;
     stopAim();
+    player.crouching = false;
+    player.prone = false;
+    player.peekingLeft = false;
+    player.peekingRight = false;
     if (controls && controls.isLocked) controls.unlock();
-
     dropHalfInventory();
 }
 function updateDeathAnimation(now, delta) {
@@ -2620,6 +2737,7 @@ function updateDeathAnimation(now, delta) {
         player.health = CONFIG.maxHealth;
         player.pos.set((Math.random() - 0.5) * 10, 0, (Math.random() - 0.5) * 10);
         player.vy = 0;
+        player.invulnerableUntil = performance.now() + 5000;
         camera.position.set(player.pos.x, player.pos.y + CONFIG.eyeHeight, player.pos.z);
         updateHealthUI(); saveRoomState();
     }
@@ -2665,12 +2783,12 @@ function updateHealthUI() {
 }
 function takeDamage(amount) {
     if (!gameStarted || deathState.active) return;
+    if (performance.now() < player.invulnerableUntil) return;
     const now = performance.now();
     if (now - player.lastDamageTime < CONFIG.damageCooldown) return;
     player.lastDamageTime = now;
     player.health = Math.max(0, player.health - amount);
     updateHealthUI();
-
     const hpText = document.getElementById('hpText');
     if (hpText) {
         hpText.classList.remove('bump');
@@ -2685,7 +2803,6 @@ function takeDamage(amount) {
         hpFill.classList.add('hit-flash');
         setTimeout(() => hpFill.classList.remove('hit-flash'), 450);
     }
-
     cameraShake = Math.min(1.4, cameraShake + 1);
     const tint = document.getElementById('hitTint');
     tint.classList.add('active');
@@ -2753,14 +2870,10 @@ function initNetwork() {
     mqttTopic = CONFIG.topicPrefix + player.roomId;
     statusEl.textContent = '○ 正在连接...'; statusEl.style.color = '#ffaa00';
     try {
-    mqttClient = mqtt.connect(CONFIG.mqttBroker, {
-        clientId: 'sg_' + player.id + '_' + Math.random().toString(16).slice(2, 8),
-        clean: true,
-        connectTimeout: 15000,        // 15 秒超时
-        reconnectPeriod: 5000,        // 5 秒重连一次
-        keepalive: 60,                // 心跳间隔加大，减少断线
-        resubscribe: true,            // 重连后自动重新订阅
-    });
+        mqttClient = mqtt.connect(CONFIG.mqttBroker, {
+            clientId: 'sg_' + player.id + '_' + Math.random().toString(16).slice(2, 8),
+            clean: true, connectTimeout: 15000, reconnectPeriod: 5000, keepalive: 60,
+        });
         mqttClient.on('connect', () => {
             statusEl.textContent = '● 已连接 · ' + player.roomId; statusEl.style.color = '#5aff5a';
             mqttClient.subscribe(mqttTopic, { qos: 0 });
@@ -2817,7 +2930,6 @@ function handleNetworkMessage(data) {
         case 'drop': handleRemoteDrop(data); break;
         case 'pickup': removeDropById(data.id); break;
         case 'barrel_break': {
-            /* 移除本地对应位置木桶 */
             for (let i = barrels.length - 1; i >= 0; i--) {
                 const b = barrels[i];
                 if (Math.abs(b.position.x - data.x) < 0.5 && Math.abs(b.position.z - data.z) < 0.5) {
@@ -2831,7 +2943,6 @@ function handleNetworkMessage(data) {
                     break;
                 }
             }
-            /* 记录下一个位置 */
             if (typeof data.nextX === 'number' && typeof data.nextZ === 'number') {
                 nextBarrelSpawn = { x: data.nextX, z: data.nextZ };
             } else {
@@ -2842,7 +2953,6 @@ function handleNetworkMessage(data) {
             break;
         }
         case 'barrel_spawn': {
-            /* 检查是否已经有这个位置附近的木桶 */
             let exists = false;
             for (const b of barrels) {
                 if (Math.abs(b.position.x - data.x) < 0.5 && Math.abs(b.position.z - data.z) < 0.5) { exists = true; break; }
@@ -2959,7 +3069,7 @@ function sendNetworkUpdate() {
     lastNetSend = now;
     const euler = new THREE.Euler(0, 0, 0, 'YXZ');
     euler.setFromQuaternion(camera.quaternion);
-    publishMessage({ type: 'move', id: player.id, position: { x: player.pos.x, y: player.pos.y, z: player.pos.z }, rotation: { y: euler.y }, name: player.name });
+    publishMessage({ type: 'move', id: player.id, position: { x: player.pos.x, y: player.pos.y, z: player.pos.z }, rotation: { y: euler.y }, name: player.name, crouch: player.crouching, prone: player.prone });
 }
 function broadcastSkin() { if (!mqttClient || !mqttClient.connected) return; publishMessage({ type: 'skin', id: player.id, skin: player.skin }); }
 function addKillFeed(text) {
@@ -2979,6 +3089,7 @@ function compressSkinImage(file, callback) {
         img.onload = () => {
             const maxSize = 96;
             let w = img.width, h = img.height;
+            if (w < 1 || h < 1) { callback(null); return; }
             if (w > maxSize || h > maxSize) {
                 const scale = maxSize / Math.max(w, h);
                 w = Math.max(1, Math.round(w * scale));
@@ -3020,14 +3131,13 @@ function initCamera() {
     document.addEventListener('mousemove', (e) => {
         if (!isLocked || mobileMode || !camera || !gameStarted) return;
         if (uiEditing || bagOpen || settingsOpen) return;
-        if (gyroEnabled) return;
         const sens = sensitivity * (aiming ? 0.6 : 1);
         const euler = new THREE.Euler(0, 0, 0, 'YXZ');
         euler.setFromQuaternion(camera.quaternion);
         euler.y -= (e.movementX || 0) * sens;
         euler.x -= (e.movementY || 0) * sens;
         euler.x = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, euler.x));
-        euler.z = cameraLean;
+        euler.z = cameraLean + peekAngleCurrent + currentProneTilt * (-Math.PI / 2) * 0.35;
         camera.quaternion.setFromEuler(euler);
     });
 }
@@ -3149,16 +3259,12 @@ function initSettings() {
         localStorage.setItem(LS.ring, ringSlider.value);
     });
     document.querySelectorAll('.toggle-btn[data-mode]').forEach(b => { b.addEventListener('click', () => setMobileMode(b.dataset.mode === 'mobile', true)); });
-    document.querySelectorAll('.toggle-btn[data-gyro]').forEach(b => {
-        b.addEventListener('click', () => setGyroEnabled(b.dataset.gyro === 'on'));
-    });
-    if (localStorage.getItem(LS.gyro) === 'on') setGyroEnabled(true);
     skinUploadBtn.addEventListener('click', () => skinFile.click());
     skinFile.addEventListener('change', () => {
         const file = skinFile.files && skinFile.files[0];
         if (!file) return;
         compressSkinImage(file, async (dataURL) => {
-            if (!dataURL) { return; }
+            if (!dataURL) { addKillFeed('皮肤图片无效（至少 1x1）'); return; }
             player.skin = dataURL;
             localStorage.setItem(LS.skin, dataURL);
             skinPreviewImg.src = dataURL;
@@ -3224,8 +3330,6 @@ function switchRoom(newRoom) {
         updateHealthUI();
     }
     if (!loadInventory(newRoom)) resetInventory();
-    /* 重新生成地图 */
-    /* 注意：这里简单起见，不重建场景，只重建网络；玩家需要刷新页面以完整重建地图 */
     initNetwork();
 }
 
@@ -3317,6 +3421,7 @@ async function main() {
     };
     let worldReady = false;
     let initError = null;
+
     try { medkitDataURL = createMedkitIcon(); } catch (e) {}
 
     try {
@@ -3369,6 +3474,7 @@ async function main() {
         if (e.key === 'Enter') { e.preventDefault(); sendChat(); }
         if (e.key === 'Escape') closeChat();
     });
+
     setHint('正在生成世界…', '#888');
     try { await buildWorld(); } catch (err) { initError = err; }
     if (!initError) { try { initCamera(); } catch (err) { initError = err; } }
@@ -3380,6 +3486,7 @@ async function main() {
     if (!initError) { try { initBagDnD(); } catch (err) { initError = err; } }
     if (!initError) { try { renderHotbar(); } catch (err) { initError = err; } }
     try { for (const id in ITEM_DEFS) getItemTexture(id); } catch (err) {}
+
     if (!initError) {
         try {
             const isTouchDevice = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
@@ -3389,6 +3496,7 @@ async function main() {
             else if (isTouchDevice) setMobileMode(true, false);
         } catch (err) {}
     }
+
     if (initError) { setHint('初始化失败：' + (initError.message || initError), '#ff5555'); worldReady = false; }
     else { setHint('资源已就绪，点击开始游戏', '#5aff5a'); worldReady = true; }
     try { animate(); } catch (err) {}
