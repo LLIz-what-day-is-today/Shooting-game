@@ -11,8 +11,38 @@
         canvas { display: block; touch-action: none; }
         input, textarea { user-select: text !important; -webkit-user-select: text !important; -webkit-touch-callout: default !important; touch-action: auto !important; }
 
-        :root { --hotbar-w: 378px; --hotbar-h: 46px; }
+        :root {
+            --hotbar-w: 378px; --hotbar-h: 46px;
+            --btn-bg: rgba(20, 24, 34, 0.32);
+            --btn-border: 1px solid rgba(255, 255, 255, 0.14);
+            --btn-hover: rgba(255, 255, 255, 0.20);
+            --btn-radius: 12px;
+            --btn-radius-lg: 14px;
+            --joystick-bg: rgba(20, 24, 34, 0.32);
+            --start-bg: rgba(20, 24, 34, 0.32);
+            --start-hover: rgba(255, 255, 255, 0.20);
+            --big-bg: rgba(20, 24, 34, 0.32);
+            --big-hover: rgba(255, 255, 255, 0.20);
+            --small-bg: rgba(20, 24, 34, 0.32);
+            --small-hover: rgba(255, 255, 255, 0.20);
+            --toggle-active: rgba(120, 180, 255, 0.35);
+        }
         body.mobile { --hotbar-w: 306px; --hotbar-h: 37px; }
+        body.ui-default {
+            --btn-bg: rgba(0, 0, 0, 0.75);
+            --btn-border: 1px solid transparent;
+            --btn-hover: rgba(40, 40, 40, 0.9);
+            --btn-radius: 4px;
+            --btn-radius-lg: 4px;
+            --joystick-bg: rgba(0, 0, 0, 0.75);
+            --start-bg: rgba(255, 255, 255, 0.16);
+            --start-hover: rgba(255, 255, 255, 0.28);
+            --big-bg: rgba(255, 255, 255, 0.12);
+            --big-hover: rgba(255, 255, 255, 0.22);
+            --small-bg: rgba(255, 255, 255, 0.08);
+            --small-hover: rgba(255, 255, 255, 0.16);
+            --toggle-active: rgba(255, 255, 255, 0.32);
+        }
 
         @keyframes crosshairBreathe {
             0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.88; }
@@ -44,36 +74,14 @@
         .hp-text { font-size: 12px; color: #fff; min-width: 28px; text-align: right; font-weight: bold; display: inline-block; }
         .hp-text.bump { animation: hpTextBump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        #killFeed {
-            position: fixed; top: 128px; left: 12px; right: auto;
-            z-index: 10; font-size: 13px; color: #fff;
-            text-shadow: 1px 1px 0 #000; pointer-events: none;
-            text-align: left; max-width: 560px;
-        }
-        .kill-entry {
-            background: rgba(0,0,0,0.75); padding: 4px 10px; margin-bottom: 4px;
-            text-align: left; width: 100%; box-sizing: border-box;
-            animation: killIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), fadeOut 3s forwards;
-        }
+        #killFeed { position: fixed; top: 128px; left: 12px; right: auto; z-index: 10; font-size: 13px; color: #fff; text-shadow: 1px 1px 0 #000; pointer-events: none; text-align: left; max-width: 560px; }
+        .kill-entry { background: rgba(0,0,0,0.75); padding: 4px 10px; margin-bottom: 4px; text-align: left; width: 100%; box-sizing: border-box; animation: killIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), fadeOut 3s forwards; }
         @keyframes killIn { from { transform: translateX(-30px) scale(0.85); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
         @keyframes fadeOut { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
-        #chatBar {
-            position: fixed; left: 12px; top: 280px; right: auto; bottom: auto;
-            width: 420px; max-width: calc(100vw - 24px);
-            height: 56vh; max-height: 56vh;
-            background: rgba(0,0,0,0.55); z-index: 55;
-            padding: 10px 14px; display: flex; flex-direction: column;
-            gap: 3px; pointer-events: none; border-radius: 4px; overflow: hidden;
-        }
+        #chatBar { position: fixed; left: 12px; top: 280px; right: auto; bottom: auto; width: 420px; max-width: calc(100vw - 24px); height: 56vh; max-height: 56vh; background: rgba(0,0,0,0.55); z-index: 55; padding: 10px 14px; display: flex; flex-direction: column; gap: 3px; pointer-events: none; border-radius: 4px; overflow: hidden; }
         #chatMessages { display: flex; flex-direction: column; justify-content: flex-end; gap: 3px; overflow: hidden; flex: 1; min-height: 0; }
-        .chat-line {
-            background: transparent; padding: 3px 6px; color: #fff;
-            font-size: 15px; line-height: 1.5;
-            text-shadow: 1px 1px 0 #000, -1px -1px 0 #000;
-            animation: chatIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            word-break: break-all;
-        }
+        .chat-line { background: transparent; padding: 3px 6px; color: #fff; font-size: 15px; line-height: 1.5; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000; animation: chatIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); word-break: break-all; }
         .chat-line .who { color: #5aff5a; }
         .chat-line .who.self { color: #5aafff; }
         .chat-line .who.msg { color: #ffaa00; }
@@ -91,49 +99,67 @@
         body.mobile #chatInput { font-size: 14px; padding: 6px 10px; }
         body.mobile #chatSend { font-size: 13px; padding: 6px 14px; }
 
-        #chatBtn { position: fixed; bottom: 92px; left: calc(50% + var(--hotbar-w) / 2 + 8px); padding: 8px 14px; background: rgba(0,0,0,0.75); color: #fff; font-size: 13px; border: none; cursor: pointer; z-index: 100; letter-spacing: 1px; white-space: nowrap; transition: transform 0.15s ease, background 0.15s ease; }
-        #chatBtn:hover { transform: scale(1.06); background: rgba(40,40,40,0.9); }
+        #chatBtn { position: fixed; bottom: 92px; left: calc(50% + var(--hotbar-w) / 2 + 8px); padding: 8px 14px; color: #fff; font-size: 13px; cursor: pointer; z-index: 100; letter-spacing: 1px; white-space: nowrap; transition: transform 0.15s ease, background 0.15s ease; background: var(--btn-bg); border: var(--btn-border); border-radius: var(--btn-radius); }
+        #chatBtn:hover { transform: scale(1.06); background: var(--btn-hover); }
         #chatBtn:active { transform: scale(0.95); }
-        #throwBtn { position: fixed; bottom: 92px; right: calc(50% + var(--hotbar-w) / 2 + 8px); padding: 8px 14px; background: rgba(0,0,0,0.75); color: #fff; font-size: 13px; border: none; cursor: pointer; z-index: 100; letter-spacing: 1px; display: none; white-space: nowrap; transition: transform 0.15s ease, background 0.15s ease; }
-        #throwBtn:hover { transform: scale(1.06); background: rgba(40,40,40,0.9); }
+        #throwBtn { position: fixed; bottom: 92px; right: calc(50% + var(--hotbar-w) / 2 + 8px); padding: 8px 14px; color: #fff; font-size: 13px; cursor: pointer; z-index: 100; letter-spacing: 1px; display: none; white-space: nowrap; transition: transform 0.15s ease, background 0.15s ease; background: var(--btn-bg); border: var(--btn-border); border-radius: var(--btn-radius); }
+        #throwBtn:hover { transform: scale(1.06); background: var(--btn-hover); }
         #throwBtn:active { transform: scale(0.95); }
         body.mobile #throwBtn { display: block; }
         body.mobile #chatBtn, body.mobile #throwBtn { bottom: 96px; padding: 6px 10px; font-size: 12px; }
 
-        #settingsBtn { position: fixed; top: 12px; right: 12px; width: 42px; height: 42px; background: rgba(0,0,0,0.75); border: none; color: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s; }
-        #settingsBtn:hover { transform: rotate(90deg) scale(1.1); background: rgba(60,60,60,0.9); }
+        #settingsBtn { position: fixed; top: 12px; right: 12px; width: 42px; height: 42px; color: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s; background: var(--btn-bg); border: var(--btn-border); border-radius: var(--btn-radius); }
+        #settingsBtn:hover { transform: rotate(90deg) scale(1.1); background: var(--btn-hover); }
         #settingsPanel { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 200; padding: 80px 24px 40px; opacity: 0; overflow-y: auto; transition: opacity 0.3s ease; }
         #settingsPanel.active { display: flex; opacity: 1; }
         #settingsPanel::-webkit-scrollbar { width: 6px; }
         #settingsPanel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); }
         #settingsPanel .panel-content { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 380px; padding-bottom: 60px; animation: panelSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes panelSlideIn { from { transform: translateY(40px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-        #backBtn { position: fixed; top: 16px; left: 16px; width: 48px; height: 48px; background: rgba(0,0,0,0.6); border: none; color: #fff; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 201; transition: transform 0.2s; }
-        #backBtn:hover { transform: translateX(-4px); }
+        #backBtn { position: fixed; top: 16px; left: 16px; width: 48px; height: 48px; color: #fff; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 201; transition: transform 0.2s, background 0.2s; background: var(--btn-bg); border: var(--btn-border); border-radius: var(--btn-radius-lg); }
+        #backBtn:hover { transform: translateX(-4px); background: var(--btn-hover); }
         #settingsPanel h2 { font-size: 22px; margin-bottom: 28px; color: #fff; letter-spacing: 3px; text-shadow: 2px 2px 0 #000; }
         .setting-row { width: 100%; margin-bottom: 22px; }
         .setting-row label { display: block; font-size: 12px; margin-bottom: 8px; color: #c8c8c8; letter-spacing: 1px; }
         .setting-row input[type="text"] { width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.75); border: none; color: #fff; font-size: 15px; outline: none; font-family: inherit; transition: box-shadow 0.2s; }
         .setting-row input[type="text"]:focus { box-shadow: 0 0 0 2px #5aff5a inset; }
-        .setting-row input[type="range"] { width: 100%; height: 8px; -webkit-appearance: none; appearance: none; background: rgba(255,255,255,0.25); outline: none; border: none; cursor: pointer; }
-        .setting-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; background: #fff; cursor: pointer; transition: transform 0.15s; }
+
+        /* ===== 滑动条玻璃容器 ===== */
+        .range-glass-wrap {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--big-bg);
+            border: var(--btn-border);
+            border-radius: var(--btn-radius);
+            transition: background 0.2s;
+            box-sizing: border-box;
+        }
+        body.ui-default .range-glass-wrap {
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+        .range-glass-wrap:hover { background: var(--big-hover); }
+
+        .setting-row input[type="range"] { width: 100%; height: 8px; -webkit-appearance: none; appearance: none; background: rgba(255,255,255,0.25); outline: none; border: none; cursor: pointer; display: block; }
+        .setting-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; background: #fff; cursor: pointer; transition: transform 0.15s; border-radius: 50%; }
         .setting-row input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
         .range-val { float: right; color: #fff; font-size: 13px; }
         .toggle-group { display: flex; gap: 8px; }
-        .toggle-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.08); color: #9a9a9a; border: none; font-size: 13px; cursor: pointer; text-align: center; font-family: inherit; transition: background 0.2s, color 0.2s, transform 0.15s; }
-        .toggle-btn:hover { transform: scale(1.03); }
+        .toggle-btn { flex: 1; padding: 10px; color: #ccc; font-size: 13px; cursor: pointer; text-align: center; font-family: inherit; transition: background 0.2s, color 0.2s, transform 0.15s; background: var(--small-bg); border: var(--btn-border); border-radius: var(--btn-radius); }
+        .toggle-btn:hover { transform: scale(1.03); background: var(--small-hover); }
         .toggle-btn:active { transform: scale(0.97); }
-        .toggle-btn.active { background: rgba(255,255,255,0.32); color: #fff; }
+        .toggle-btn.active { background: var(--toggle-active); color: #fff; }
         .skin-row { display: flex; gap: 12px; align-items: stretch; }
         .skin-preview { width: 72px; height: 72px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
         .skin-preview img { max-width: 100%; max-height: 100%; image-rendering: pixelated; transition: transform 0.2s; }
         .skin-preview:hover img { transform: scale(1.08); }
         .skin-buttons { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-        .skin-btn { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.08); color: #ddd; border: none; font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.15s, transform 0.15s; }
-        .skin-btn:hover { background: rgba(255,255,255,0.16); transform: scale(1.02); }
+        .skin-btn { flex: 1; padding: 8px 12px; color: #ddd; font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.15s, transform 0.15s; background: var(--small-bg); border: var(--btn-border); border-radius: var(--btn-radius); }
+        .skin-btn:hover { background: var(--small-hover); transform: scale(1.02); }
         .skin-btn:active { transform: scale(0.97); }
-        .big-btn { width: 100%; padding: 12px; background: rgba(255,255,255,0.12); color: #fff; border: none; font-size: 13px; cursor: pointer; letter-spacing: 1px; font-family: inherit; transition: background 0.2s, transform 0.15s; }
-        .big-btn:hover { background: rgba(255,255,255,0.22); transform: scale(1.02); }
+        .big-btn { width: 100%; padding: 12px; color: #fff; font-size: 13px; cursor: pointer; letter-spacing: 1px; font-family: inherit; transition: background 0.2s, transform 0.15s; background: var(--big-bg); border: var(--btn-border); border-radius: var(--btn-radius); }
+        .big-btn:hover { background: var(--big-hover); transform: scale(1.02); }
         .big-btn:active { transform: scale(0.97); }
 
         #roomModal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 300; padding: 24px; }
@@ -151,22 +177,23 @@
         #mobileControls.active { display: block; }
         #lookZone { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; touch-action: none; z-index: 1; }
 
-        #joystickZone { position: fixed; bottom: 34px; left: 34px; width: 136px; height: 136px; border-radius: 50%; background: rgba(0,0,0,0.75); pointer-events: auto; touch-action: none; z-index: 200; display: none; }
+        #joystickZone { position: fixed; bottom: 34px; left: 34px; width: 136px; height: 136px; border-radius: 50%; pointer-events: auto; touch-action: none; z-index: 200; display: none; background: var(--joystick-bg); border: var(--btn-border); }
         body.mobile #joystickZone { display: block; }
         #joystickKnob { position: absolute; top: 50%; left: 50%; width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.35); transform: translate(-50%, -50%); pointer-events: none; will-change: left, top; }
 
         #sprintBtn, #shootBtn, #jumpBtn, #bagBtn, #aimBtn, #crouchBtn, #proneBtn, #peekLeftBtn, #peekRightBtn {
-            position: fixed; border-radius: 50%; background: rgba(0,0,0,0.75); color: #fff;
+            position: fixed; border-radius: 50%; color: #fff;
             display: none; align-items: center; justify-content: center;
             pointer-events: auto; touch-action: none; font-family: inherit;
             z-index: 200; user-select: none; -webkit-user-select: none;
             transition: background 0.15s, transform 0.15s;
+            background: var(--btn-bg);
+            border: var(--btn-border);
         }
         body.mobile #sprintBtn, body.mobile #shootBtn, body.mobile #jumpBtn,
         body.mobile #bagBtn, body.mobile #aimBtn, body.mobile #crouchBtn,
         body.mobile #proneBtn, body.mobile #peekLeftBtn, body.mobile #peekRightBtn { display: flex; }
 
-        /* UI 编辑时强制显示所有手机按钮，方便调整位置 */
         body.ui-editing #sprintBtn, body.ui-editing #shootBtn, body.ui-editing #jumpBtn,
         body.ui-editing #bagBtn, body.ui-editing #aimBtn, body.ui-editing #crouchBtn,
         body.ui-editing #proneBtn, body.ui-editing #peekLeftBtn, body.ui-editing #peekRightBtn { display: flex !important; }
@@ -200,20 +227,21 @@
 
         #mobileRing { position: fixed; left: -9999px; top: -9999px; width: 172px; height: 172px; border-radius: 50%; border: 5px solid #fff; mix-blend-mode: difference; pointer-events: none; display: none; z-index: 55; transform: translate(-50%, -50%); will-change: left, top; }
 
-        #startScreen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; color: #fff; padding: 24px; gap: 14px; transition: opacity 0.55s ease, visibility 0.55s; }
+        #startScreen {
+            position: fixed; inset: 0;
+            background-image: url('https://img-baofun.zhhainiao.com/fs/94e254e46c408b161f11c1ae12fae8bf.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 500; color: #fff; padding: 24px; gap: 14px;
+            transition: opacity 0.55s ease, visibility 0.55s;
+        }
+        #startScreen::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); pointer-events: none; }
+        #startScreen > * { position: relative; z-index: 1; }
         #startScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-        #llLogo {
-            position: fixed;
-            inset: 0;
-            background: #ea1c1f;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 600;
-            transition: opacity 1s ease;
-        }
+        #llLogo { position: fixed; inset: 0; background: #ea1c1f; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 600; transition: opacity 1s ease; }
         #llLogo.hidden { opacity: 0; pointer-events: none; }
         #llLogo img { max-width: 60%; max-height: 50%; object-fit: contain; z-index: 2; }
 
@@ -222,12 +250,12 @@
         #startScreen > *:nth-child(2) { animation-delay: 0.15s; }
         #startScreen > *:nth-child(3) { animation-delay: 0.25s; }
         @keyframes startFadeIn { from { transform: translateY(30px) scale(0.94); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-        #startScreen input[type="text"] { padding: 14px 18px; background: rgba(255,255,255,0.06); border: none; color: #fff; font-size: 17px; text-align: center; outline: none; width: 280px; font-family: inherit; touch-action: auto; transition: box-shadow 0.2s; }
+        #startScreen input[type="text"] { padding: 14px 18px; background: rgba(0,0,0,0.6); border: none; color: #fff; font-size: 17px; text-align: center; outline: none; width: 280px; font-family: inherit; touch-action: auto; transition: box-shadow 0.2s; }
         #startScreen input[type="text"]:focus { box-shadow: 0 0 0 2px #5aff5a inset; }
-        #startBtn { padding: 14px 58px; background: rgba(255,255,255,0.16); border: none; color: #fff; font-size: 17px; cursor: pointer; letter-spacing: 4px; font-family: inherit; touch-action: auto; transition: background 0.2s, transform 0.15s; }
-        #startBtn:hover { background: rgba(255,255,255,0.28); transform: scale(1.04); }
+        #startBtn { padding: 14px 58px; color: #fff; font-size: 17px; cursor: pointer; letter-spacing: 4px; font-family: inherit; touch-action: auto; transition: background 0.2s, transform 0.15s; background: var(--start-bg); border: var(--btn-border); border-radius: var(--btn-radius-lg); }
+        #startBtn:hover { background: var(--start-hover); transform: scale(1.04); }
         #startBtn:active { transform: scale(0.96); }
-        #loadingHint { font-size: 12px; color: #888; letter-spacing: 1px; transition: color 0.3s; text-align: center; max-width: 320px; word-break: break-all; line-height: 1.5; }
+        #loadingHint { font-size: 12px; color: #ddd; letter-spacing: 1px; transition: color 0.3s; text-align: center; max-width: 320px; word-break: break-all; line-height: 1.5; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
 
         .hit-marker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff4444; font-size: 30px; font-weight: bold; pointer-events: none; z-index: 11; animation: hitPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         @keyframes hitPop { 0% { transform: translate(-50%,-50%) scale(0.3) rotate(-25deg); opacity: 0; } 40% { transform: translate(-50%,-50%) scale(1.35) rotate(8deg); opacity: 1; } 100% { transform: translate(-50%,-50%) scale(1.8) rotate(0deg); opacity: 0; } }
@@ -239,22 +267,9 @@
         #deathFade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 40; transition: opacity 0.6s ease; }
         #deathFade.active { opacity: 1; }
 
-        #hotbar {
-            position: fixed; bottom: 92px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; align-items: stretch; gap: 0;
-            padding: 0; margin: 0; z-index: 90;
-            width: var(--hotbar-w); height: var(--hotbar-h);
-            background: url('https://zh.minecraft.wiki/images/thumb/Hotbar.png/300px-Hotbar.png?95cb4') no-repeat center center;
-            background-size: 100% 100%; image-rendering: pixelated;
-            -ms-interpolation-mode: nearest-neighbor;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
-        }
+        #hotbar { position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%); display: flex; align-items: stretch; gap: 0; padding: 0; margin: 0; z-index: 90; width: var(--hotbar-w); height: var(--hotbar-h); background: url('https://zh.minecraft.wiki/images/thumb/Hotbar.png/300px-Hotbar.png?95cb4') no-repeat center center; background-size: 100% 100%; image-rendering: pixelated; -ms-interpolation-mode: nearest-neighbor; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4)); }
         .hotbar-slot { flex: 1 1 0; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; background: transparent; overflow: visible; }
-        .hotbar-slot.active {
-            background: url('https://zh.minecraft.wiki/images/Hotbar_selection.png?ba576') no-repeat center center;
-            background-size: contain; image-rendering: pixelated;
-        }
+        .hotbar-slot.active { background: url('https://zh.minecraft.wiki/images/Hotbar_selection.png?ba576') no-repeat center center; background-size: contain; image-rendering: pixelated; }
         @keyframes slotBump { 0% { transform: scale(1); } 35% { transform: scale(1.18); } 70% { transform: scale(0.95); } 100% { transform: scale(1); } }
         .hotbar-slot.bump { animation: slotBump 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .hotbar-slot:hover { background-color: rgba(255,255,255,0.08); }
@@ -267,16 +282,7 @@
         body.mobile #hotbar { bottom: 96px; }
         body.mobile #itemName { bottom: 144px; font-size: 12px; }
 
-        #bagPanel {
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.82);
-            opacity: 0; visibility: hidden;
-            background: rgba(20,20,20,0.95); padding: 20px; z-index: 400;
-            display: flex; flex-direction: column; gap: 14px;
-            border: 2px solid #555; max-width: 92vw; max-height: 90vh;
-            overflow-y: auto; pointer-events: none;
-            transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease, visibility 0.32s;
-        }
+        #bagPanel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.82); opacity: 0; visibility: hidden; background: rgba(20,20,20,0.95); padding: 20px; z-index: 400; display: flex; flex-direction: column; gap: 14px; border: 2px solid #555; max-width: 92vw; max-height: 90vh; overflow-y: auto; pointer-events: none; transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease, visibility 0.32s; }
         #bagPanel.active { transform: translate(-50%, -50%) scale(1); opacity: 1; visibility: visible; pointer-events: auto; }
         #bagPanel h3 { font-size: 16px; text-align: center; letter-spacing: 2px; color: #fff; }
         .bag-grid { display: grid; grid-template-columns: repeat(6, 56px); gap: 6px; }
@@ -289,39 +295,10 @@
         @keyframes floatBob { 0%, 100% { transform: scale(1.05); } 50% { transform: scale(0.98) rotate(2deg); } }
         #bagFloating img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
 
-        .bag-slot .pct-bar {
-            position: absolute;
-            left: 4px; right: 4px;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 14px;
-            background: #ffffff;
-            border-radius: 2px;
-            display: none;
-            overflow: hidden;
-            pointer-events: none;
-            z-index: 10;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-        }
+        .bag-slot .pct-bar { position: absolute; left: 4px; right: 4px; top: 50%; transform: translateY(-50%); height: 14px; background: #ffffff; border-radius: 2px; display: none; overflow: hidden; pointer-events: none; z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .bag-slot .pct-bar.active { display: block; }
-        .bag-slot .pct-fill {
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 0%;
-            background: #3b82f6;
-        }
-        .bag-slot .pct-text {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            font-size: 10px;
-            font-weight: bold;
-            font-family: inherit;
-            text-shadow: 0 0 2px rgba(255,255,255,0.9);
-        }
+        .bag-slot .pct-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: #3b82f6; }
+        .bag-slot .pct-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #000; font-size: 10px; font-weight: bold; font-family: inherit; text-shadow: 0 0 2px rgba(255,255,255,0.9); }
 
         body.ui-editing #mobileControls, body.ui-editing #chatInputWrap { pointer-events: none !important; }
         .ui-edit { outline: 2px dashed #5aff5a !important; outline-offset: 2px; cursor: move !important; z-index: 9998 !important; pointer-events: auto !important; }
@@ -336,6 +313,15 @@
     </style>
 </head>
 <body>
+
+<script>
+(function () {
+    let style = 'glass';
+    try { style = localStorage.getItem('sg_uistyle') || 'glass'; } catch (e) {}
+    if (style === 'default') document.body.classList.add('ui-default');
+    else document.body.classList.add('ui-glass');
+})();
+</script>
 
 <div id="llLogo">
     <img src="https://zh.minecraft.wiki/images/LLOGO.png?2fe11&20261015105202" alt="LL Logo">
@@ -418,20 +404,35 @@
             </div>
         </div>
         <div class="setting-row">
+            <label>UI 风格</label>
+            <div class="toggle-group">
+                <div class="toggle-btn" data-style="default">默认</div>
+                <div class="toggle-btn active" data-style="glass">液态玻璃</div>
+            </div>
+        </div>
+        <div class="setting-row">
             <label>摄像机灵敏度 <span class="range-val" id="sensValue">5.0</span></label>
-            <input type="range" id="sensSlider" min="1" max="20" step="1" value="5">
+            <div class="range-glass-wrap">
+                <input type="range" id="sensSlider" min="1" max="20" step="1" value="5">
+            </div>
         </div>
         <div class="setting-row">
             <label>视场角 FOV（最低 30°） <span class="range-val" id="fovValue">75°</span></label>
-            <input type="range" id="fovSlider" min="30" max="120" step="1" value="75">
+            <div class="range-glass-wrap">
+                <input type="range" id="fovSlider" min="30" max="120" step="1" value="75">
+            </div>
         </div>
         <div class="setting-row">
             <label>准星大小 <span class="range-val" id="crosshairSizeValue">26</span></label>
-            <input type="range" id="crosshairSizeSlider" min="8" max="80" step="1" value="26">
+            <div class="range-glass-wrap">
+                <input type="range" id="crosshairSizeSlider" min="8" max="80" step="1" value="26">
+            </div>
         </div>
         <div class="setting-row">
             <label>反色光圈大小 <span class="range-val" id="ringValue">172</span></label>
-            <input type="range" id="ringSlider" min="60" max="320" step="4" value="172">
+            <div class="range-glass-wrap">
+                <input type="range" id="ringSlider" min="60" max="320" step="4" value="172">
+            </div>
         </div>
         <div class="setting-row">
             <label>切换房间</label>
@@ -480,7 +481,6 @@
 <script>
 window.__gameStarted = false;
 
-/* LLOGO 最多显示 3 秒（从脚本开始执行时计时） */
 setTimeout(() => {
     const llLogo = document.getElementById('llLogo');
     if (llLogo) llLogo.classList.add('hidden');
@@ -539,6 +539,7 @@ const LS = {
     crosshairSize: 'sg_crosshairsize',
     statePrefix: 'sg_roomstate_', invPrefix: 'sg_inv_',
     uiLayout: 'sg_uilayout',
+    uiStyle: 'sg_uistyle',
 };
 
 const ASSETS = {
@@ -565,7 +566,7 @@ const ITEM_DEFS = {
     sniper_ammo: { name: '狙击子弹', img: 'https://s1.aigei.com/src/img/png/d6/d6f9b3b74e0448b0b5a75bf72f768f3f.png?imageMogr2/auto-orient/thumbnail/!282x282r/gravity/Center/crop/282x282/quality/85/%7CimageView2/2/w/282&e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:iF6xYHprXa5XOgPWSrhlNYzvqIg=', stackable: true, maxStack: 30, removeBg: true },
     medkit: { name: '血包', img: null, stackable: true, maxStack: 5, heal: 40, removeBg: false },
     harm_potion: { name: '伤害药水', img: 'https://zh.minecraft.wiki/images/Invicon_Splash_Potion_of_Harming.png?9b6ad', stackable: true, maxStack: 16, removeBg: false, isPotion: true },
-    knife:  { name: '刀', img: 'https://zh.minecraft.wiki/images/Invicon_Iron_Sword.png?ff2d7', stackable: false, damage: 5, removeBg: true },
+    knife:  { name: '刀', img: 'https://zh.minecraft.wiki/images/Invicon_Iron_Sword.png?ff2d7', stackable: false, damage: 34, removeBg: true, melee: true, attackRange: 2.6, attackCooldown: 380 },
 };
 
 const inventory = { slots: new Array(CONFIG.invSize).fill(null), selected: 0 };
@@ -669,6 +670,7 @@ let sprinting = false, sprintByJoystick = false, sprintByButton = false;
 
 let rightMouseDown = false;
 let leftMouseDown = false;
+let lastMeleeTime = 0;
 
 let ctrlTimer = null;
 
@@ -685,6 +687,8 @@ let sprintFovPulse = 0;
 
 let peekOffsetCurrent = 0;
 let peekAngleCurrent = 0;
+
+let uiStyle = 'glass';
 
 const _tmpVec1 = new THREE.Vector3();
 
@@ -1187,13 +1191,8 @@ async function buildWorld() {
         cobble: new THREE.MeshLambertMaterial({ map: cobbleTex, color: cobbleTex ? 0xffffff : FALLBACK_COLORS.cobble }),
         brick:  new THREE.MeshLambertMaterial({ map: brickTex,  color: brickTex ? 0xffffff : FALLBACK_COLORS.brick }),
         glass:  new THREE.MeshLambertMaterial({
-            map: glassTex,
-            color: glassTex ? 0xffffff : 0xbfe4ff,
-            transparent: true,
-            opacity: 0.55,
-            alphaTest: 0.05,
-            depthWrite: false,
-            side: THREE.DoubleSide,
+            map: glassTex, color: glassTex ? 0xffffff : 0xbfe4ff,
+            transparent: true, opacity: 0.55, alphaTest: 0.05, depthWrite: false, side: THREE.DoubleSide,
         }),
     };
 
@@ -1321,9 +1320,7 @@ function spawnBarrelAt(x, z, texture, isRemote) {
     scene.add(mesh);
     sceneObjects.push(mesh);
     barrels.push(mesh);
-    if (isRemote === false) {
-        publishMessage({ type: 'barrel_spawn', x: x, z: z });
-    }
+    if (isRemote === false) { publishMessage({ type: 'barrel_spawn', x: x, z: z }); }
 }
 
 function updateBarrelSpawning(now) {
@@ -1349,7 +1346,6 @@ function updateBarrelSpawning(now) {
 function breakBarrel(barrelMesh) {
     const bx = barrelMesh.position.x;
     const bz = barrelMesh.position.z;
-
     scene.remove(barrelMesh);
     const col = barrelMesh.userData && barrelMesh.userData.collider;
     if (col) { const ci = colliders.indexOf(col); if (ci >= 0) colliders.splice(ci, 1); }
@@ -1392,7 +1388,6 @@ function breakBarrel(barrelMesh) {
         nextBarrelSpawn = null;
         publishMessage({ type: 'barrel_break', x: bx, z: bz, nextX: null, nextZ: null, nextIdx: barrelCornerIndex });
     }
-
     barrelRespawnTime = performance.now() + CONFIG.barrelRespawnInterval;
 }
 
@@ -1515,7 +1510,6 @@ const bagFloatingImg = document.getElementById('bagFloatingImg');
 function initBagDnD() {
     const grid = document.getElementById('bagGrid');
     let lastTapIdx = -1, lastTapTime = 0;
-
     let holdState = null;
     let holdTimer = null;
 
@@ -1543,18 +1537,14 @@ function initBagDnD() {
         const item = inventory.slots[idx];
         if (!item) return;
         e.preventDefault();
-
         bagDragState = { fromIdx: idx, item: item, startX: e.clientX, startY: e.clientY, moved: false };
-
         bagFloatingImg.src = getItemImgURL(item.id);
         bagFloating.style.display = 'block';
         bagFloating.style.left = (e.clientX - 28) + 'px';
         bagFloating.style.top = (e.clientY - 28) + 'px';
-
         holdState = { slot: slot, fromIdx: idx, startTime: performance.now(), pct: 0 };
         const pctBar = pctBarOf(slot);
         if (pctBar) pctBar.classList.add('active');
-
         holdTimer = setInterval(() => {
             if (!holdState) return;
             const held = performance.now() - holdState.startTime;
@@ -1590,12 +1580,10 @@ function initBagDnD() {
         bagDragState = null;
         bagFloating.style.display = 'none';
         document.querySelectorAll('.bag-slot').forEach(s => s.classList.remove('dragover'));
-
         const held = holdState ? (performance.now() - holdState.startTime) : 0;
         const pct = holdState ? holdState.pct : 0;
         const wasHold = holdState !== null;
         clearHoldState();
-
         if (!moved && wasHold && held > 500 && pct > 0) {
             const item = inventory.slots[fromIdx];
             if (item && ITEM_DEFS[item.id]) {
@@ -1614,20 +1602,16 @@ function initBagDnD() {
             }
             return;
         }
-
         if (!moved) {
             const now = performance.now();
             if (lastTapIdx === fromIdx && now - lastTapTime < 340) { useItemAt(fromIdx); lastTapIdx = -1; }
             else { lastTapIdx = fromIdx; lastTapTime = now; }
             return;
         }
-
         const target = document.elementFromPoint(e.clientX, e.clientY);
         const rect = document.getElementById('bagPanel').getBoundingClientRect();
         const insidePanel = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
-
         if (!insidePanel) { throwItemFromIndex(fromIdx); return; }
-
         if (target && target.classList.contains('bag-slot')) {
             const toIdx = parseInt(target.dataset.index);
             if (toIdx !== fromIdx) {
@@ -1907,27 +1891,20 @@ function updateBullets(delta, now) {
 
 function spawnPotionProjectile(pos, dir, ownerId) {
     const tex = getItemTexture('harm_potion');
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: tex, color: tex ? 0xffffff : 0xcc00cc,
-        transparent: true, depthTest: true, depthWrite: false,
-    }));
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, color: tex ? 0xffffff : 0xcc00cc, transparent: true, depthTest: true, depthWrite: false }));
     sprite.scale.set(0.45, 0.45, 1);
     sprite.position.copy(pos);
     scene.add(sprite);
     potionProjectiles.push({
         mesh: sprite,
         vel: dir.clone().normalize().multiplyScalar(16).add(new THREE.Vector3(0, 4.5, 0)),
-        ownerId: ownerId,
-        spawnTime: performance.now(),
+        ownerId: ownerId, spawnTime: performance.now(),
     });
 }
 
 function spawnPotionSplash(pos) {
     const tex = getItemTexture('harm_potion');
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: tex, color: 0xff66ff,
-        transparent: true, opacity: 0.8, depthTest: true, depthWrite: false,
-    }));
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, color: 0xff66ff, transparent: true, opacity: 0.8, depthTest: true, depthWrite: false }));
     sprite.scale.set(1.5, 1.5, 1);
     sprite.position.copy(pos);
     scene.add(sprite);
@@ -1940,16 +1917,11 @@ function updatePotionProjectiles(delta, now) {
         p.vel.y += CONFIG.gravity * delta * 0.6;
         p.mesh.position.addScaledVector(p.vel, delta);
         p.mesh.material.rotation = (now - p.spawnTime) * 0.008;
-
         let hit = false;
         const dxSelf = p.mesh.position.x - player.pos.x;
         const dzSelf = p.mesh.position.z - player.pos.z;
         const dySelf = p.mesh.position.y - (player.pos.y + 0.9);
-        if (dxSelf*dxSelf + dzSelf*dzSelf + dySelf*dySelf < 1.2) {
-            takeDamage(25);
-            hit = true;
-        }
-
+        if (dxSelf*dxSelf + dzSelf*dzSelf + dySelf*dySelf < 1.2) { takeDamage(25); hit = true; }
         if (!hit) {
             for (const id in remotePlayers) {
                 if (id === p.ownerId) continue;
@@ -1958,15 +1930,11 @@ function updatePotionProjectiles(delta, now) {
                 const dz = p.mesh.position.z - rp.mesh.position.z;
                 const dy = p.mesh.position.y - (rp.mesh.position.y + 0.9);
                 if (dx*dx + dz*dz + dy*dy < 1.2) {
-                    if (p.ownerId === player.id) {
-                        publishMessage({ type: 'hit', targetId: id, damage: 25, from: player.name });
-                    }
-                    hit = true;
-                    break;
+                    if (p.ownerId === player.id) publishMessage({ type: 'hit', targetId: id, damage: 25, from: player.name });
+                    hit = true; break;
                 }
             }
         }
-
         if (!hit) {
             for (const bc of boxColliders) {
                 const dx = Math.abs(p.mesh.position.x - bc.x);
@@ -1975,19 +1943,12 @@ function updatePotionProjectiles(delta, now) {
                 if (dx < bc.hw + 0.2 && dy < bc.hh + 0.2 && dz < bc.hd + 0.2) { hit = true; break; }
             }
         }
-
         if (!hit) {
             const gh = getGroundHeight(p.mesh.position.x, p.mesh.position.z, p.mesh.position.y);
             if (p.mesh.position.y <= gh + 0.1) hit = true;
         }
-
         if (now - p.spawnTime > 6000) hit = true;
-
-        if (hit) {
-            spawnPotionSplash(p.mesh.position.clone());
-            scene.remove(p.mesh);
-            potionProjectiles.splice(i, 1);
-        }
+        if (hit) { spawnPotionSplash(p.mesh.position.clone()); scene.remove(p.mesh); potionProjectiles.splice(i, 1); }
     }
 }
 
@@ -1995,13 +1956,11 @@ function throwPotion() {
     if (!gameStarted || deathState.active || uiEditing || bagOpen) return false;
     const item = inventory.slots[inventory.selected];
     if (!item || item.id !== 'harm_potion') return false;
-
     const pos = camera.position.clone();
     const dir = new THREE.Vector3();
     camera.getWorldDirection(dir);
     const spawnPos = pos.clone().add(dir.clone().multiplyScalar(0.8));
     spawnPotionProjectile(spawnPos, dir, player.id);
-
     if (item.count > 1) item.count--;
     else inventory.slots[inventory.selected] = null;
     renderHotbar(); saveInventory();
@@ -2020,27 +1979,20 @@ addEventListener('keydown', (e) => {
     }
     if (e.code === 'KeyT' && gameStarted && !mobileMode && !deathState.active && !bagOpen) { e.preventDefault(); openChat(); }
     if (e.code === 'KeyI' && gameStarted && !deathState.active) { e.preventDefault(); if (bagOpen) closeBag(); else openBag(); }
-    if (e.code === 'KeyC' && gameStarted && !deathState.active && !bagOpen) {
-        e.preventDefault();
-        startAim();
-    }
+    if (e.code === 'KeyC' && gameStarted && !deathState.active && !bagOpen) { e.preventDefault(); startAim(); }
 
     if (e.code === 'ControlLeft' || e.code === 'ControlRight') {
         if (!gameStarted || deathState.active || bagOpen || chatOpen) return;
         e.preventDefault();
         if (ctrlTimer) {
-            clearTimeout(ctrlTimer);
-            ctrlTimer = null;
+            clearTimeout(ctrlTimer); ctrlTimer = null;
             if (player.crouching) player.crouching = false;
             toggleProne();
         } else {
             ctrlTimer = setTimeout(() => {
                 ctrlTimer = null;
-                if (player.prone) {
-                    player.prone = false;
-                } else {
-                    player.crouching = !player.crouching;
-                }
+                if (player.prone) player.prone = false;
+                else player.crouching = !player.crouching;
                 const crouchBtnEl = document.getElementById('crouchBtn');
                 const proneBtnEl = document.getElementById('proneBtn');
                 if (crouchBtnEl) crouchBtnEl.classList.toggle('active', player.crouching);
@@ -2065,15 +2017,9 @@ addEventListener('keydown', (e) => {
 });
 addEventListener('keyup', (e) => {
     keys[e.code] = false;
-    if (e.code === 'KeyC') {
-        if (aiming && !rightMouseDown) stopAim();
-    }
-    if (e.code === 'KeyQ') {
-        player.peekingRight = false;
-    }
-    if (e.code === 'KeyE') {
-        player.peekingLeft = false;
-    }
+    if (e.code === 'KeyC') { if (aiming && !rightMouseDown) stopAim(); }
+    if (e.code === 'KeyQ') { player.peekingRight = false; }
+    if (e.code === 'KeyE') { player.peekingLeft = false; }
 });
 
 addEventListener('wheel', (e) => {
@@ -2087,11 +2033,7 @@ addEventListener('wheel', (e) => {
 function toggleProne() {
     if (!gameStarted || deathState.active || uiEditing || bagOpen) return;
     player.prone = !player.prone;
-    if (player.prone) {
-        player.crouching = false;
-        player.peekingLeft = false;
-        player.peekingRight = false;
-    }
+    if (player.prone) { player.crouching = false; player.peekingLeft = false; player.peekingRight = false; }
     const proneBtnEl = document.getElementById('proneBtn');
     const crouchBtnEl = document.getElementById('crouchBtn');
     const peekLeftEl = document.getElementById('peekLeftBtn');
@@ -2113,6 +2055,8 @@ function stopAim() {
     if (!aiming) return;
     aiming = false;
     if (camera) { camera.fov = baseFov; camera.updateProjectionMatrix(); }
+    const aimBtnEl = document.getElementById('aimBtn');
+    if (aimBtnEl) aimBtnEl.classList.remove('active');
 }
 function tryUseMedkitOnLeftClick() {
     const item = inventory.slots[inventory.selected];
@@ -2199,6 +2143,35 @@ function fireGun() {
     if (!item || !ITEM_DEFS[item.id]) return;
     const def = ITEM_DEFS[item.id];
     if (!def.damage) return;
+
+    if (def.melee) {
+        const now = performance.now();
+        if (now - lastMeleeTime < (def.attackCooldown || 400)) return;
+        lastMeleeTime = now;
+        const dir = new THREE.Vector3();
+        camera.getWorldDirection(dir);
+        const origin = camera.position.clone();
+        const range = def.attackRange || 2.6;
+        let hitId = null, minDist = Infinity;
+        for (const id in remotePlayers) {
+            const rp = remotePlayers[id];
+            const toP = rp.mesh.position.clone().sub(origin);
+            toP.y += 0.9;
+            const dist = toP.length();
+            if (dist > range) continue;
+            const dot = toP.clone().normalize().dot(dir);
+            if (dot < 0.6) continue;
+            if (dist < minDist) { minDist = dist; hitId = id; }
+        }
+        if (hitId) {
+            publishMessage({ type: 'hit', targetId: hitId, damage: def.damage, from: player.name });
+            showHitMarker();
+        }
+        cameraLean += (Math.random() - 0.5) * 0.06;
+        recoilKick = 0.6;
+        return;
+    }
+
     const ammoType = def.ammoType;
     if (ammoType) {
         let hasAmmo = false;
@@ -2377,25 +2350,16 @@ function initMobileControls() {
     shootBtn.addEventListener('pointerup', shootEnd);
     shootBtn.addEventListener('pointercancel', shootEnd);
 
-    let aimPointerId = null;
     aimBtn.addEventListener('pointerdown', (e) => {
         e.preventDefault(); e.stopPropagation();
         if (!gameStarted || deathState.active || uiEditing || bagOpen) return;
-        aimPointerId = e.pointerId;
-        startAim();
-        if (aiming) aimBtn.classList.add('active');
-    });
-    aimBtn.addEventListener('pointerup', (e) => {
-        if (e.pointerId !== aimPointerId) return;
-        aimPointerId = null;
-        aimBtn.classList.remove('active');
-        stopAim();
-    });
-    aimBtn.addEventListener('pointercancel', (e) => {
-        if (e.pointerId !== aimPointerId) return;
-        aimPointerId = null;
-        aimBtn.classList.remove('active');
-        stopAim();
+        if (aiming) {
+            stopAim();
+            aimBtn.classList.remove('active');
+        } else {
+            startAim();
+            if (aiming) aimBtn.classList.add('active');
+        }
     });
 
     jumpBtn.addEventListener('pointerdown', (e) => {
@@ -2489,7 +2453,6 @@ function setMobileMode(on, save) {
 
 /* ==================== 物理 ==================== */
 function tryJump() { if (player.onGround && !player.prone) { player.vy = CONFIG.jumpSpeed; player.onGround = false; } }
-
 function getPlayerHeight() { return currentBodyHeight; }
 function getEyeHeight() { return currentEyeHeight; }
 
@@ -2578,7 +2541,6 @@ function updatePlayer(delta, now) {
     const targetBodyHeight = player.prone ? CONFIG.proneHeight : (player.crouching ? CONFIG.crouchHeight : CONFIG.playerHeight);
     const targetEyeHeight = player.prone ? CONFIG.proneEyeHeight : (player.crouching ? CONFIG.crouchEyeHeight : CONFIG.eyeHeight);
     const targetProneTilt = player.prone ? 1 : 0;
-
     const poseK = 1 - Math.pow(0.001, delta);
     currentBodyHeight = THREE.MathUtils.lerp(currentBodyHeight, targetBodyHeight, poseK);
     currentEyeHeight = THREE.MathUtils.lerp(currentEyeHeight, targetEyeHeight, poseK);
@@ -2642,13 +2604,8 @@ function updatePlayer(delta, now) {
 
     let targetPeekOffset = 0;
     let targetPeekAngle = 0;
-    if (player.peekingLeft) {
-        targetPeekOffset = CONFIG.PEEK_OFFSET;
-        targetPeekAngle = -CONFIG.PEEK_ANGLE;
-    } else if (player.peekingRight) {
-        targetPeekOffset = -CONFIG.PEEK_OFFSET;
-        targetPeekAngle = CONFIG.PEEK_ANGLE;
-    }
+    if (player.peekingLeft) { targetPeekOffset = CONFIG.PEEK_OFFSET; targetPeekAngle = -CONFIG.PEEK_ANGLE; }
+    else if (player.peekingRight) { targetPeekOffset = -CONFIG.PEEK_OFFSET; targetPeekAngle = CONFIG.PEEK_ANGLE; }
     peekOffsetCurrent = THREE.MathUtils.lerp(peekOffsetCurrent, targetPeekOffset, 0.15);
     peekAngleCurrent = THREE.MathUtils.lerp(peekAngleCurrent, targetPeekAngle, 0.15);
 
@@ -2775,10 +2732,8 @@ function updateHealthUI() {
     if (!fill || !text) return;
     fill.style.width = (pct * 100) + '%';
     fill.classList.remove('mid', 'low', 'critical');
-    if (pct < 0.3) {
-        fill.classList.add('low');
-        fill.classList.add('critical');
-    } else if (pct < 0.65) fill.classList.add('mid');
+    if (pct < 0.3) { fill.classList.add('low'); fill.classList.add('critical'); }
+    else if (pct < 0.65) fill.classList.add('mid');
     text.textContent = Math.round(Math.max(0, player.health));
 }
 function takeDamage(amount) {
@@ -2920,9 +2875,7 @@ function handleNetworkMessage(data) {
         case 'leave': removeRemotePlayer(data.id); break;
         case 'move': updateRemotePlayer(data); break;
         case 'skin': updateRemotePlayerSkin(data.id, data.skin); break;
-        case 'hit':
-            if (data.targetId === player.id) { takeDamage(data.damage || 20); }
-            break;
+        case 'hit': if (data.targetId === player.id) { takeDamage(data.damage || 20); } break;
         case 'chat':
             if (data.to && data.to !== player.name) return;
             addChatLine(data.from, data.text, 'msg', !!data.to);
@@ -2943,11 +2896,8 @@ function handleNetworkMessage(data) {
                     break;
                 }
             }
-            if (typeof data.nextX === 'number' && typeof data.nextZ === 'number') {
-                nextBarrelSpawn = { x: data.nextX, z: data.nextZ };
-            } else {
-                nextBarrelSpawn = null;
-            }
+            if (typeof data.nextX === 'number' && typeof data.nextZ === 'number') nextBarrelSpawn = { x: data.nextX, z: data.nextZ };
+            else nextBarrelSpawn = null;
             if (typeof data.nextIdx === 'number') barrelCornerIndex = data.nextIdx;
             barrelRespawnTime = performance.now() + CONFIG.barrelRespawnInterval;
             break;
@@ -2957,9 +2907,7 @@ function handleNetworkMessage(data) {
             for (const b of barrels) {
                 if (Math.abs(b.position.x - data.x) < 0.5 && Math.abs(b.position.z - data.z) < 0.5) { exists = true; break; }
             }
-            if (!exists) {
-                spawnBarrelAt(data.x, data.z, null, true);
-            }
+            if (!exists) spawnBarrelAt(data.x, data.z, null, true);
             nextBarrelSpawn = null;
             barrelRespawnTime = performance.now() + CONFIG.barrelRespawnInterval;
             break;
@@ -2983,16 +2931,8 @@ async function addRemotePlayer(data) {
     remotePlayers[data.id] = {
         mesh: group, nameSprite: nameSprite, skin: data.skin || null,
         displayName: data.name || 'Unknown',
-        targetPos: new THREE.Vector3(
-            data.position ? data.position.x : 0,
-            py,
-            data.position ? data.position.z : 0
-        ),
-        currentPos: new THREE.Vector3(
-            data.position ? data.position.x : 0,
-            py,
-            data.position ? data.position.z : 0
-        ),
+        targetPos: new THREE.Vector3(data.position ? data.position.x : 0, py, data.position ? data.position.z : 0),
+        currentPos: new THREE.Vector3(data.position ? data.position.x : 0, py, data.position ? data.position.z : 0),
         targetRot: 0, currentRot: 0,
         spawnTime: performance.now(), lastUpdate: performance.now(),
     };
@@ -3206,6 +3146,13 @@ function initSettings() {
     if (savedSkin) { player.skin = savedSkin; skinPreviewImg.src = savedSkin; }
     else skinPreviewImg.src = ASSETS.kai;
 
+    let savedStyle = 'glass';
+    try { savedStyle = localStorage.getItem(LS.uiStyle) || 'glass'; } catch (e) {}
+    uiStyle = (savedStyle === 'default') ? 'default' : 'glass';
+    document.querySelectorAll('.toggle-btn[data-style]').forEach(b => {
+        b.classList.toggle('active', b.dataset.style === uiStyle);
+    });
+
     btn.addEventListener('click', (e) => {
         if (uiEditing || bagOpen) return;
         e.stopPropagation();
@@ -3259,6 +3206,9 @@ function initSettings() {
         localStorage.setItem(LS.ring, ringSlider.value);
     });
     document.querySelectorAll('.toggle-btn[data-mode]').forEach(b => { b.addEventListener('click', () => setMobileMode(b.dataset.mode === 'mobile', true)); });
+    document.querySelectorAll('.toggle-btn[data-style]').forEach(b => {
+        b.addEventListener('click', () => setUIStyle(b.dataset.style, true));
+    });
     skinUploadBtn.addEventListener('click', () => skinFile.click());
     skinFile.addEventListener('change', () => {
         const file = skinFile.files && skinFile.files[0];
@@ -3423,7 +3373,6 @@ async function main() {
     let initError = null;
 
     try { medkitDataURL = createMedkitIcon(); } catch (e) {}
-
     try {
         const oldRoom = localStorage.getItem(LS.room);
         if (oldRoom && !/^[a-zA-Z0-9_]+$/.test(oldRoom)) {
@@ -3499,6 +3448,8 @@ async function main() {
 
     if (initError) { setHint('初始化失败：' + (initError.message || initError), '#ff5555'); worldReady = false; }
     else { setHint('资源已就绪，点击开始游戏', '#5aff5a'); worldReady = true; }
+
+    try { setUIStyle(uiStyle, false); } catch (err) { console.warn('UI 风格初始化失败:', err); }
     try { animate(); } catch (err) {}
 }
 
@@ -3507,6 +3458,218 @@ main().catch((err) => {
     if (hint) { hint.style.color = '#ff5555'; hint.textContent = '主流程崩溃：' + (err.message || err); }
     alert('初始化失败：' + (err.message || err) + '\n请截图这段文字反馈。');
 });
+
+/* ==================== 液态玻璃 ==================== */
+class LiquidGlass {
+    constructor(element, opts = {}) {
+        this.el = element;
+        this.opts = Object.assign({
+            strength: 0.7,
+            borderWidth: 0.16,
+            blur: 0.3,
+            brightness: 1.15,
+            saturate: 1.25,
+        }, opts);
+
+        this.id = 'lg_' + Math.random().toString(36).slice(2, 9);
+        this.dpi = 1;
+        this._w = 0; this._h = 0;
+
+        this._buildSVG();
+        this._applyStyle();
+        this._rebuild();
+
+        if (window.ResizeObserver) {
+            this._ro = new ResizeObserver(() => this._rebuild());
+            this._ro.observe(element);
+        }
+    }
+
+    _buildSVG() {
+        const ns = 'http://www.w3.org/2000/svg';
+        this.svg = document.createElementNS(ns, 'svg');
+        this.svg.setAttribute('width', '0');
+        this.svg.setAttribute('height', '0');
+        this.svg.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;pointer-events:none;';
+
+        const defs = document.createElementNS(ns, 'defs');
+        this.filter = document.createElementNS(ns, 'filter');
+        this.filter.setAttribute('id', this.id + '_f');
+        this.filter.setAttribute('filterUnits', 'userSpaceOnUse');
+        this.filter.setAttribute('colorInterpolationFilters', 'sRGB');
+        this.filter.setAttribute('x', '0');
+        this.filter.setAttribute('y', '0');
+
+        this.feImage = document.createElementNS(ns, 'feImage');
+        this.feImage.setAttribute('id', this.id + '_map');
+        this.feImage.setAttribute('preserveAspectRatio', 'none');
+
+        this.disp = document.createElementNS(ns, 'feDisplacementMap');
+        this.disp.setAttribute('in', 'SourceGraphic');
+        this.disp.setAttribute('in2', '#' + this.id + '_map');
+        this.disp.setAttribute('xChannelSelector', 'R');
+        this.disp.setAttribute('yChannelSelector', 'G');
+
+        this.filter.appendChild(this.feImage);
+        this.filter.appendChild(this.disp);
+        defs.appendChild(this.filter);
+        this.svg.appendChild(defs);
+        document.body.appendChild(this.svg);
+
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
+    }
+
+    _applyStyle() {
+        const bf = 'url(#' + this.id + '_f) blur(' + this.opts.blur +
+            'px) brightness(' + this.opts.brightness +
+            ') saturate(' + this.opts.saturate + ')';
+        this.el.style.backdropFilter = bf;
+        this.el.style.webkitBackdropFilter = bf;
+    }
+
+    _rebuild() {
+        const rect = this.el.getBoundingClientRect();
+        const w = Math.max(2, Math.round(rect.width));
+        const h = Math.max(2, Math.round(rect.height));
+        if (w === this._w && h === this._h) return;
+        this._w = w; this._h = h;
+
+        this.filter.setAttribute('width', w);
+        this.filter.setAttribute('height', h);
+        this.feImage.setAttribute('width', w);
+        this.feImage.setAttribute('height', h);
+
+        this.canvas.width = w * this.dpi;
+        this.canvas.height = h * this.dpi;
+        this._generateMap(w, h);
+    }
+
+    _generateMap(w, h) {
+        const cw = w * this.dpi, ch = h * this.dpi;
+        const data = new Uint8ClampedArray(cw * ch * 4);
+        const raw = new Float32Array(cw * ch * 2);
+
+        const bw = this.opts.borderWidth;
+        const strength = this.opts.strength;
+        let maxScale = 0.0001;
+
+        for (let y = 0; y < ch; y++) {
+            for (let x = 0; x < cw; x++) {
+                const u = x / cw;
+                const v = y / ch;
+                const ix = u - 0.5;
+                const iy = v - 0.5;
+
+                const edgeX = 0.5 - Math.abs(ix);
+                const edgeY = 0.5 - Math.abs(iy);
+                const edge = Math.min(edgeX, edgeY);
+
+                let t = edge / bw;
+                if (t < 0) t = 0; else if (t > 1) t = 1;
+                t = t * t * (3 - 2 * t);
+
+                const scale = 1 - (1 - t) * strength;
+
+                const sx = 0.5 + ix * scale;
+                const sy = 0.5 + iy * scale;
+                const dx = sx * cw - x;
+                const dy = sy * ch - y;
+
+                const idx = (y * cw + x) * 2;
+                raw[idx] = dx;
+                raw[idx + 1] = dy;
+                const m = Math.max(Math.abs(dx), Math.abs(dy));
+                if (m > maxScale) maxScale = m;
+            }
+        }
+
+        maxScale *= 0.5;
+
+        for (let i = 0, j = 0; i < data.length; i += 4, j += 2) {
+            data[i]     = (raw[j]     / maxScale + 0.5) * 255;
+            data[i + 1] = (raw[j + 1] / maxScale + 0.5) * 255;
+            data[i + 2] = 0;
+            data[i + 3] = 255;
+        }
+
+        this.ctx.putImageData(new ImageData(data, cw, ch), 0, 0);
+        this.feImage.setAttributeNS('http://www.w3.org/1999/xlink', 'href', this.canvas.toDataURL());
+        this.disp.setAttribute('scale', (maxScale / this.dpi).toString());
+    }
+
+    destroy() {
+        if (this._ro) this._ro.disconnect();
+        this.svg.remove();
+        this.canvas.remove();
+        this.el.style.backdropFilter = '';
+        this.el.style.webkitBackdropFilter = '';
+    }
+}
+
+const _glassInstances = [];
+
+function clearAllGlass() {
+    for (const g of _glassInstances) {
+        try { g.destroy(); } catch (e) {}
+    }
+    _glassInstances.length = 0;
+}
+
+function initLiquidGlass() {
+    clearAllGlass();
+    const targetSelectors = [
+        '#settingsBtn',
+        '#chatBtn',
+        '#throwBtn',
+        '#backBtn',
+        '#startBtn',
+        '#shootBtn',
+        '#aimBtn',
+        '#jumpBtn',
+        '#bagBtn',
+        '#sprintBtn',
+        '#crouchBtn',
+        '#proneBtn',
+        '#peekLeftBtn',
+        '#peekRightBtn',
+        '#joystickZone',
+        '.big-btn',
+        '.toggle-btn',
+        '.skin-btn',
+        '.range-glass-wrap',
+    ];
+    for (const sel of targetSelectors) {
+        const els = document.querySelectorAll(sel);
+        els.forEach(el => {
+            try {
+                _glassInstances.push(new LiquidGlass(el, { strength: 0.7, borderWidth: 0.16 }));
+            } catch (e) { console.warn('液态玻璃初始化失败:', sel, e); }
+        });
+    }
+}
+window.__glass = _glassInstances;
+
+function setUIStyle(style, save) {
+    if (save === undefined) save = true;
+    if (style !== 'glass' && style !== 'default') style = 'glass';
+    uiStyle = style;
+
+    document.body.classList.toggle('ui-glass', style === 'glass');
+    document.body.classList.toggle('ui-default', style === 'default');
+
+    document.querySelectorAll('.toggle-btn[data-style]').forEach(x => {
+        x.classList.toggle('active', x.dataset.style === style);
+    });
+
+    clearAllGlass();
+    if (style === 'glass') {
+        try { initLiquidGlass(); } catch (e) { console.warn('液态玻璃初始化失败:', e); }
+    }
+
+    if (save) { try { localStorage.setItem(LS.uiStyle, style); } catch (e) {} }
+}
+window.__setUIStyle = setUIStyle;
 </script>
 </body>
 </html>
