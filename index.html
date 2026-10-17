@@ -237,8 +237,8 @@ body.mobile #sprintHint{display:block}
 #deathFade.active{opacity:1}
 
 #hotbar{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);display:flex;align-items:stretch;gap:0;padding:0;margin:0;z-index:90;width:var(--hotbar-w);height:var(--hotbar-h);background-image:var(--hotbar-bg,url('https://zh.minecraft.wiki/images/thumb/Hotbar.png/300px-Hotbar.png?95cb4'));background-repeat:no-repeat;background-position:center center;background-size:100% 100%;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.4))}
-.hotbar-slot{flex:1 1 0;height:100%;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;background:transparent;overflow:visible}
-.hotbar-slot.active{background-image:var(--hotbar-sel-bg,url('https://zh.minecraft.wiki/images/Hotbar_selection.png?ba576'));background-repeat:no-repeat;background-position:center center;background-size:contain;image-rendering:pixelated}
+.hotbar-slot{flex:1 1 0;height:100%;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;background-color:transparent;background-image:var(--hotbar-slot-bg,none);background-repeat:no-repeat;background-position:center center;background-size:100% 100%;overflow:visible}
+.hotbar-slot.active{background-image:var(--hotbar-sel-bg,url('https://zh.minecraft.wiki/images/Hotbar_selection.png?ba576')),var(--hotbar-slot-bg,none);background-repeat:no-repeat,no-repeat;background-position:center center,center center;background-size:contain,100% 100%;image-rendering:pixelated}
 @keyframes slotBump{0%{transform:scale(1)}35%{transform:scale(1.18)}70%{transform:scale(0.95)}100%{transform:scale(1)}}
 .hotbar-slot.bump{animation:slotBump 0.3s cubic-bezier(0.34,1.56,0.64,1)}
 .hotbar-slot:hover{background-color:rgba(255,255,255,0.08)}
@@ -763,7 +763,7 @@ const TEXTURE_PACK_FILE_MAP = {
 };
 
 /* 非 Three.js 纹理的 UI 资源 */
-const TEXTURE_PACK_UI_FILES = ['物品栏.png', '物品栏选中.png', '字体.ttf', '背景图.png'];
+const TEXTURE_PACK_UI_FILES = ['物品栏.png', '物品栏选中.png', '物品栏选项框.png', '字体.ttf', '背景图.png'];
 
 let texturePackData = {};
 
@@ -882,6 +882,12 @@ function applyUIAssets() {
         root.style.setProperty('--hotbar-sel-bg', 'url("' + active['物品栏选中.png'] + '")');
     } else {
         root.style.removeProperty('--hotbar-sel-bg');
+    }
+
+        if (active['物品栏选项框.png']) {
+        root.style.setProperty('--hotbar-slot-bg', 'url("' + active['物品栏选项框.png'] + '")');
+    } else {
+        root.style.removeProperty('--hotbar-slot-bg');
     }
 
     const startScreen = document.getElementById('startScreen');
