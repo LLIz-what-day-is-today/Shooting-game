@@ -314,6 +314,12 @@ body.ui-editing #mobileControls,body.ui-editing #chatInputWrap{pointer-events:no
     background:rgba(255,255,255,0.24);
     border:none;outline:none;transform:none;
 }
+
+/* 材质包字体覆盖 */
+body.use-custom-font, body.use-custom-font * {
+    font-family: 'CustomFont', 'Microsoft YaHei', '微软雅黑', sans-serif !important;
+}
+#uploadTexturePackBtn { margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -374,6 +380,7 @@ body.ui-editing #mobileControls,body.ui-editing #chatInputWrap{pointer-events:no
 </div>
 <div id="netStatus">未连接</div>
 <div id="llWatermark">LL-team AB.No stealing products.</div>
+
 <div id="uiEditBar">
     <span class="ui-edit-tip">拖动元素移动 · 拖拽右下角调整大小（含手机按钮）</span>
     <button id="uiResetBtn">重置全部</button>
@@ -443,6 +450,14 @@ body.ui-editing #mobileControls,body.ui-editing #chatInputWrap{pointer-events:no
             <label>UI 编辑（可调手机按钮位置）</label>
             <button class="big-btn" id="editUIBtn">编辑 UI 布局</button>
         </div>
+        <div class="setting-row">
+            <label>材质包</label>
+            <div class="toggle-group" id="texturePackGroup">
+                <div class="toggle-btn active" data-pack="default">默认</div>
+                <div class="toggle-btn" data-pack="custom">材质包</div>
+            </div>
+            <button class="big-btn" id="uploadTexturePackBtn" style="margin-top:10px">上传材质包</button>
+        </div>
     </div>
 </div>
 
@@ -478,6 +493,7 @@ body.ui-editing #mobileControls,body.ui-editing #chatInputWrap{pointer-events:no
         onerror="this.onerror=null; this.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.min.js"
         onerror="this.onerror=null; this.src='https://unpkg.com/three@0.150.0/build/three.min.js';"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <script>
 /* ============ 全局错误处理 ============ */
@@ -542,6 +558,13 @@ const CONFIG = {
     PEEK_OFFSET: 0.6,
     PEEK_ANGLE: 0.25,
     POSE_TRANSITION_SPEED: 12,
+    // 光影
+    SHADOW_MAP_SIZE: 2048,
+    SHADOW_AREA: 78,          // shadow camera 半宽
+    SUN_POS: { x: 100, y: 80, z: 20 },   // 太阳在 +X 方向
+    SUN_COLOR: 0xfff2dd,
+    SUN_INTENSITY: 1.35,
+    AMBIENT_INTENSITY: 0.52,
 };
 
 const LS = {
@@ -567,6 +590,8 @@ const ASSETS = {
 };
 
 const FALLBACK_COLORS = { planks: 0xc09a5b, log: 0x8a6234, cobble: 0x909090, brick: 0xa8574a, glass: 0xbfe4ff };
+
+const ORIGINAL_ASSETS = Object.assign({}, ASSETS);
 
 const ITEM_DEFS = {
     pistol: { name: '手枪', img: 'https://s1.aigei.com/src/img/png/0d/0d7e70d1a07547e38c06e6fcbf53c510.png?imageMogr2/auto-orient/thumbnail/!560x560r/gravity/Center/crop/560x560/quality/85/%7CimageView2/2/w/560&e=2051020800&token=P7S2Xpzfz11vAkASLTkfHN7Fw-oOZBecqeJaxypL:vZYrRReOrldOQbHWSddiJHWHxK0=', stackable: false, damage: 28, ammoType: 'ammo', removeBg: true },
@@ -613,13 +638,16 @@ const potionProjectiles = [];
 const yBillboards = [];
 const fullBillboards = [];
 
-const texCache = {}, texPromises = {};
+let texCache = {}, texPromises = {};
 const skinTextureCache = {}, itemTextureCache = {};
 const itemIconURL = {};
 let medkitDataURL = null, bulletTex = null;
 let localPlayerMesh = null, localMeshGeneration = 0;
 let lastBarrelSpawnCheck = 0;
 let dropIdCounter = 0, lastRenderedSelection = -1;
+
+let worldMats = null;
+const worldBillboardMats = [];
 
 let currentBodyHeight = CONFIG.playerHeight;
 let currentEyeHeight = CONFIG.eyeHeight;
@@ -719,6 +747,211 @@ function getBulletTexture() {
     bulletTex.magFilter = THREE.LinearFilter;
     bulletTex.minFilter = THREE.LinearFilter;
     return bulletTex;
+}
+
+/* ============ 材质包（IndexedDB，无任何大小限制） ============ */
+const TEXTURE_PACK_MODE_KEY = 'sg_packmode';
+const TEXTURE_PACK_FILE_MAP = {
+    '草地.png': 'mossBlock',
+    '树.png': 'tree',
+    '石砖.png': 'brick',
+    '圆石.png': 'cobble',
+    '木头.png': 'log',
+    '石头.png': 'stone',
+    '木板.png': 'planks',
+};
+
+let texturePackData = {};
+
+function openTexPackDB() {
+    return new Promise((res, rej) => {
+        const req = indexedDB.open('sg_texpack_db', 1);
+        req.onupgradeneeded = () => {
+            const db = req.result;
+            if (!db.objectStoreNames.contains('packs')) db.createObjectStore('packs');
+        };
+        req.onsuccess = () => res(req.result);
+        req.onerror = () => rej(req.error);
+    });
+}
+async function texPackDBSet(key, value) {
+    const db = await openTexPackDB();
+    return new Promise((res, rej) => {
+        const tx = db.transaction('packs', 'readwrite');
+        tx.objectStore('packs').put(value, key);
+        tx.oncomplete = () => res();
+        tx.onerror = () => rej(tx.error);
+    });
+}
+async function texPackDBGet(key) {
+    const db = await openTexPackDB();
+    return new Promise((res, rej) => {
+        const tx = db.transaction('packs', 'readonly');
+        const r = tx.objectStore('packs').get(key);
+        r.onsuccess = () => res(r.result || null);
+        r.onerror = () => rej(r.error);
+    });
+}
+
+async function loadTexturePackIntoMemory() {
+    try {
+        const raw = await texPackDBGet('current');
+        if (raw) { texturePackData = JSON.parse(raw); return; }
+    } catch(e) { console.warn('读取材质包失败:', e); }
+    try {
+        const legacy = localStorage.getItem('sg_texturepack');
+        if (legacy) {
+            texturePackData = JSON.parse(legacy);
+            try { await texPackDBSet('current', legacy); } catch(e) {}
+            localStorage.removeItem('sg_texturepack');
+            return;
+        }
+    } catch(e) {}
+    texturePackData = {};
+}
+
+async function applyTexturePack() {
+    const mode = localStorage.getItem(TEXTURE_PACK_MODE_KEY) || 'default';
+
+    for (const file in TEXTURE_PACK_FILE_MAP) {
+        ASSETS[TEXTURE_PACK_FILE_MAP[file]] = ORIGINAL_ASSETS[TEXTURE_PACK_FILE_MAP[file]];
+    }
+    if (mode === 'custom') {
+        for (const file in TEXTURE_PACK_FILE_MAP) {
+            if (texturePackData[file]) ASSETS[TEXTURE_PACK_FILE_MAP[file]] = texturePackData[file];
+        }
+    }
+
+    for (const k in texPromises) delete texPromises[k];
+    for (const k in texCache) delete texCache[k];
+
+    await refreshWorldTextures();
+}
+
+async function refreshWorldTextures() {
+    if (!worldMats) return;
+    const entries = [
+        ['mossBlock', worldMats.floor,  true],
+        ['planks',    worldMats.planks, false],
+        ['log',       worldMats.log,    false],
+        ['cobble',    worldMats.cobble, false],
+        ['brick',     worldMats.brick,  false],
+        ['glass',     worldMats.glass,  false],
+    ];
+    for (const [key, mat, isFloor] of entries) {
+        if (!mat) continue;
+        const t = await getTexture(ASSETS[key]);
+        if (!t) continue;
+        if (isFloor) {
+            t.wrapS = t.wrapT = THREE.RepeatWrapping;
+            t.repeat.set(CONFIG.floorRepeat, CONFIG.floorRepeat);
+        }
+        mat.map = t;
+        mat.color.setHex(0xffffff);
+        mat.needsUpdate = true;
+    }
+    for (const mat of worldBillboardMats) {
+        const key = mat.userData && mat.userData.texKey;
+        if (!key) continue;
+        const t = await getTexture(ASSETS[key]);
+        if (!t) continue;
+        mat.map = t;
+        mat.color.setHex(0xffffff);
+        mat.needsUpdate = true;
+    }
+}
+
+async function uploadTexturePack(file) {
+    if (typeof JSZip === 'undefined') { alert('JSZip 未加载，请检查网络'); return; }
+    let zip;
+    try { zip = await JSZip.loadAsync(file); }
+    catch(e) { alert('ZIP 解析失败：' + e.message); return; }
+
+    const pack = {};
+    const targetNames = Object.keys(TEXTURE_PACK_FILE_MAP).concat(['背景图.png', '字体.ttf']);
+    for (const path in zip.files) {
+        const f = zip.files[path];
+        if (f.dir) continue;
+        const baseName = path.split('/').pop();
+        if (!targetNames.includes(baseName)) continue;
+        let mime = 'application/octet-stream';
+        try {
+            const buf = await f.async('arraybuffer');
+            const u8 = new Uint8Array(buf);
+            if (baseName.endsWith('.ttf')) mime = 'font/ttf';
+            else if (u8[0] === 0x89 && u8[1] === 0x50) mime = 'image/png';
+            else if (u8[0] === 0xFF && u8[1] === 0xD8) mime = 'image/jpeg';
+            else if (u8[0] === 0x52 && u8[1] === 0x49 && u8[8] === 0x57) mime = 'image/webp';
+            else mime = 'image/png';
+
+            let bin = '';
+            const chunk = 0x8000;
+            for (let i = 0; i < u8.length; i += chunk) {
+                bin += String.fromCharCode.apply(null, u8.subarray(i, i + chunk));
+            }
+            pack[baseName] = 'data:' + mime + ';base64,' + btoa(bin);
+        } catch(e) { console.warn('读取文件失败:', baseName, e); }
+    }
+    if (Object.keys(pack).length === 0) {
+        alert('材质包里没有找到可用的文件');
+        return;
+    }
+
+    texturePackData = pack;
+    texPackDBSet('current', JSON.stringify(pack)).catch(e => {
+        console.warn('材质包写入 IndexedDB 失败（当前会话仍生效，刷新后可能丢失）:', e);
+    });
+
+    localStorage.setItem(TEXTURE_PACK_MODE_KEY, 'custom');
+    document.querySelectorAll('.toggle-btn[data-pack]').forEach(b => {
+        b.classList.toggle('active', b.dataset.pack === 'custom');
+    });
+
+    try {
+        await applyTexturePack();
+        addKillFeed('✅ 材质包已上传并实时生效');
+    } catch(e) {
+        console.error('应用材质包失败:', e);
+        addKillFeed('材质包应用失败: ' + (e.message || e));
+    }
+}
+
+function initTexturePackSettings() {
+    const curMode = localStorage.getItem(TEXTURE_PACK_MODE_KEY) || 'default';
+    document.querySelectorAll('.toggle-btn[data-pack]').forEach(b => {
+        b.classList.toggle('active', b.dataset.pack === curMode);
+        b.addEventListener('click', async () => {
+            const mode = b.dataset.pack;
+            const cur = localStorage.getItem(TEXTURE_PACK_MODE_KEY) || 'default';
+            if (mode === cur) return;
+            if (mode === 'custom' && Object.keys(texturePackData).length === 0) {
+                alert('还没有上传材质包，请先上传');
+                return;
+            }
+            localStorage.setItem(TEXTURE_PACK_MODE_KEY, mode);
+            try {
+                await applyTexturePack();
+                addKillFeed('材质模式已切换，材质已重新加载');
+            } catch(e) {
+                console.error('切换材质失败:', e);
+                addKillFeed('切换材质失败: ' + (e.message || e));
+            }
+        });
+    });
+
+    const upBtn = document.getElementById('uploadTexturePackBtn');
+    if (upBtn) {
+        upBtn.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.zip,application/zip';
+            input.onchange = async () => {
+                const f = input.files && input.files[0];
+                if (f) await uploadTexturePack(f);
+            };
+            input.click();
+        });
+    }
 }
 
 /* ============ 房间名处理 ============ */
@@ -828,7 +1061,7 @@ function getTexture(url) {
     if (texPromises[url]) return texPromises[url];
     texPromises[url] = new Promise((res) => {
         const l = new THREE.TextureLoader();
-        l.setCrossOrigin('anonymous');
+        if (!url.startsWith('data:')) l.setCrossOrigin('anonymous');
         l.load(url,
             (t) => { try { t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; applyColorSpace(t); texCache[url] = t; res(t); } catch(e) { res(null); } },
             undefined,
@@ -1114,12 +1347,16 @@ function addBuilding(bx, bz, type, mats, bg, sg) {
     const ab = (ix, iy, iz, mn) => {
         const m = new THREE.Mesh(bg, mats[mn]);
         m.position.set(ix, iy + 0.5, iz);
+        m.castShadow = true;
+        m.receiveShadow = true;
         g.add(m);
         boxColliders.push({ x: bx + ix, y: iy + 0.5, z: bz + iz, hw: 0.5, hh: 0.5, hd: 0.5 });
     };
     const as = (ix, iy, iz, mn) => {
         const m = new THREE.Mesh(sg, mats[mn]);
         m.position.set(ix, iy + 0.25, iz);
+        m.castShadow = true;
+        m.receiveShadow = true;
         g.add(m);
         boxColliders.push({ x: bx + ix, y: iy + 0.25, z: bz + iz, hw: 0.5, hh: 0.25, hd: 0.5 });
     };
@@ -1212,11 +1449,34 @@ async function buildWorld() {
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x8fc4e8);
-    scene.fog = new THREE.Fog(0x8fc4e8, 50, 130);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.85));
-    const d = new THREE.DirectionalLight(0xffffff, 0.85);
-    d.position.set(60, 110, 40);
-    scene.add(d);
+    scene.fog = new THREE.Fog(0x8fc4e8, 60, 140);
+
+    // 环境光（阴影区域亮度）
+    scene.add(new THREE.AmbientLight(0xffffff, CONFIG.AMBIENT_INTENSITY));
+
+    // 太阳在 +X 方向，不渲染太阳本体，仅做光源与投影
+    const sun = new THREE.DirectionalLight(CONFIG.SUN_COLOR, CONFIG.SUN_INTENSITY);
+    sun.position.set(CONFIG.SUN_POS.x, CONFIG.SUN_POS.y, CONFIG.SUN_POS.z);
+    sun.target.position.set(0, 0, 0);
+    scene.add(sun);
+    scene.add(sun.target);
+
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(CONFIG.SHADOW_MAP_SIZE, CONFIG.SHADOW_MAP_SIZE);
+    const S = CONFIG.SHADOW_AREA;
+    sun.shadow.camera.left = -S;
+    sun.shadow.camera.right = S;
+    sun.shadow.camera.top = S;
+    sun.shadow.camera.bottom = -S;
+    sun.shadow.camera.near = 1;
+    sun.shadow.camera.far = 350;
+    sun.shadow.bias = -0.0005;
+    sun.shadow.normalBias = 0.03;
+    sun.shadow.radius = 2;
+
+    // 补一盏极弱的地面反弹光，避免背光面死黑
+    const fill = new THREE.HemisphereLight(0xbfd4ff, 0x5c6a4a, 0.18);
+    scene.add(fill);
 
     const fm = new THREE.MeshLambertMaterial({ side: THREE.DoubleSide });
     if (mossTex) {
@@ -1226,6 +1486,7 @@ async function buildWorld() {
     } else fm.color = 0x8ecf6a;
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(CONFIG.floorSize, CONFIG.floorSize), fm);
     floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
     scene.add(floor);
 
     const bm = {
@@ -1239,6 +1500,16 @@ async function buildWorld() {
             depthWrite: false, side: THREE.DoubleSide,
         }),
     };
+
+    worldMats = {
+        floor: fm,
+        planks: bm.planks,
+        log: bm.log,
+        cobble: bm.cobble,
+        brick: bm.brick,
+        glass: bm.glass,
+    };
+    worldBillboardMats.length = 0;
 
     const bg = new THREE.BoxGeometry(1, 1, 1);
     const sg = new THREE.BoxGeometry(1, 0.5, 1);
@@ -1291,6 +1562,10 @@ async function buildWorld() {
         const w = h * sa;
         const m = createFullBillboard(stoneTex, w, h, 0x888888);
         m.position.set(x, h / 2, z);
+        m.material.userData.texKey = 'stone';
+        m.castShadow = true;
+        m.receiveShadow = true;
+        worldBillboardMats.push(m.material);
         m.userData = { type: 'stone', baseScale: new THREE.Vector2(w, h), spawnTime: performance.now() + placed * 25 };
         m.scale.set(0.001 * sa, 0.001, 1);
         scene.add(m);
@@ -1315,6 +1590,10 @@ async function buildWorld() {
         const w = h * ta;
         const m = createFullBillboard(treeTex, w, h, 0x2f6b2f);
         m.position.set(x, h / 2, z);
+        m.material.userData.texKey = 'tree';
+        m.castShadow = true;
+        m.receiveShadow = true;
+        worldBillboardMats.push(m.material);
         m.userData = { type: 'tree', baseScale: new THREE.Vector2(w, h), spawnTime: performance.now() + 400 + seededRandom() * 600 };
         m.scale.set(0.001, 0.001, 1);
         scene.add(m);
@@ -1358,6 +1637,8 @@ function spawnBarrelAt(x, z, texture, isRemote) {
     const tex = texture || window.__barrelTex;
     const m = createFullBillboard(tex, 0.9, 0.9, 0x8a5a2b);
     m.position.set(x, 0.45, z);
+    m.castShadow = true;
+    m.receiveShadow = true;
     const col = { x, z, radius: 0.42, height: 0.9 };
     colliders.push(col);
     m.userData = { type: 'barrel', collider: col };
@@ -1441,6 +1722,8 @@ function createPlayerMesh(texture) {
     const w = h * a;
     const m = createFullBillboard(texture, w, h, 0x6a6a6a);
     m.position.y = h / 2;
+    m.castShadow = true;
+    m.receiveShadow = true;
     g.add(m);
     return g;
 }
@@ -1814,6 +2097,7 @@ function spawnDrop(pos, vel, id, count, dropId, isRemote) {
     const bh = 0.5, bw = bh * a;
     const m = createFullBillboard(t, bw, bh, 0xcccccc);
     m.position.copy(pos);
+    m.castShadow = true;
     scene.add(m);
     const did = dropId || (player.id + '_' + (dropIdCounter++) + '_' + Math.random().toString(36).slice(2, 6));
     drops.push({
@@ -2987,7 +3271,6 @@ function handleNetworkMessage(data) {
 
 async function addRemotePlayer(data) {
     if (!data.id || remotePlayers[data.id]) return;
-    /* ever 检测 */
     if (nameHasEver(data.name)) { showErrorScreen(); return; }
     const t = await getSkinTexture(data.skin);
     if (remotePlayers[data.id]) return;
@@ -3159,6 +3442,9 @@ function initRenderer() {
     renderer = new THREE.WebGLRenderer({ antialias: false });
     renderer.setSize(innerWidth, innerHeight);
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    // 开启阴影
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.body.appendChild(renderer.domElement);
     addEventListener('resize', () => {
         if (!camera || !renderer) return;
@@ -3320,6 +3606,7 @@ function initSettings() {
     switchRoomBtn.addEventListener('click', openRoomModal);
     editUIBtn.addEventListener('click', () => { settingsOpen = false; panel.classList.remove('active'); enterUIEdit(); });
     panel.addEventListener('click', (e) => e.stopPropagation());
+    initTexturePackSettings();
 }
 
 function openRoomModal() {
@@ -3519,6 +3806,8 @@ async function main() {
     document.getElementById('errorRestartBtn').addEventListener('click', () => { location.reload(); });
 
     setHint('正在生成世界…', '#888');
+    await loadTexturePackIntoMemory();
+    try { await applyTexturePack(); } catch(e) { console.warn('材质包应用失败:', e); }
     try { await buildWorld(); } catch(err) { initError = err; }
     if (!initError) { try { initCamera(); } catch(err) { initError = err; } }
     if (!initError) { try { initRenderer(); } catch(err) { initError = err; } }
