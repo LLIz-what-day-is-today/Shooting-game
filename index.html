@@ -228,6 +228,7 @@ body.mobile #sprintHint{display:block}
 .hit-marker{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#ff4444;font-size:30px;font-weight:bold;pointer-events:none;z-index:11;animation:hitPop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards}
 @keyframes hitPop{0%{transform:translate(-50%,-50%) scale(0.3) rotate(-25deg);opacity:0}40%{transform:translate(-50%,-50%) scale(1.35) rotate(8deg);opacity:1}100%{transform:translate(-50%,-50%) scale(1.8) rotate(0deg);opacity:0}}
 #netStatus{position:fixed;bottom:8px;right:12px;font-size:11px;color:#888;z-index:10;pointer-events:none;text-shadow:1px 1px 0 #000}
+#llWatermark{position:fixed;bottom:0;left:0;background:#000;color:#fff;font-size:11px;padding:4px 8px;letter-spacing:1px;z-index:150;pointer-events:none;white-space:nowrap;user-select:none;-webkit-user-select:none}
 #damageFlash{position:fixed;inset:0;background:radial-gradient(circle,transparent 40%,rgba(200,0,0,0.7) 100%);opacity:0;pointer-events:none;z-index:15;transition:opacity 0.4s ease-out}
 #damageFlash.flash{opacity:1;transition:opacity 0s}
 #hitTint{position:fixed;inset:0;background:rgba(200,20,20,0.35);opacity:0;pointer-events:none;z-index:14;transition:opacity 0.1s}
@@ -372,7 +373,7 @@ body.ui-editing #mobileControls,body.ui-editing #chatInputWrap{pointer-events:no
     </div>
 </div>
 <div id="netStatus">未连接</div>
-
+<div id="llWatermark">LL-team AB.No stealing products.</div>
 <div id="uiEditBar">
     <span class="ui-edit-tip">拖动元素移动 · 拖拽右下角调整大小（含手机按钮）</span>
     <button id="uiResetBtn">重置全部</button>
