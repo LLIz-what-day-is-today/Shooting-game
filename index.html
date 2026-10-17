@@ -2227,8 +2227,6 @@ function fireGun() {
             publishMessage({ type: 'hit', targetId: hitId, damage: def.damage, from: player.name });
             showHitMarker();
         }
-        cameraLean += (Math.random() - 0.5) * 0.06;
-        recoilKick = 0.6;
         return;
     }
     const ammoType = def.ammoType;
