@@ -236,9 +236,9 @@ body.mobile #sprintHint{display:block}
 #deathFade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:40;transition:opacity 0.6s ease}
 #deathFade.active{opacity:1}
 
-#hotbar{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);display:flex;align-items:stretch;gap:0;padding:0;margin:0;z-index:90;width:var(--hotbar-w);height:var(--hotbar-h);background:url('https://zh.minecraft.wiki/images/thumb/Hotbar.png/300px-Hotbar.png?95cb4') no-repeat center center;background-size:100% 100%;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.4))}
+#hotbar{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);display:flex;align-items:stretch;gap:0;padding:0;margin:0;z-index:90;width:var(--hotbar-w);height:var(--hotbar-h);background-image:var(--hotbar-bg,url('https://zh.minecraft.wiki/images/thumb/Hotbar.png/300px-Hotbar.png?95cb4'));background-repeat:no-repeat;background-position:center center;background-size:100% 100%;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.4))}
 .hotbar-slot{flex:1 1 0;height:100%;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;background:transparent;overflow:visible}
-.hotbar-slot.active{background:url('https://zh.minecraft.wiki/images/Hotbar_selection.png?ba576') no-repeat center center;background-size:contain;image-rendering:pixelated}
+.hotbar-slot.active{background-image:var(--hotbar-sel-bg,url('https://zh.minecraft.wiki/images/Hotbar_selection.png?ba576'));background-repeat:no-repeat;background-position:center center;background-size:contain;image-rendering:pixelated}
 @keyframes slotBump{0%{transform:scale(1)}35%{transform:scale(1.18)}70%{transform:scale(0.95)}100%{transform:scale(1)}}
 .hotbar-slot.bump{animation:slotBump 0.3s cubic-bezier(0.34,1.56,0.64,1)}
 .hotbar-slot:hover{background-color:rgba(255,255,255,0.08)}
@@ -560,8 +560,8 @@ const CONFIG = {
     POSE_TRANSITION_SPEED: 12,
     // 光影
     SHADOW_MAP_SIZE: 2048,
-    SHADOW_AREA: 78,          // shadow camera 半宽
-    SUN_POS: { x: 100, y: 80, z: 20 },   // 太阳在 +X 方向
+    SHADOW_AREA: 78,
+    SUN_POS: { x: 100, y: 80, z: 20 },
     SUN_COLOR: 0xfff2dd,
     SUN_INTENSITY: 1.35,
     AMBIENT_INTENSITY: 0.52,
@@ -759,7 +759,11 @@ const TEXTURE_PACK_FILE_MAP = {
     '木头.png': 'log',
     '石头.png': 'stone',
     '木板.png': 'planks',
+    '玻璃.png': 'glass',
 };
+
+/* 非 Three.js 纹理的 UI 资源 */
+const TEXTURE_PACK_UI_FILES = ['物品栏.png', '物品栏选中.png', '字体.ttf', '背景图.png'];
 
 let texturePackData = {};
 
@@ -826,6 +830,7 @@ async function applyTexturePack() {
     for (const k in texCache) delete texCache[k];
 
     await refreshWorldTextures();
+    applyUIAssets();
 }
 
 async function refreshWorldTextures() {
@@ -861,6 +866,48 @@ async function refreshWorldTextures() {
     }
 }
 
+/* 应用非 Three.js 纹理：物品栏、字体、背景图 */
+function applyUIAssets() {
+    const mode = localStorage.getItem(TEXTURE_PACK_MODE_KEY) || 'default';
+    const active = (mode === 'custom') ? texturePackData : {};
+    const root = document.documentElement;
+
+    if (active['物品栏.png']) {
+        root.style.setProperty('--hotbar-bg', 'url("' + active['物品栏.png'] + '")');
+    } else {
+        root.style.removeProperty('--hotbar-bg');
+    }
+
+    if (active['物品栏选中.png']) {
+        root.style.setProperty('--hotbar-sel-bg', 'url("' + active['物品栏选中.png'] + '")');
+    } else {
+        root.style.removeProperty('--hotbar-sel-bg');
+    }
+
+    const startScreen = document.getElementById('startScreen');
+    if (startScreen) {
+        if (active['背景图.png']) {
+            startScreen.style.backgroundImage = 'url("' + active['背景图.png'] + '")';
+        } else {
+            startScreen.style.backgroundImage = '';
+        }
+    }
+
+    let fontStyle = document.getElementById('sg-custom-font-face');
+    if (active['字体.ttf']) {
+        if (!fontStyle) {
+            fontStyle = document.createElement('style');
+            fontStyle.id = 'sg-custom-font-face';
+            document.head.appendChild(fontStyle);
+        }
+        fontStyle.textContent = '@font-face{font-family:"CustomFont";src:url("' + active['字体.ttf'] + '") format("truetype");}';
+        document.body.classList.add('use-custom-font');
+    } else {
+        if (fontStyle) fontStyle.remove();
+        document.body.classList.remove('use-custom-font');
+    }
+}
+
 async function uploadTexturePack(file) {
     if (typeof JSZip === 'undefined') { alert('JSZip 未加载，请检查网络'); return; }
     let zip;
@@ -868,28 +915,19 @@ async function uploadTexturePack(file) {
     catch(e) { alert('ZIP 解析失败：' + e.message); return; }
 
     const pack = {};
-    const targetNames = Object.keys(TEXTURE_PACK_FILE_MAP).concat(['背景图.png', '字体.ttf']);
+    const targetNames = Object.keys(TEXTURE_PACK_FILE_MAP).concat(TEXTURE_PACK_UI_FILES);
     for (const path in zip.files) {
         const f = zip.files[path];
         if (f.dir) continue;
         const baseName = path.split('/').pop();
         if (!targetNames.includes(baseName)) continue;
-        let mime = 'application/octet-stream';
+        let mime;
+        if (baseName.endsWith('.png')) mime = 'image/png';
+        else if (baseName.endsWith('.ttf')) mime = 'font/ttf';
+        else continue;
         try {
-            const buf = await f.async('arraybuffer');
-            const u8 = new Uint8Array(buf);
-            if (baseName.endsWith('.ttf')) mime = 'font/ttf';
-            else if (u8[0] === 0x89 && u8[1] === 0x50) mime = 'image/png';
-            else if (u8[0] === 0xFF && u8[1] === 0xD8) mime = 'image/jpeg';
-            else if (u8[0] === 0x52 && u8[1] === 0x49 && u8[8] === 0x57) mime = 'image/webp';
-            else mime = 'image/png';
-
-            let bin = '';
-            const chunk = 0x8000;
-            for (let i = 0; i < u8.length; i += chunk) {
-                bin += String.fromCharCode.apply(null, u8.subarray(i, i + chunk));
-            }
-            pack[baseName] = 'data:' + mime + ';base64,' + btoa(bin);
+            const b64 = await f.async('base64');
+            pack[baseName] = 'data:' + mime + ';base64,' + b64;
         } catch(e) { console.warn('读取文件失败:', baseName, e); }
     }
     if (Object.keys(pack).length === 0) {
@@ -1061,6 +1099,7 @@ function getTexture(url) {
     if (texPromises[url]) return texPromises[url];
     texPromises[url] = new Promise((res) => {
         const l = new THREE.TextureLoader();
+        // dataURL 为同源内联数据，跳过 crossOrigin 避免部分环境加载失败
         if (!url.startsWith('data:')) l.setCrossOrigin('anonymous');
         l.load(url,
             (t) => { try { t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; applyColorSpace(t); texCache[url] = t; res(t); } catch(e) { res(null); } },
@@ -1076,7 +1115,7 @@ function getSkinTexture(u) {
     if (skinTextureCache[u]) return Promise.resolve(skinTextureCache[u]);
     return new Promise((res) => {
         const l = new THREE.TextureLoader();
-        l.setCrossOrigin('anonymous');
+        if (!u.startsWith('data:')) l.setCrossOrigin('anonymous');
         l.load(u,
             (t) => { try { t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; applyColorSpace(t); t.needsUpdate = true; skinTextureCache[u] = t; res(t); } catch(e) { res(getTexture(ASSETS.kai)); } },
             undefined,
@@ -1451,10 +1490,8 @@ async function buildWorld() {
     scene.background = new THREE.Color(0x8fc4e8);
     scene.fog = new THREE.Fog(0x8fc4e8, 60, 140);
 
-    // 环境光（阴影区域亮度）
     scene.add(new THREE.AmbientLight(0xffffff, CONFIG.AMBIENT_INTENSITY));
 
-    // 太阳在 +X 方向，不渲染太阳本体，仅做光源与投影
     const sun = new THREE.DirectionalLight(CONFIG.SUN_COLOR, CONFIG.SUN_INTENSITY);
     sun.position.set(CONFIG.SUN_POS.x, CONFIG.SUN_POS.y, CONFIG.SUN_POS.z);
     sun.target.position.set(0, 0, 0);
@@ -1474,7 +1511,6 @@ async function buildWorld() {
     sun.shadow.normalBias = 0.03;
     sun.shadow.radius = 2;
 
-    // 补一盏极弱的地面反弹光，避免背光面死黑
     const fill = new THREE.HemisphereLight(0xbfd4ff, 0x5c6a4a, 0.18);
     scene.add(fill);
 
